@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "Locate Parking";
 
-    int clicked = 0, newClicked =0;
+    int clicked = 1, newClicked =0;
     HomeFragment homeFragment = new HomeFragment();
     FriendsFragment friendsFragment = new FriendsFragment();
     SettingsFragment settingsFragment = new SettingsFragment();
@@ -46,7 +46,8 @@ public class MainActivity extends Activity {
 
             if( 0 < newClicked && newClicked < 4 && clicked != newClicked)
             {
-                changeFragment(newClicked);
+                changeFragment(newClicked, true);
+                changeFragment(clicked, false);
                 clicked = newClicked;
                 return true;
             }
@@ -56,41 +57,47 @@ public class MainActivity extends Activity {
 
     };
 
-    void changeFragment(int position)
+    void addFragments()
+    {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        ft.add(R.id.fragmentContainer, homeFragment);
+        ft.hide(homeFragment);
+
+        ft.add(R.id.fragmentContainer, friendsFragment);
+        ft.hide(friendsFragment);
+
+        ft.add(R.id.fragmentContainer, settingsFragment);
+        ft.hide(settingsFragment);
+
+        ft.commit();
+    }
+
+    void changeFragment(int position, boolean show)
     {
         switch (position)
         {
             case 1:
-                newFragment = getHomeFragment();
+                newFragment = homeFragment;
                 break;
             case 2:
-                newFragment = getFriendsFragment();
+                newFragment = friendsFragment;
                 break;
             case 3:
-                newFragment = getSettingsFragment();
+                newFragment = settingsFragment;
                 break;
         }
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragmentContainer, newFragment);
+
+        if(show)
+            ft.show(newFragment);
+        else
+            ft.hide(newFragment);
+
         ft.commit();
     }
-
-    public HomeFragment getHomeFragment()
-    {
-        return homeFragment;
-    }
-
-    public FriendsFragment getFriendsFragment()
-    {
-        return friendsFragment;
-    }
-
-    public SettingsFragment getSettingsFragment()
-    {
-        return settingsFragment;
-    }
-
+    
     public void disableDoubleSelect(int i)
     {
         Menu menu = null;
@@ -116,7 +123,10 @@ public class MainActivity extends Activity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         //select home on start
         navigation.setSelectedItemId(R.id.navigation_home);
-        changeFragment(1);
+
+        addFragments();
+        changeFragment(1, true);
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
