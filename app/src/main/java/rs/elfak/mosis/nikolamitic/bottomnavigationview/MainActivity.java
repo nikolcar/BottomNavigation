@@ -1,38 +1,72 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.TextView;
+
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
 
 public class MainActivity extends Activity {
 
-    private TextView mTextMessage;
+    private static final String TAG = "Locate Parking";
+
+    //FragmentManager fragmentManager = getFragmentManager();
+    //Fragment newFragment = null;
+    //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            boolean result = false;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
+                    Log.d(TAG, "navigation_home");
+                    changeFragment("home");
+                    result = true;
+                    break;
                 case R.id.navigation_friends:
-                    mTextMessage.setText(R.string.title_friends);
-                    return true;
+                    Log.d(TAG, "navigation_friends");
+                    changeFragment("friends");
+                    result = true;
+                    break;
                 case R.id.navigation_settings:
-                    mTextMessage.setText(R.string.title_settings);
-                    return true;
+                    Log.d(TAG, "navigation_settings");
+                    changeFragment("settings");
+                    result = true;
+                    break;
             }
-            return false;
+            return result;
         }
 
     };
+
+    void changeFragment(String name)
+    {
+        Fragment newFragment = null;
+
+        switch (name)
+        {
+            case "home":
+                newFragment = new FragmentHome();
+                break;
+            case "friends":
+                newFragment = new FriendsFragment();
+                break;
+            case "settings":
+                newFragment = new FragmentSettings();
+                break;
+        }
+
+        getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, newFragment).commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +76,13 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         //select home on start
         navigation.setSelectedItemId(R.id.navigation_home);
-
+        changeFragment("home");
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
+
+
 
 }
