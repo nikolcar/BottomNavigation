@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
         switch (name)
         {
             case "home":
-                newFragment = new FragmentHome();
+                newFragment = new HomeFragment();
                 break;
             case "friends":
                 newFragment = new FriendsFragment();
