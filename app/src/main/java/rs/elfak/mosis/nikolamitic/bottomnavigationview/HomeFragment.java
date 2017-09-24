@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment
         mMapView = (MapView) view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
+
         mMapView.onResume(); // needed to get the map to display immediately
 
         try
@@ -62,7 +64,8 @@ public class HomeFragment extends Fragment
 
 
                 // For showing a move to my location button
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -74,7 +77,7 @@ public class HomeFragment extends Fragment
                 }
                 googleMap.setMyLocationEnabled(false);
 
-                LatLng currentLocation = new LatLng(43.3246,21.9030);
+                LatLng currentLocation = new LatLng(43.3246, 21.9030);
 
                 // For dropping a marker at a point on the Map
                 MarkerOptions markerOptions = new MarkerOptions();
@@ -87,16 +90,20 @@ public class HomeFragment extends Fragment
                 googleMap.addMarker(markerOptions);
 
                 // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(10).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(13).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             }
         });
-
 
         return view;
     }
 
-    public Bitmap bitmapSizeByScall( Bitmap bitmapIn, float scall_zero_to_one_f)
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    public Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
     {
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
                 Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),

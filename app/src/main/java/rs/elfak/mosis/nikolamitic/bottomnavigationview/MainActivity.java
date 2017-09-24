@@ -2,10 +2,13 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 
@@ -15,57 +18,91 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "Locate Parking";
 
-    //FragmentManager fragmentManager = getFragmentManager();
-    //Fragment newFragment = null;
-    //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
+    int clicked = 0, newClicked =0;
+    HomeFragment homeFragment = new HomeFragment();
+    FriendsFragment friendsFragment = new FriendsFragment();
+    SettingsFragment settingsFragment = new SettingsFragment();
+    Fragment newFragment = null;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            boolean result = false;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     Log.d(TAG, "navigation_home");
-                    changeFragment("home");
-                    result = true;
+                    newClicked = 1;
                     break;
                 case R.id.navigation_friends:
                     Log.d(TAG, "navigation_friends");
-                    changeFragment("friends");
-                    result = true;
+                    newClicked = 2;
                     break;
                 case R.id.navigation_settings:
                     Log.d(TAG, "navigation_settings");
-                    changeFragment("settings");
-                    result = true;
+                    newClicked = 3;
                     break;
             }
-            return result;
+
+            if( 0 < newClicked && newClicked < 4 && clicked != newClicked)
+            {
+                changeFragment(newClicked);
+                clicked = newClicked;
+                return true;
+            }
+
+            return false;
         }
 
     };
 
-    void changeFragment(String name)
+    void changeFragment(int position)
     {
-        Fragment newFragment = null;
-
-        switch (name)
+        switch (position)
         {
-            case "home":
-                newFragment = new HomeFragment();
+            case 1:
+                newFragment = getHomeFragment();
                 break;
-            case "friends":
-                newFragment = new FriendsFragment();
+            case 2:
+                newFragment = getFriendsFragment();
                 break;
-            case "settings":
-                newFragment = new FragmentSettings();
+            case 3:
+                newFragment = getSettingsFragment();
                 break;
         }
 
-        getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, newFragment).commit();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentContainer, newFragment);
+        ft.commit();
+    }
+
+    public HomeFragment getHomeFragment()
+    {
+        return homeFragment;
+    }
+
+    public FriendsFragment getFriendsFragment()
+    {
+        return friendsFragment;
+    }
+
+    public SettingsFragment getSettingsFragment()
+    {
+        return settingsFragment;
+    }
+
+    public void disableDoubleSelect(int i)
+    {
+        Menu menu = null;
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.navigation, menu);
+
+        menu.getItem(1).setCheckable(true);
+        menu.getItem(2).setCheckable(true);
+        menu.getItem(3).setCheckable(true);
+
+        menu.getItem(i).setCheckable(false);
     }
 
     @Override
@@ -79,7 +116,7 @@ public class MainActivity extends Activity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         //select home on start
         navigation.setSelectedItemId(R.id.navigation_home);
-        changeFragment("home");
+        changeFragment(1);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
