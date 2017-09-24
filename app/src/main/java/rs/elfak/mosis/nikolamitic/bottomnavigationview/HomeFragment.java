@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment
                 }
                 googleMap.setMyLocationEnabled(false);
 
-                LatLng currentLocation = new LatLng(43.3246, 21.9030);
+                LatLng currentLocation = new LatLng(43.318731, 21.891143);
 
                 // For dropping a marker at a point on the Map
                 MarkerOptions markerOptions = new MarkerOptions();
@@ -90,7 +90,7 @@ public class HomeFragment extends Fragment
                 googleMap.addMarker(markerOptions);
 
                 // For zooming automatically to the location of the marker
-                CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(13).build();
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(15).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             }
         });

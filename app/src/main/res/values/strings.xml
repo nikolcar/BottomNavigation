@@ -6,4 +6,16 @@
 
 
     <string name="search_hint">Search friend</string>
+    <string name="btn_back"><![CDATA[<< Back]]></string>
+    <string name="register_now">Register now!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="login">Login</string>
+    <string name="reset_instructions">Enter Email to get password reset instructions.</string>
+    <string name="reset">Reset</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
+    <string name="register">Register</string>
+
 </resources>

@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
 
         ft.commit();
     }
-    
+
     public void disableDoubleSelect(int i)
     {
         Menu menu = null;
