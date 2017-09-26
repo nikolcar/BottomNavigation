@@ -3,6 +3,7 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 
 public class MainActivity extends Activity {
 
@@ -115,6 +117,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
+
         //remove title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 

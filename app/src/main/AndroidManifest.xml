@@ -15,7 +15,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/icon"
+        android:icon="@mipmap/icon_white"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
@@ -40,7 +40,8 @@
 
         <activity android:name=".Login.LoginActivity" />
         <activity android:name=".Login.SignupActivity" />
-        <activity android:name=".Login.ResetPasswordActivity"></activity>
+        <activity android:name=".Login.ResetPasswordActivity" />
+        <activity android:name=".Friends.FriendAddNewActivity"></activity>
     </application>
 
 </manifest>

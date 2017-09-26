@@ -1,17 +1,20 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Login;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
-public class LoginActivity extends AppCompatActivity
+public class LoginActivity extends Activity
 {
     private EditText inputEmail, inputPassword;
     private Button btnSignup, btnLogin, btnReset;
@@ -20,6 +23,7 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
 
         btnSignup = (Button) findViewById(R.id.btn_signup);

@@ -6,88 +6,81 @@
     android:layout_height="fill_parent"
     android:background="@color/blue"
     android:gravity="center_vertical"
-    android:padding="@dimen/activity_horizontal_margin"
     tools:context="rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.SignupActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal|center_vertical"
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
 
-        <EditText
-            android:id="@+id/firstname"
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:src="@mipmap/logo"/>
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="@string/firstname" />
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <EditText
+                    android:id="@+id/firstname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="@string/firstname" />
 
-        <EditText
-            android:id="@+id/lastname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="@string/lastname"
-            android:textColor="@android:color/white"/>
+                <EditText
+                    android:id="@+id/lastname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="@string/lastname"
+                    android:textColor="@android:color/white"/>
 
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@android:color/white" />
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white" />
 
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:hint="@string/password"
-            android:imeActionId="@+id/login"
-            android:imeOptions="actionUnspecified"
-            android:inputType="textPassword"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@android:color/white" />
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:hint="@string/password"
+                    android:imeActionId="@+id/login"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white" />
 
-        <Button
-            android:id="@+id/sign_up_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@color/blue"
-            android:text="@string/register"
-            android:textColor="@color/white" />
-
-
-        <Button
-            android:id="@+id/btn_reset_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/forgot_password"
-            android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
-
-        <Button
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/btn_link_to_login"
-            android:textAllCaps="false"
-            android:textColor="@color/blue"
-            android:textSize="15sp" />
+                <Button
+                    android:id="@+id/sign_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/blue"
+                    android:text="@string/register"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </RelativeLayout>

@@ -5,79 +5,91 @@
     android:layout_height="fill_parent"
     android:gravity="center_vertical"
     android:orientation="vertical"
-    android:background="@color/blue"
-    android:padding="@dimen/activity_horizontal_margin"
     tools:context="rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|center_vertical"
         android:background="@color/white"
         android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_signup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="right|top"
-        android:text="@string/register_now"
-        android:textAllCaps="false"
-        android:textColor="@color/blue"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right|top"
+            android:text="@string/register_now"
+            android:textAllCaps="false"
+            android:textColor="@color/blue"
+            android:textSize="15sp" />
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:src="@mipmap/logo"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"
-        android:textColor="@color/blue"
-        android:textColorHint="@color/blue" />
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:src="@mipmap/logo"/>
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/blue"
+                    android:textColorHint="@color/blue" />
 
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:layout_marginLeft="10dp"
-        android:textColor="@color/blue"
-        android:textColorHint="@color/blue" />
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/blue"
+                    android:textColorHint="@color/blue" />
 
-    <Button
-        android:id="@+id/btn_reset_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:background="@null"
-        android:text="@string/forgot_password"
-        android:textAllCaps="false"
-        android:layout_gravity="left|top"
-        android:textColor="@color/blue" />
+                <Button
+                    android:id="@+id/btn_reset_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:background="@null"
+                    android:text="@string/forgot_password"
+                    android:textAllCaps="false"
+                    android:layout_gravity="left|top"
+                    android:textColor="@color/blue" />
 
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/blue"
-        android:text="@string/login"
-        android:textColor="@android:color/white" />
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/blue"
+                    android:text="@string/login"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
+
+
 </RelativeLayout>
