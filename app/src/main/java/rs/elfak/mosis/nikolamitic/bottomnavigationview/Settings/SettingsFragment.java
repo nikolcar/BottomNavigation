@@ -1,4 +1,4 @@
-package rs.elfak.mosis.nikolamitic.bottomnavigationview;
+package rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.google.firebase.auth.FirebaseAuth;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 public class SettingsFragment extends Fragment
 {
@@ -31,6 +32,7 @@ public class SettingsFragment extends Fragment
             public void onClick(View v) {
                 mAuth.signOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
+                getActivity().finish();
             }
         });
 

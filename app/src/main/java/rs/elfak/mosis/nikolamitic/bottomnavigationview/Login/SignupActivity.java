@@ -71,6 +71,7 @@ public class SignupActivity extends Activity {
                         {
                             Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                            finish();
                         }
                         else
                         {

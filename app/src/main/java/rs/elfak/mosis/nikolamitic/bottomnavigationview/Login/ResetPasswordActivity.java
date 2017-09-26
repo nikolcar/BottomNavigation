@@ -26,6 +26,7 @@ public class ResetPasswordActivity extends Activity {
 
     FirebaseAuth mAuth;
     EditText etEmail;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +36,17 @@ public class ResetPasswordActivity extends Activity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        Intent i = getIntent();
+        email = i.getStringExtra("Email");
+
         etEmail = (EditText) findViewById(R.id.reset_password_email);
+        etEmail.setText(email);
+        etEmail.setSelection(email.length());
     }
 
     public void reset_password_button_click(View v)
     {
-        String email = etEmail.getText().toString();
+         email = etEmail.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
@@ -62,6 +68,7 @@ public class ResetPasswordActivity extends Activity {
                         {
                             Toast.makeText(ResetPasswordActivity.this, "Email is sent", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
+                            finish();
                         }
                         else
                         {

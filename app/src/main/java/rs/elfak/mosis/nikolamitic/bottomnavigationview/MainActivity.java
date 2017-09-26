@@ -11,14 +11,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
 
 public class MainActivity extends Activity {
 
@@ -131,22 +132,6 @@ public class MainActivity extends Activity {
 
         mAuth = FirebaseAuth.getInstance();
         loggedUser = mAuth.getCurrentUser();
-
-        authListener = new FirebaseAuth.AuthStateListener()
-        {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                loggedUser = firebaseAuth.getCurrentUser();
-                if (loggedUser == null)
-                {
-                    // user auth state is changed - user is null
-                    // launch login activity
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                    finish();
-                }
-            }
-        };
 
         if(loggedUser!=null)
         {

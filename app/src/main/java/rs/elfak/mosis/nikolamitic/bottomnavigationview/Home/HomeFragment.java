@@ -1,4 +1,4 @@
-package rs.elfak.mosis.nikolamitic.bottomnavigationview;
+package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 
 import android.Manifest;
 import android.app.Fragment;
@@ -26,6 +26,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 
 public class HomeFragment extends Fragment

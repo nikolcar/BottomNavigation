@@ -27,6 +27,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 public class LoginActivity extends Activity
 {
     private EditText inputEmail, inputPassword;
+    String email;
     private FirebaseAuth mAuth;
 
     @Override
@@ -49,12 +50,15 @@ public class LoginActivity extends Activity
 
     public void reset_password_click(View view)
     {
-        startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
+        Intent i = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+        email = inputEmail.getText().toString();
+        i.putExtra("Email",email);
+        startActivity(i);
     }
 
     public void login_button_click(View view)
     {
-        String email = inputEmail.getText().toString();
+        email = inputEmail.getText().toString();
         final String password = inputPassword.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
@@ -80,6 +84,7 @@ public class LoginActivity extends Activity
                         {
                             Toast.makeText(LoginActivity.this, "Log in successful", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
                         }
                         else
                         {
