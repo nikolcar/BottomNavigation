@@ -24,11 +24,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.Date;
 
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
@@ -65,6 +69,8 @@ public class SignupActivity extends Activity
         txtRepeatPassword = (EditText) findViewById(R.id.sign_up_repeat_password);
 
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        users = database.getReference("users");
 
         // Button listener to show date picker dialog
         changeDate.setOnClickListener(new View.OnClickListener() {
@@ -80,10 +86,11 @@ public class SignupActivity extends Activity
 
     public void sign_up_button_click(View v)
     {
-        String firstName = txtFirstName.getText().toString();
-        String lastName = txtLastName.getText().toString();
-        String nickname = txtNickname.getText().toString();
-        String dateOfBirth = tvDateOfBirth.getText().toString();
+        final String firstName = txtFirstName.getText().toString();
+        final String lastName = txtLastName.getText().toString();
+        final String nickname = txtNickname.getText().toString();
+        final String dateOfBirth = tvDateOfBirth.getText().toString();
+
         String email = txtEmailAddress.getText().toString();
         final String password = txtPassword.getText().toString();
         String repeatPassword = txtRepeatPassword.getText().toString();
@@ -149,6 +156,9 @@ public class SignupActivity extends Activity
 
                         if(task.isSuccessful())
                         {
+                            String uid = task.getResult().getUser().getUid();
+
+                            addUserInDatabase(uid, firstName, lastName, nickname, dateOfBirth);
                             Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(SignupActivity.this, MainActivity.class));
                             finish();
@@ -161,6 +171,21 @@ public class SignupActivity extends Activity
                 });
     }
 
+    private void addUserInDatabase(String uid, String first, String last, String nick, String date)
+    {
+        User newUser = new User(first, last, nick, date);
+        users.child(uid).setValue(newUser);
+        //database.getReference("scoreTable").child(uid).child("name").setValue(first + "," + nick + ", " + last);
+        //database.getReference("scoreTable").child(uid).child("points").setValue(0);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(first + "," + nick + ", " + last)
+                .build();
+
+        user.updateProfile(profileUpdates);
+    }
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -188,8 +213,8 @@ public class SignupActivity extends Activity
             day   = selectedDay;
 
             // Show selected date
-            tvDateOfBirth.setText(new StringBuilder().append(month + 1)
-                    .append("-").append(day).append("-").append(year)
+            tvDateOfBirth.setText(new StringBuilder().append(day)
+                    .append("-").append(month+1).append("-").append(year)
                     .append(" "));
 
         }
