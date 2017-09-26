@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
     android:orientation="vertical"
     tools:context="rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity">
@@ -16,6 +17,7 @@
 
         <Button
             android:id="@+id/btn_signup"
+            android:onClick="sign_up_click"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
@@ -42,29 +44,50 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:src="@mipmap/logo"/>
-                <EditText
-                    android:id="@+id/email"
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/blue"
-                    android:textColorHint="@color/blue" />
+                    android:id="@+id/login_input_email">
 
-                <EditText
-                    android:id="@+id/password"
-                    android:layout_width="fill_parent"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/login_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:hint="@string/email"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/blue"
+                        android:textColorHint="@color/blue"
+                        android:maxLines="1"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/password"
-                    android:inputType="textPassword"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@color/blue"
-                    android:textColorHint="@color/blue" />
+                    android:id="@+id/login_input_password"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleDrawable="@drawable/ic_password_blue_24dp"
+                    app:passwordToggleTint="@color/blue">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/login_password"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/password"
+                        android:inputType="textPassword"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/blue"
+                        android:textColorHint="@color/blue"
+                        android:maxLines="1" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <Button
                     android:id="@+id/btn_reset_password"
+                    android:onClick="reset_password_click"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -76,6 +99,7 @@
 
                 <Button
                     android:id="@+id/btn_login"
+                    android:onClick="login_button_click"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"

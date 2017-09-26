@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "480546401500",
+    "firebase_url": "https://locateparking-180910.firebaseio.com",
+    "project_id": "locateparking-180910",
+    "storage_bucket": "locateparking-180910.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480546401500:android:eeb6668f01bf1139",
+        "android_client_info": {
+          "package_name": "rs.elfak.mosis.nikolamitic.bottomnavigationview"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "480546401500-k4cakdjmv8tubjb73dldlrr1nlph8q37.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rs.elfak.mosis.nikolamitic.bottomnavigationview",
+            "certificate_hash": "75bfd4bb4a33ae4c236fe3bc38824501f5a91d8e"
+          }
+        },
+        {
+          "client_id": "480546401500-qn3v96mm47t581ugq7bq4u69sban63sq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEgLtoTLPcfY4E3PBqmnWh-O4JwCgIARQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "480546401500-qn3v96mm47t581ugq7bq4u69sban63sq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

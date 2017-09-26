@@ -11,7 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
@@ -26,12 +30,18 @@ public class MainActivity extends Activity {
     SettingsFragment settingsFragment = new SettingsFragment();
     Fragment newFragment = null;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth mAuth;
+    private FirebaseUser loggedUser;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener()
+    {
         @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
+        public boolean onNavigationItemSelected(@NonNull MenuItem item)
+        {
+            switch (item.getItemId())
+            {
                 case R.id.navigation_home:
                     Log.d(TAG, "navigation_home");
                     newClicked = 1;
@@ -115,28 +125,49 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
+        loggedUser = mAuth.getCurrentUser();
 
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        finish();
+        authListener = new FirebaseAuth.AuthStateListener()
+        {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-        //remove title bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+                loggedUser = firebaseAuth.getCurrentUser();
+                if (loggedUser == null)
+                {
+                    // user auth state is changed - user is null
+                    // launch login activity
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        };
 
-        setContentView(R.layout.activity_main);
+        if(loggedUser!=null)
+        {
+            //remove title bar
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        //select home on start
-        navigation.setSelectedItemId(R.id.navigation_home);
+            setContentView(R.layout.activity_main);
 
-        addFragments();
-        changeFragment(1, true);
+            BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            //select home on start
+            navigation.setSelectedItemId(R.id.navigation_home);
 
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+            addFragments();
+            changeFragment(1, true);
+
+            navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        }
+        else
+        {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
     }
-
-
-
 }

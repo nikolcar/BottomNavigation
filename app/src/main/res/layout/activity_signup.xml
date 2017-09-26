@@ -23,55 +23,77 @@
             android:layout_marginTop="30dp"
             android:layout_marginBottom="30dp"
             android:src="@mipmap/logo"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+<!--
                 <EditText
-                    android:id="@+id/firstname"
+                    android:id="@+id/sign_up_firstname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:hint="@string/firstname" />
+                    android:hint="@string/firstname"
+                    android:textColor="@color/blue"/>
 
                 <EditText
-                    android:id="@+id/lastname"
+                    android:id="@+id/sign_up_lastname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:hint="@string/lastname"
-                    android:textColor="@android:color/white"/>
-
-                <EditText
-                    android:id="@+id/email"
+                    android:textColor="@color/blue"/>
+-->
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white" />
+                    android:id="@+id/sing_up_input_email">
 
-                <EditText
-                    android:id="@+id/password"
+                <android.support.design.widget.TextInputEditText
+                        android:id="@+id/sign_up_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/blue" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusableInTouchMode="true"
-                    android:hint="@string/password"
-                    android:imeActionId="@+id/login"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white" />
+                    android:id="@+id/sign_up_input_password"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleDrawable="@drawable/ic_password_blue_24dp"
+                    app:passwordToggleTint="@color/blue">
+
+                    <EditText
+                        android:id="@+id/sign_up_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="true"
+                        android:hint="@string/password"
+                        android:imeActionId="@+id/login"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/blue" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <Button
                     android:id="@+id/sign_up_button"
+                    android:onClick="sign_up_button_click"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -79,8 +101,11 @@
                     android:text="@string/register"
                     android:textColor="@color/white"
                     android:layout_gravity="center_horizontal"/>
+
             </LinearLayout>
+
         </ScrollView>
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -8,7 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:background">@android:color/transparent</item>
-
         <item name="android:editTextColor">@color/blue</item>
         <item name="android:textColorHint">@color/blue</item>
 

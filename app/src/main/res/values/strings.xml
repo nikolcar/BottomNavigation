@@ -16,5 +16,6 @@
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
     <string name="register">Register</string>
+    <string name="logout">Logout</string>
 
 </resources>
