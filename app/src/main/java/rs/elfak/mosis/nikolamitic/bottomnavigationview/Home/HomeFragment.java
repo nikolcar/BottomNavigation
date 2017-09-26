@@ -101,7 +101,8 @@ public class HomeFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
     }
 
@@ -115,25 +116,29 @@ public class HomeFragment extends Fragment
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         mMapView.onResume();
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         mMapView.onPause();
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         mMapView.onDestroy();
     }
 
     @Override
-    public void onLowMemory() {
+    public void onLowMemory()
+    {
         super.onLowMemory();
         mMapView.onLowMemory();
     }

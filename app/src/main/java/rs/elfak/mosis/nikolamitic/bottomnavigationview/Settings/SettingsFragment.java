@@ -27,9 +27,11 @@ public class SettingsFragment extends Fragment
 
         btnLogout = (Button) v.findViewById(R.id.btn_logout);
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
+        btnLogout.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 mAuth.signOut();
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 getActivity().finish();

@@ -22,14 +22,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
-public class ResetPasswordActivity extends Activity {
-
+public class ResetPasswordActivity extends Activity
+{
     FirebaseAuth mAuth;
     EditText etEmail;
     String email;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_reset_password);
@@ -48,7 +49,8 @@ public class ResetPasswordActivity extends Activity {
     {
          email = etEmail.getText().toString();
 
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email))
+        {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -58,10 +60,11 @@ public class ResetPasswordActivity extends Activity {
 
 
         (mAuth.sendPasswordResetEmail(email))
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnCompleteListener(new OnCompleteListener<Void>()
+                {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
                         progressDialog.dismiss();
 
                         if(task.isSuccessful())

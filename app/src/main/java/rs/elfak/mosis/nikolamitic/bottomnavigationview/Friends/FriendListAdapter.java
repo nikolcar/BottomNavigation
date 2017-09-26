@@ -33,7 +33,6 @@ public class FriendListAdapter extends ArrayAdapter<FriendModel>
         this.mFriendList = mFriendList;
     }
 
-
     private int lastPosition = -1;
 
     @Override
@@ -68,5 +67,4 @@ public class FriendListAdapter extends ArrayAdapter<FriendModel>
 
         return convertView;
     }
-
 }

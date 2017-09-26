@@ -21,8 +21,8 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends Activity
+{
     private static final String TAG = "Locate Parking";
 
     int clicked = 1, newClicked =0;

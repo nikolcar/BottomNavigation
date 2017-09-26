@@ -24,14 +24,15 @@ import com.google.firebase.auth.FirebaseUser;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
-public class SignupActivity extends Activity {
-
+public class SignupActivity extends Activity
+{
     private EditText txtEmailAddress;
     private EditText txtPassword;
     private FirebaseAuth mAuth;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_signup);
@@ -43,16 +44,17 @@ public class SignupActivity extends Activity {
 
     public void sign_up_button_click(View v)
     {
-
         String email = txtEmailAddress.getText().toString();
         final String password = txtPassword.getText().toString();
 
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email))
+        {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password))
+        {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -61,10 +63,11 @@ public class SignupActivity extends Activity {
         progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         (mAuth.createUserWithEmailAndPassword(email,password))
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
+                {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
                         progressDialog.dismiss();
 
                         if(task.isSuccessful())

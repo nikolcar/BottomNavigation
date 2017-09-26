@@ -42,7 +42,6 @@ public class LoginActivity extends Activity
         mAuth = FirebaseAuth.getInstance();
     }
 
-
     public void sign_up_click(View view)
     {
         startActivity(new Intent(LoginActivity.this, SignupActivity.class));
