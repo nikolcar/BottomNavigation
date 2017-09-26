@@ -17,5 +17,9 @@
     <string name="lastname">Lastname</string>
     <string name="register">Register</string>
     <string name="logout">Logout</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="nickname">Nickname</string>
+    <string name="choose">Choose</string>
+    <string name="repeat_password">Repeat password</string>
 
 </resources>

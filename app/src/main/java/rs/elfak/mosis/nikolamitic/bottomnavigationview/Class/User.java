@@ -4,12 +4,16 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Class;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class User
 {
-    public String email;
+    public String uid;
     public String firstName;
     public String lastName;
+    public String nickname;
+    public Date dateOfBirth;
+
     public LatLng location;
     public Integer points;
     public ArrayList<User> friends;
@@ -21,11 +25,13 @@ public class User
     public Boolean showplayers;
     public Boolean workback;
 
-    public User(String firstName, String lastName, String email)
+    public User(String uid, String firstName, String lastName, String nickname, Date dateOfBirth)
     {
-        this.email = email;
+        this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.nickname = nickname;
+        this.dateOfBirth=dateOfBirth;
 
         this.location = new LatLng(0.0,0.0);
         this.points = 0;
@@ -49,13 +55,8 @@ public class User
         return this.points;
     }
 
-    public void addPoints(int bonus)
-    {
-        this.points+=bonus;
-    }
-
     public String toString()
     {
-        return this.firstName+" "+this.lastName;
+        return this.firstName+", "+this.nickname+", "+this.lastName;
     }
 }

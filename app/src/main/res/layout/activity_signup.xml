@@ -30,27 +30,84 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
-<!--
-                <EditText
-                    android:id="@+id/sign_up_firstname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:hint="@string/firstname"
-                    android:textColor="@color/blue"/>
 
-                <EditText
-                    android:id="@+id/sign_up_lastname"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:hint="@string/lastname"
-                    android:textColor="@color/blue"/>
--->
+                    android:id="@+id/sing_up_input_firstname">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/sign_up_firstname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:hint="@string/firstname"
+                        android:textColor="@color/blue"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sing_up_input_lastname">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/sign_up_lastname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:hint="@string/lastname"
+                        android:textColor="@color/blue"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sing_up_input_nickname">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/sign_up_nickname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:hint="@string/nickname"
+                        android:textColor="@color/blue"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/date_of_birth"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerInParent="true"
+                        android:textSize="15dp"
+                        android:paddingLeft="4dp"
+                        android:id="@+id/sign_up_date_of_birth"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/choose"
+                        android:layout_alignParentRight="true"
+                        android:textSize="15dp"
+                        android:layout_marginRight="4dp"
+                        android:background="@color/blue"
+                        android:textColor="@color/white"
+                        android:id="@+id/btn_datepicker"/>
+
+                </RelativeLayout>
+
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,6 +137,25 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/password"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:textColor="@color/blue" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sign_up_input_repeat_password"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleDrawable="@drawable/ic_password_blue_24dp"
+                    app:passwordToggleTint="@color/blue">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/sign_up_repeat_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/repeat_password"
                         android:inputType="textPassword"
                         android:maxLines="1"
                         android:textColor="@color/blue" />
