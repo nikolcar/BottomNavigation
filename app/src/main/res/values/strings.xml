@@ -10,16 +10,29 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot password?</string>
-    <string name="login">Login</string>
+    <string name="login">LOGIN</string>
     <string name="reset_instructions">Enter Email to get password reset instructions.</string>
-    <string name="reset">Reset</string>
+    <string name="reset">RESET</string>
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
-    <string name="register">Register</string>
+    <string name="register">REGISTER</string>
     <string name="logout">Logout</string>
     <string name="date_of_birth">Date of birth</string>
     <string name="nickname">Nickname</string>
-    <string name="choose">Choose</string>
+    <string name="choose">CHOOSE</string>
     <string name="repeat_password">Repeat password</string>
+    <string name="parking_name">Name</string>
+    <string name="parking_desc">Description</string>
+    <string name="parking_type">Type</string>
+    <string name="parking_long">Longitude</string>
+    <string name="parking_lati">Latitude</string>
+    <string name="add">ADD</string>
+    <string name="cancel">CANCEL</string>
+    <string name="Add_new_parking">Add new parking</string>
+
+    <string-array name="parking_type" color="@color/blue">
+        <item>Private</item>
+        <item>Public</item>
+    </string-array>
 
 </resources>

@@ -39,9 +39,12 @@
             android:value="AIzaSyDJyjumTJRrdVlcPK72iPL41Sy7Z8hqPls" />
 
         <activity android:name=".Login.LoginActivity" />
-        <activity android:name=".Login.SignupActivity" />
+        <activity android:name=".Login.SignupActivity"/>
         <activity android:name=".Login.ResetPasswordActivity" />
-        <activity android:name=".Friends.FriendAddNewActivity"></activity>
+        <activity android:name=".Friends.FriendAddNewActivity" />
+        <activity android:name=".Home.AddParkingActivity"
+            android:theme="@style/dialog_light"
+            android:label="@string/Add_new_parking"></activity>
     </application>
 
 </manifest>

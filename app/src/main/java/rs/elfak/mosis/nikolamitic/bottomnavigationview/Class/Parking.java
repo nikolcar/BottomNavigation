@@ -9,14 +9,14 @@ public class Parking
     public String description;
     public String adderId;
     public boolean secret;
-    public String pid;
+    //public String pid;
 
-    public Parking(String name, Double lon, Double lat, String uid, boolean secret, String pid)
+    public Parking(String name, String description, Double lon, Double lat, String uid, boolean secret)
     {
         this.name = name;
+        this.description = description;
         this.location = new LatLng(lon,lat);
         this.adderId = uid;
         this.secret = secret;
-        this.pid = pid;
     }
 }
