@@ -3,17 +3,12 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Login;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,8 +32,20 @@ public class LoginActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
 
+        Intent i = getIntent();
+        email = i.getStringExtra("Reset_Email");
+
         inputEmail = (EditText) findViewById(R.id.login_email);
+
+        inputEmail.setText(email);
+
         inputPassword = (EditText) findViewById(R.id.login_password);
+
+        if(email!=null)
+        {
+            inputPassword.requestFocus();
+        }
+
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -71,7 +78,6 @@ public class LoginActivity extends Activity
         }
 
         final ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Please wait...", "Processing...",true);
-        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         (mAuth.signInWithEmailAndPassword(email,password))
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -91,7 +97,5 @@ public class LoginActivity extends Activity
                         }
                     }
                 });
-
-
     }
 }

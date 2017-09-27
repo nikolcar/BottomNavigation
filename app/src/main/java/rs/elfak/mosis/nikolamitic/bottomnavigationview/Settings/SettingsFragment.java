@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 public class SettingsFragment extends Fragment
 {
-    Button btnLogout;
+    FloatingActionButton btnLogout;
     FirebaseAuth mAuth;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -25,7 +26,7 @@ public class SettingsFragment extends Fragment
 
         mAuth = FirebaseAuth.getInstance();
 
-        btnLogout = (Button) v.findViewById(R.id.btn_logout);
+        btnLogout = (FloatingActionButton) v.findViewById(R.id.btn_logout);
 
         btnLogout.setOnClickListener(new View.OnClickListener()
         {

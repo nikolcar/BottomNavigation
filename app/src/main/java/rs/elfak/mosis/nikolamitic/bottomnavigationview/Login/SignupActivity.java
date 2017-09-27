@@ -1,14 +1,10 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Login;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -29,9 +25,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
@@ -40,14 +33,11 @@ public class SignupActivity extends Activity
 {
     private EditText txtFirstName, txtLastName, txtNickname, txtEmailAddress, txtPassword,  txtRepeatPassword;
     private TextView tvDateOfBirth;
-    private Button changeDate;
-
 
     private int year = 1970, month = 00, day = 01;
     static final int DATE_PICKER_ID = 1111;
 
     private FirebaseAuth mAuth;
-    private FirebaseDatabase database;
     private DatabaseReference users;
 
     @Override
@@ -62,20 +52,22 @@ public class SignupActivity extends Activity
         txtNickname = (EditText) findViewById(R.id.sign_up_nickname);
 
         tvDateOfBirth = (TextView) findViewById(R.id.sign_up_date_of_birth);
-        changeDate = (Button) findViewById(R.id.btn_datepicker);
+        Button changeDate = (Button) findViewById(R.id.btn_datepicker);
 
         txtEmailAddress = (EditText) findViewById(R.id.sign_up_email);
         txtPassword = (EditText) findViewById(R.id.sign_up_password);
         txtRepeatPassword = (EditText) findViewById(R.id.sign_up_repeat_password);
 
         mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         users = database.getReference("users");
 
         // Button listener to show date picker dialog
-        changeDate.setOnClickListener(new View.OnClickListener() {
+        changeDate.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
                 // On button click show datepicker dialog
                 showDialog(DATE_PICKER_ID);
@@ -91,9 +83,9 @@ public class SignupActivity extends Activity
         final String nickname = txtNickname.getText().toString();
         final String dateOfBirth = tvDateOfBirth.getText().toString();
 
-        String email = txtEmailAddress.getText().toString();
+        final String email = txtEmailAddress.getText().toString();
         final String password = txtPassword.getText().toString();
-        String repeatPassword = txtRepeatPassword.getText().toString();
+        final String repeatPassword = txtRepeatPassword.getText().toString();
 
         if (TextUtils.isEmpty(firstName))
         {
@@ -144,7 +136,6 @@ public class SignupActivity extends Activity
         }
 
         final ProgressDialog progressDialog = ProgressDialog.show(SignupActivity.this, "Please wait...", "Processing...",true);
-        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         (mAuth.createUserWithEmailAndPassword(email,password))
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>()
@@ -188,8 +179,10 @@ public class SignupActivity extends Activity
     }
 
     @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
+    protected Dialog onCreateDialog(int id)
+    {
+        switch (id)
+        {
             case DATE_PICKER_ID:
 
                 // open datepicker dialog.
@@ -205,23 +198,15 @@ public class SignupActivity extends Activity
     {
         // when dialog box is closed, below method will be called.
         @Override
-        public void onDateSet(DatePicker view, int selectedYear,
-                              int selectedMonth, int selectedDay) {
-
+        public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay)
+        {
             year  = selectedYear;
             month = selectedMonth;
             day   = selectedDay;
 
             // Show selected date
-            tvDateOfBirth.setText(new StringBuilder().append(day)
-                    .append("-").append(month+1).append("-").append(year)
-                    .append(" "));
-
+            tvDateOfBirth.setText(new StringBuilder().append(day).append("-").append(month+1).append("-").append(year).append(" "));
         }
     };
-
-
-
-
-    }
+}
 

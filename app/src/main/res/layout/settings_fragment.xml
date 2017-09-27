@@ -15,13 +15,22 @@
         />
 
 
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:background="@color/blue"
-        android:text="@string/logout"
-        android:textColor="@android:color/white" />
+    <!--
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:background="@color/blue"
+            android:text="@string/logout"
+            android:textColor="@android:color/white" />
+    -->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            app:srcCompat="@drawable/ic_exit_to_app_white_24dp"
+            android:layout_gravity="bottom|end"/>
 
 </android.support.design.widget.CoordinatorLayout>
