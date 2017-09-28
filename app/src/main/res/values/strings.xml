@@ -31,8 +31,8 @@
     <string name="Add_new_parking">Add new parking</string>
 
     <string-array name="parking_type" color="@color/blue">
-        <item>Private</item>
         <item>Public</item>
+        <item>Private</item>
     </string-array>
 
 </resources>

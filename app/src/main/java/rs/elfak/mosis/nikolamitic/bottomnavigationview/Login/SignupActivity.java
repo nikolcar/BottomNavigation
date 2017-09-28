@@ -189,6 +189,7 @@ public class SignupActivity extends Activity
                 // set date picker for current date
                 // add pickerListener listner to date picker
                 DatePickerDialog datePickerDialog = new DatePickerDialog(this,pickerListener, year, month, day);
+                datePickerDialog.getDatePicker().getTouchables().get(0).performClick();
                 return datePickerDialog;
         }
         return null;

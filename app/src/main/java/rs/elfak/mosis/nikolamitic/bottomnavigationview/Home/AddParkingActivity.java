@@ -23,6 +23,9 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
@@ -94,9 +97,12 @@ public class AddParkingActivity extends Activity{
             return;
         }
 
+        Date date = Calendar.getInstance().getTime();
+
         FirebaseUser user = mAuth.getCurrentUser();
         String uid = user.getUid();
-        Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
+
+        Parking newParking = new Parking(name, description, longitude, latitude, uid, secret, date);
         String key = parkings.push().getKey();
         parkings.child(key).setValue(newParking);
 
@@ -105,7 +111,7 @@ public class AddParkingActivity extends Activity{
             users.child(uid).child("myPrivate").push().setValue(key);
         }
 
-        users.child(uid).child("points")
+        //users.child(uid).child("points").
 
         Toast.makeText(getApplicationContext(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();
         this.finish();
@@ -118,7 +124,7 @@ public class AddParkingActivity extends Activity{
 
     private void getGpsCoordinates()
     {
-        //TODO
+        //TODO get user location
         Double currentLat = 43.3151881;
         Double currentLon = 21.9199866;
 
