@@ -34,6 +34,8 @@ public class AddParkingActivity extends Activity{
 
     FirebaseAuth mAuth;
     private DatabaseReference parkings;
+    private DatabaseReference users;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class AddParkingActivity extends Activity{
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         parkings = database.getReference("parkings");
+        users = database.getReference("users");
 
         etName = (EditText) findViewById(R.id.add_parking_name);
         etDescription = (EditText) findViewById(R.id.add_parking_desc);
@@ -96,6 +99,13 @@ public class AddParkingActivity extends Activity{
         Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
         String key = parkings.push().getKey();
         parkings.child(key).setValue(newParking);
+
+        if(secret)
+        {
+            users.child(uid).child("myPrivate").push().setValue(key);
+        }
+
+        users.child(uid).child("points")
 
         Toast.makeText(getApplicationContext(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();
         this.finish();
