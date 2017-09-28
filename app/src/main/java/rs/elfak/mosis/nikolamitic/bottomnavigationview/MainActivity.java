@@ -156,15 +156,14 @@ public class MainActivity extends Activity
 
         mAuth = FirebaseAuth.getInstance();
         loggedUser = mAuth.getCurrentUser();
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        parkings = database.getReference("parkings");
-        users = database.getReference("users");
-
-        storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
 
         if(loggedUser!=null)
         {
+            storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            parkings = database.getReference("parkings");
+            users = database.getReference("users");
+
             //remove title bar
             requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -299,19 +298,21 @@ public class MainActivity extends Activity
                     }
                 });
 */
-
                 storage.putFile(settingsFragment.savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        settingsFragment.setProfilePhoto();
+                        progressDialog.dismiss();
                         Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Failed to upload picture, please try again!", Toast.LENGTH_SHORT).show();                    }
+                        Toast.makeText(MainActivity.this, "Failed to upload picture, please try again!", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
                 });
-                settingsFragment.setProfilePhoto();
-                progressDialog.dismiss();
+                settingsFragment.dialog.dismiss();
             }
             else {
                 Toast.makeText(MainActivity.this, "Action canceled!", Toast.LENGTH_SHORT).show();

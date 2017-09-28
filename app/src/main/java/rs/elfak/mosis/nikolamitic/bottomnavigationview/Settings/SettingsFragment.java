@@ -89,11 +89,10 @@ public class SettingsFragment extends Fragment
         mAuth = FirebaseAuth.getInstance();
         loggedUser = mAuth.getCurrentUser();
         storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
+        database = FirebaseDatabase.getInstance();
 
         tvName = (TextView) v.findViewById(R.id.item_friend_name);
         ivAvatar = (ImageView) v.findViewById(R.id.item_friend_avatar);
-
-
 
         if(loggedUser!=null)
         {
