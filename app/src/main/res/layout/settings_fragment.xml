@@ -51,6 +51,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue"
                     android:layout_margin="10dp"
+                    android:textSize="15dp"
                     android:text="@string/change_password"
                     android:textColor="@color/white" />
 
@@ -60,6 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="10dp"
+                    android:textSize="15dp"
                     android:background="@color/blue"
                     android:text="@string/change_image"
                     android:textColor="@color/white" />

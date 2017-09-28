@@ -10,11 +10,15 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +29,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 
@@ -35,6 +47,10 @@ public class HomeFragment extends Fragment
 
     private GoogleMap googleMap;
     MapView mMapView;
+
+    public Dialog dialog;
+    public EditText etName, etDescription, etLongitude, etLatitude;
+    public Spinner sType;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,7 +70,7 @@ public class HomeFragment extends Fragment
             {
                 //startActivity(new Intent(getActivity(), AddParkingActivity.class));
 
-                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
+                dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO add parking
                 View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
@@ -65,6 +81,13 @@ public class HomeFragment extends Fragment
                 TextView tvTitle = (TextView) dialog.findViewById(R.id.add_parking_title);
                 tvTitle.setText(R.string.Add_new_parking);
 
+                etName = (EditText) dialog.findViewById(R.id.add_parking_name);
+                etDescription = (EditText) dialog.findViewById(R.id.add_parking_desc);
+                etLatitude = (EditText) dialog.findViewById(R.id.add_parking_lati);
+                etLongitude = (EditText) dialog.findViewById(R.id.add_parking_long);
+                sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
+
+                getGpsCoordinates();
                 dialog.show();
             }
         });
@@ -128,6 +151,25 @@ public class HomeFragment extends Fragment
         });
 
         return view;
+    }
+
+    public void getGpsCoordinates()
+    {
+        //TODO get user location
+        Double currentLat = 43.3151881;
+        Double currentLon = 21.9199866;
+
+        if(currentLat!=null && currentLon!=null)
+        {
+            etLatitude.setText(String.valueOf(currentLat));
+            etLongitude.setText(String.valueOf(currentLon));
+        }
+        else
+        {
+            Toast.makeText(getActivity(),"Please turn on GPS",Toast.LENGTH_SHORT).show();
+            etLatitude.setText("unknown");
+            etLongitude.setText("unknown");
+        }
     }
 
     @Override

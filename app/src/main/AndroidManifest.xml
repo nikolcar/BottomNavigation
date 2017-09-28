@@ -43,9 +43,6 @@
         <activity android:name=".Login.SignupActivity"/>
         <activity android:name=".Login.ResetPasswordActivity" />
         <activity android:name=".Friends.FriendAddNewActivity" />
-        <activity android:name=".Home.AddParkingActivity"
-            android:theme="@style/dialog_no_tytle"
-            android:label="@string/Add_new_parking"></activity>
     </application>
 
 </manifest>

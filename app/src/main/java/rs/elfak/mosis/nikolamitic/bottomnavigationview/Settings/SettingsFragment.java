@@ -4,11 +4,14 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +33,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
@@ -43,50 +56,51 @@ import static android.app.Activity.RESULT_OK;
 
 public class SettingsFragment extends Fragment
 {
+    public Dialog dialog;
+
+    private Button btnChangePassword, btnChangePhoto, btnSave;
+    private CheckBox work_check, players_check, friends_check;
+    public EditText newPassword, repetePassword;
+    private Spinner gpsSpinner;
+    private FloatingActionButton btnLogout;
+
+    private Integer gpsRefresh;
+    private Boolean friends_status, players_status, workback_status;
+    public Uri savedURI;
+
+    private TextView tvName, tvPoints;
+    private static ImageView ivAvatar;
+
+    private Rect displayRectangle;
+    private LayoutInflater layoutInflater;
+
     private FirebaseAuth mAuth;
     private FirebaseUser loggedUser;
     private FirebaseDatabase database;
     private StorageReference storage;
 
-    private Button btnChangePassword, btnChangePhoto, btnSave, changePassword, camera, gallery;
-    private CheckBox work_check, players_check, friends_check;
-    private EditText newPassword;
-    private Spinner gpsSpinner;
-    private LinearLayout photoLayout, changePasswordLayout;
-    private FloatingActionButton btnLogout;
-
-    private Integer gpsRefresh;
-    private Boolean friends_status, players_status, workback_status;
-    private Uri savedURI;
-
-    TextView tvName, tvPoints;
-    private static ImageView ivAvatar;
-
-    Rect displayRectangle;
-    LayoutInflater layoutInflater;
+    static File localFileProfileImage = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.settings_fragment, container, false);
 
+        mAuth = FirebaseAuth.getInstance();
+        loggedUser = mAuth.getCurrentUser();
+        storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
 
         tvName = (TextView) v.findViewById(R.id.item_friend_name);
         ivAvatar = (ImageView) v.findViewById(R.id.item_friend_avatar);
 
-        mAuth = FirebaseAuth.getInstance();
 
-        loggedUser = mAuth.getCurrentUser();
-
-        database = FirebaseDatabase.getInstance();
-
-        storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
 
         if(loggedUser!=null)
         {
             updatePoints();
             tvName.setText(loggedUser.getDisplayName());
-            //ivAvatar.setImageBitmap();
+            //final Uri photoUrl = loggedUser.getPhotoUrl();
+            setProfilePhoto();
         }
 
         btnChangePassword = (Button) v.findViewById(R.id.btn_change_password);
@@ -136,7 +150,7 @@ public class SettingsFragment extends Fragment
             }
         });
 
-        /*
+/*
         database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -149,8 +163,8 @@ public class SettingsFragment extends Fragment
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
                 work_check.setChecked(workback_status);
-                int pos = adapter.getPosition(gpsRefresh.toString());
-                gpsSpinner.setSelection(pos);
+                //int pos = adapter.getPosition(gpsRefresh.toString());
+                //gpsSpinner.setSelection(pos);
             }
 
             @Override
@@ -158,7 +172,7 @@ public class SettingsFragment extends Fragment
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
+*/
 
         btnSave.setOnClickListener(new View.OnClickListener()
         {
@@ -179,12 +193,12 @@ public class SettingsFragment extends Fragment
                 //Snackbar.make(findViewById(android.R.id.content), "Please exit the app in order to apply the settings about showing players or friends", Snackbar.LENGTH_LONG).show();
             }
         });
-*/
+
         btnChangePassword.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
-                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
+                dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change password
                 View layout = layoutInflater.inflate(R.layout.dialog_change_password, null);
@@ -195,6 +209,8 @@ public class SettingsFragment extends Fragment
                 TextView tvTitle = (TextView) dialog.findViewById(R.id.change_password_title);
                 tvTitle.setText(R.string.change_password);
 
+                newPassword = (EditText) dialog.findViewById(R.id.change_password_new_password);
+                repetePassword = (EditText) dialog.findViewById(R.id.change_password_repeat_password);
 
                 dialog.show();
             }
@@ -205,7 +221,7 @@ public class SettingsFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
+                dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change image
                 View layout = layoutInflater.inflate(R.layout.dialog_change_photo, null);
@@ -219,36 +235,7 @@ public class SettingsFragment extends Fragment
                 dialog.show();
             }
         });
-/*
-        camera.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
-                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "WorkingWithPhotosApp");
-                imagesFolder.mkdirs();
-
-                File image = new File(imagesFolder, "QR_1.png");
-                savedURI = Uri.fromFile(image);
-
-                imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, savedURI);
-
-                startActivityForResult(imageIntent, 0);
-            }
-        });
-
-        gallery.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(pickPhoto , 1);
-            }
-        });
-*/
         return v;
     }
 
@@ -269,43 +256,57 @@ public class SettingsFragment extends Fragment
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 0 || requestCode == 1)
+    private Bitmap getBitmapFromURL(Uri uri)
+    {
+        try
         {
-            if (resultCode == RESULT_OK)
-            {
-                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Processing...",true);
-
-                if (data != null)
-                    savedURI = data.getData();
-                /*UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(selectedImage).build();
-                user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(SettingsActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-
-                storage.putFile(savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getActivity(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), "Failed to upload picture, please try again!", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();                    }
-                });
-            }
-            else {
-                Toast.makeText(getActivity(), "Action canceled!", Toast.LENGTH_SHORT).show();
-            }
+            String str = uri.toString();
+            URL src = new URL(str);
+            HttpURLConnection connection = (HttpURLConnection) src.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input=connection.getInputStream();
+            Bitmap mBitmap = BitmapFactory.decodeStream(input);
+            return mBitmap;
         }
+        catch (IOException e)
+        {
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+    public void setProfilePhoto()
+    {
+        try
+        {
+            localFileProfileImage = File.createTempFile("profileImage",".jpg");
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
+        storage.getFile(localFileProfileImage).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Bitmap bitmap = BitmapFactory.decodeFile(localFileProfileImage.getAbsolutePath());
+                if(bitmap!=null){
+                    bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
+                    ivAvatar.setImageBitmap(bitmap);
+                    bitmap = null;
+                }else{
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                //Toast.makeText(MainActivity.this, "Error downloading/saving profile image", Toast.LENGTH_SHORT).show();
+                //TODO: Can't display this, maybe user doesn't have a profile photo
+            }
+        });
     }
 
 }
