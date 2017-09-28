@@ -3,24 +3,18 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,7 +26,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 
@@ -47,6 +40,11 @@ public class HomeFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
 
+        final Rect displayRectangle = new Rect();
+        Window window = getActivity().getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        final LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
+
         btnAddParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
 
         btnAddParking.setOnClickListener(new View.OnClickListener()
@@ -56,19 +54,17 @@ public class HomeFragment extends Fragment
             {
                 //startActivity(new Intent(getActivity(), AddParkingActivity.class));
 
-                Dialog dialog = new Dialog(getActivity());
+                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO add parking
-                Rect displayRectangle = new Rect();
-                Window window = getActivity().getWindow();
-                window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-                LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
-
-                View layout = layoutInflater.inflate(R.layout.add_parking, null);
+                View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 
-                dialog.setTitle("Add new parking");
                 dialog.setContentView(layout);
+
+                TextView tvTitle = (TextView) dialog.findViewById(R.id.add_parking_title);
+                tvTitle.setText(R.string.Add_new_parking);
+
                 dialog.show();
             }
         });

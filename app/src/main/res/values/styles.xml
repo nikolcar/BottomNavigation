@@ -13,14 +13,8 @@
         <item name="android:textColorHint">@color/blue</item>
     </style>
 
-    <style name="dialog_light" parent="@android:style/Theme.Holo.Light.Dialog">
-        <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryDark">@color/blue</item>
-        <item name="colorAccent">@color/blue</item>
-        <item name="android:textColor">@color/blue</item>
-        <item name="android:windowBackground">@color/white</item>
-        <item name="android:textColorSecondary">@color/blue</item>
-        <item name="colorControlNormal">@color/blue</item>
+    <style name="dialog_no_tytle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="windowNoTitle">true</item>
     </style>
 
 

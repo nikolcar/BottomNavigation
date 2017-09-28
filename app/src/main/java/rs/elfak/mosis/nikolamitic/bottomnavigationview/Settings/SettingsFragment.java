@@ -7,10 +7,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,9 +36,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
@@ -191,14 +184,18 @@ public class SettingsFragment extends Fragment
         {
             @Override
             public void onClick(View v) {
-                Dialog dialog = new Dialog(getActivity());
+                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change password
-                View layout = layoutInflater.inflate(R.layout.change_password, null);
+                View layout = layoutInflater.inflate(R.layout.dialog_change_password, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 
                 dialog.setContentView(layout);
-                dialog.setTitle("Change password");
+
+                TextView tvTitle = (TextView) dialog.findViewById(R.id.change_password_title);
+                tvTitle.setText(R.string.change_password);
+
+
                 dialog.show();
             }
         });
@@ -208,14 +205,17 @@ public class SettingsFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Dialog dialog = new Dialog(getActivity());
+                Dialog dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change image
-                View layout = layoutInflater.inflate(R.layout.change_photo, null);
+                View layout = layoutInflater.inflate(R.layout.dialog_change_photo, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 
                 dialog.setContentView(layout);
-                dialog.setTitle("Change photo");
+
+                TextView tvTitle = (TextView) dialog.findViewById(R.id.change_photo_title);
+                tvTitle.setText(R.string.change_image);
+
                 dialog.show();
             }
         });
