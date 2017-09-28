@@ -1,12 +1,14 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,7 +54,22 @@ public class HomeFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(getActivity(), AddParkingActivity.class));
+                //startActivity(new Intent(getActivity(), AddParkingActivity.class));
+
+                Dialog dialog = new Dialog(getActivity());
+
+                //TODO add parking
+                Rect displayRectangle = new Rect();
+                Window window = getActivity().getWindow();
+                window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+                LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
+
+                View layout = layoutInflater.inflate(R.layout.add_parking, null);
+                layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
+
+                dialog.setTitle("Add new parking");
+                dialog.setContentView(layout);
+                dialog.show();
             }
         });
 

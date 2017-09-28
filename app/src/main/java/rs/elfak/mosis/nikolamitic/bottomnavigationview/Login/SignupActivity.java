@@ -172,7 +172,7 @@ public class SignupActivity extends Activity
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(first + "," + nick + ", " + last)
+                .setDisplayName(first + ", " + nick + ", " + last)
                 .build();
 
         user.updateProfile(profileUpdates);

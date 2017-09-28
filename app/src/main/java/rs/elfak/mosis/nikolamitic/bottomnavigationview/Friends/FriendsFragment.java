@@ -30,22 +30,24 @@ public class FriendsFragment extends Fragment
         View view = inflater.inflate(R.layout.friends_fragment, container, false);
 
         lvHighscore = (ListView) view.findViewById(R.id.highscore_list);
-
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
-
+        
         mFriends = new ArrayList<>();
 
         mAdapter = new FriendListAdapter(getActivity().getApplicationContext(), mFriends);
         lvHighscore.setAdapter(mAdapter);
 
-        mFriends.add(new FriendModel("Pera Perić", 5, bm));
-        mFriends.add(new FriendModel("Mika Mikić", 15, bm));
-        mFriends.add(new FriendModel("Pera Perić", 5, bm));
-        mFriends.add(new FriendModel("Mika Mikić", 15, bm));
-        mFriends.add(new FriendModel("Pera Perić", 5, bm));
-        mFriends.add(new FriendModel("Mika Mikić", 15, bm));
-        mFriends.add(new FriendModel("Pera Perić", 5, bm));
-        mFriends.add(new FriendModel("Mika Mikić", 15, bm));
+        //TODO get friends
+        Bitmap bm1 = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_white_round);
+        Bitmap bm2 = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_blue_round);
+
+        mFriends.add(new FriendModel("Pera Perić", 5, bm1));
+        mFriends.add(new FriendModel("Mika Mikić", 15, bm2));
+        mFriends.add(new FriendModel("Pera Perić", 5, bm1));
+        mFriends.add(new FriendModel("Mika Mikić", 15, bm2));
+        mFriends.add(new FriendModel("Pera Perić", 5, bm1));
+        mFriends.add(new FriendModel("Mika Mikić", 15, bm2));
+        mFriends.add(new FriendModel("Pera Perić", 5, bm1));
+        mFriends.add(new FriendModel("Mika Mikić", 15, bm2));
 
         return view;
     }

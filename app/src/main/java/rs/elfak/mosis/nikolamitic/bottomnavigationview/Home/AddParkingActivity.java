@@ -111,6 +111,7 @@ public class AddParkingActivity extends Activity{
             users.child(uid).child("myPrivate").push().setValue(key);
         }
 
+        //TODO add points
         //users.child(uid).child("points").
 
         Toast.makeText(getApplicationContext(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();

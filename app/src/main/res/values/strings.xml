@@ -29,6 +29,24 @@
     <string name="add">ADD</string>
     <string name="cancel">CANCEL</string>
     <string name="Add_new_parking">Add new parking</string>
+    <string name="change_image">CHANGE IMAGE</string>
+
+    <string name="work_in_back">Work in background</string>
+    <string name="show_players">Show other players on the map</string>
+    <string name="show_friends">Show friends on the map</string>
+    <string name="gps_refresh">GPS refresh time</string>
+    <string name="about">by nikolcar</string>
+    <string name="save">SAVE</string>
+    <string name="camera_upload">Camera</string>
+    <string name="gallery_upload">Gallery</string>
+    <string name="change_password">CHANGE PASSWORD</string>
+    <string name="new_password">New password</string>
+    <string name="btn_change">CHANGE</string>
+    <string-array name="gps_refresh_array">
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
 
     <string-array name="parking_type" color="@color/blue">
         <item>Public</item>
