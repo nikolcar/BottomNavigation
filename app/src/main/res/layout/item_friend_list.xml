@@ -12,7 +12,7 @@
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:padding="16dp"
-        android:src="@mipmap/icon_white_round"/>
+        android:src="@mipmap/avatar"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

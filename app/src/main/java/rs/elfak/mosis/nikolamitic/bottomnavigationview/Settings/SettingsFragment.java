@@ -1,9 +1,11 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -11,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,6 +85,8 @@ public class SettingsFragment extends Fragment
 
     static File localFileProfileImage = null;
 
+    private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -99,6 +105,7 @@ public class SettingsFragment extends Fragment
             updatePoints();
             tvName.setText(loggedUser.getDisplayName());
             //final Uri photoUrl = loggedUser.getPhotoUrl();
+            //TODO
             setProfilePhoto();
         }
 
@@ -153,7 +160,11 @@ public class SettingsFragment extends Fragment
         database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User u = dataSnapshot.getValue(User.class);
+                //User u = dataSnapshot.getValue(User.class);
+
+                User u = dataSnapshot.getChildren().iterator().next().getValue(User.class);
+
+
                 friends_status = u.showfriends;
                 players_status = u.showplayers;
                 workback_status = u.workback;
@@ -171,8 +182,8 @@ public class SettingsFragment extends Fragment
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-*/
 
+*/
         btnSave.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -220,6 +231,7 @@ public class SettingsFragment extends Fragment
             @Override
             public void onClick(View v)
             {
+
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change image

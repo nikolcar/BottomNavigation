@@ -155,11 +155,24 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
+
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                loggedUser = firebaseAuth.getCurrentUser();
+                if (loggedUser == null) {
+                    // user auth state is changed - user is null
+                    // launch login activity
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        };
+
         loggedUser = mAuth.getCurrentUser();
 
         if(loggedUser!=null)
         {
-            storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             parkings = database.getReference("parkings");
             users = database.getReference("users");
@@ -298,6 +311,7 @@ public class MainActivity extends Activity
                     }
                 });
 */
+                storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
                 storage.putFile(settingsFragment.savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

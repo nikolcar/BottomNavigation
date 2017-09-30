@@ -42,6 +42,9 @@
     <string name="change_password">CHANGE PASSWORD</string>
     <string name="new_password">New password</string>
     <string name="btn_change">CHANGE</string>
+    <string name="title_location_permission">Location permission</string>
+    <string name="text_location_permission">Allow Locate Parking app to access this device\'s location?</string>
+    <string name="ok">Ok</string>
     <string-array name="gps_refresh_array">
         <item>1</item>
         <item>5</item>
