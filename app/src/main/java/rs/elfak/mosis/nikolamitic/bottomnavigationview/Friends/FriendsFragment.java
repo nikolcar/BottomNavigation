@@ -30,6 +30,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
@@ -79,8 +81,8 @@ public class FriendsFragment extends Fragment
         btnAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFriend("Unx1u1DaUfbjVkEGZR4yPenIaNw2");
-                getFriendData("Unx1u1DaUfbjVkEGZR4yPenIaNw2");
+                addFriend("1MuxFYi6GpPEWg7pbYr3oOE9qZi2");
+                getFriendData("1MuxFYi6GpPEWg7pbYr3oOE9qZi2");
             }
         });
 
@@ -135,28 +137,38 @@ public class FriendsFragment extends Fragment
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
 
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), 0, bitmap, friendUid));
-                            mAdapter.notifyDataSetChanged();
-                            updatePoints(friendUid);
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
+                            updatePoints(friendUid);
+
+                            mAdapter.notifyDataSetChanged();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             //user exists, but doesn't have profile photo
                             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), 0, bitmap, friendUid));
-                            mAdapter.notifyDataSetChanged();
-                            updatePoints(friendUid);
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
+                            updatePoints(friendUid);
+
+                            mAdapter.notifyDataSetChanged();
                         }
                     });
 
                 } else {
                     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
                     mFriends.add(new FriendModel("fake user\n" + friendUid, 0, bitmap, friendUid));
-                    mAdapter.notifyDataSetChanged();
                     bitmap = null;
+
+                    Collections.sort(mFriends, new Comparator<FriendModel>() {
+                        @Override
+                        public int compare(FriendModel o1, FriendModel o2) {
+                            return o2.getPoints()-o1.getPoints();
+                        }
+                    });
+
+                    mAdapter.notifyDataSetChanged();
                 }
 
                 progressDialog.dismiss();
@@ -179,6 +191,14 @@ public class FriendsFragment extends Fragment
                 int points = dataSnapshot.getValue(Integer.class);
                 int i = findModelById(friendUid);
                 mFriends.get(i).setPoints(points);
+
+                Collections.sort(mFriends, new Comparator<FriendModel>() {
+                    @Override
+                    public int compare(FriendModel o1, FriendModel o2) {
+                        return o2.getPoints()-o1.getPoints();
+                    }
+                });
+
                 mAdapter.notifyDataSetChanged();
             }
 
