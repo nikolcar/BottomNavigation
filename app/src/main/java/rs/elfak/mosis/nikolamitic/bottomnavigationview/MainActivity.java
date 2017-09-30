@@ -48,10 +48,10 @@ public class MainActivity extends Activity
     private static final String TAG = "Locate Parking";
 
     int clicked = 1, newClicked =0;
-    HomeFragment homeFragment = new HomeFragment();
-    FriendsFragment friendsFragment = new FriendsFragment();
-    SettingsFragment settingsFragment = new SettingsFragment();
-    Fragment newFragment = null;
+    HomeFragment homeFragment;
+    FriendsFragment friendsFragment;
+    SettingsFragment settingsFragment;
+    Fragment newFragment;
 
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth mAuth;
@@ -98,12 +98,25 @@ public class MainActivity extends Activity
     {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
+        homeFragment = new HomeFragment();
         ft.add(R.id.fragmentContainer, homeFragment);
         ft.hide(homeFragment);
 
+        friendsFragment = new FriendsFragment();
         ft.add(R.id.fragmentContainer, friendsFragment);
         ft.hide(friendsFragment);
 
+
+        Bundle fragment = new Bundle();
+        Bundle extras = getIntent().getExtras();
+        String display_name = loggedUser.getDisplayName();
+        if (extras != null)
+            display_name= getIntent().getStringExtra("DISPLAY_NAME");
+
+        fragment.putString("display_name", display_name);
+        settingsFragment = new SettingsFragment();
+        settingsFragment.setArguments(fragment);
+        
         ft.add(R.id.fragmentContainer, settingsFragment);
         ft.hide(settingsFragment);
 

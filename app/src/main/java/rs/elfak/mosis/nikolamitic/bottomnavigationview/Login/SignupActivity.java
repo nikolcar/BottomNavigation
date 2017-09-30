@@ -151,7 +151,9 @@ public class SignupActivity extends Activity
 
                             addUserInDatabase(uid, firstName, lastName, nickname, dateOfBirth);
                             Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                            Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                            intent.putExtra("DISPLAY_NAME", firstName + " " + lastName + "\n" + nickname);
+                            startActivity(intent);
                             finish();
                         }
                         else

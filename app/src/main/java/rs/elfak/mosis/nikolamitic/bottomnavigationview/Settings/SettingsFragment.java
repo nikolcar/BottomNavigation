@@ -72,7 +72,7 @@ public class SettingsFragment extends Fragment
     private Boolean friends_status, players_status, workback_status;
     public Uri savedURI;
 
-    private TextView tvName, tvPoints;
+    public TextView tvName, tvPoints;
     private static ImageView ivAvatar;
 
     private Rect displayRectangle;
@@ -84,8 +84,6 @@ public class SettingsFragment extends Fragment
     private StorageReference storage;
 
     static File localFileProfileImage = null;
-
-    private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -100,12 +98,11 @@ public class SettingsFragment extends Fragment
         tvName = (TextView) v.findViewById(R.id.item_friend_name);
         ivAvatar = (ImageView) v.findViewById(R.id.item_friend_avatar);
 
+
         if(loggedUser!=null)
         {
-            updatePoints();
-            tvName.setText(loggedUser.getDisplayName());
-            //final Uri photoUrl = loggedUser.getPhotoUrl();
-            setProfilePhoto();
+            updateInfo();
+            tvName.setText(getArguments().getString("display_name"));
         }
 
         btnChangePassword = (Button) v.findViewById(R.id.btn_change_password);
@@ -254,7 +251,7 @@ public class SettingsFragment extends Fragment
         getActivity().finish();
     }
 
-    public void updatePoints(){
+    public void updateInfo(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         database.getReference("users").child(loggedUser.getUid()).child("points").addValueEventListener(new ValueEventListener() {
             @Override
@@ -269,6 +266,8 @@ public class SettingsFragment extends Fragment
 
             }
         });
+
+        setProfilePhoto();
     }
 
 
