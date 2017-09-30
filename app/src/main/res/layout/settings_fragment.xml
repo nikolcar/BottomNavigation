@@ -85,26 +85,29 @@
                     android:textColor="@color/blue"
                     android:textSize="18sp" />
 
-                <CheckBox
+                <android.support.v7.widget.AppCompatCheckBox
                     android:id="@+id/settings_work_back"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/blue"
-                    android:text="@string/work_in_back" />
+                    android:text="@string/work_in_back"
+                    app:buttonTint="@color/blue" />
 
-                <CheckBox
+                <android.support.v7.widget.AppCompatCheckBox
                     android:id="@+id/settings_show_friends"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/blue"
-                    android:text="@string/show_friends" />
+                    android:text="@string/show_friends"
+                    app:buttonTint="@color/blue" />
 
-                <CheckBox
+                <android.support.v7.widget.AppCompatCheckBox
                     android:id="@+id/settings_show_players"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/blue"
-                    android:text="@string/show_players"/>
+                    android:text="@string/show_players"
+                    app:buttonTint="@color/blue"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

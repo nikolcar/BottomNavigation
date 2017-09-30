@@ -105,7 +105,6 @@ public class SettingsFragment extends Fragment
             updatePoints();
             tvName.setText(loggedUser.getDisplayName());
             //final Uri photoUrl = loggedUser.getPhotoUrl();
-            //TODO
             setProfilePhoto();
         }
 
