@@ -260,7 +260,56 @@ public class MainActivity extends Activity
 
     public void change_password_click(View v)
     {
+        final String newPassword = settingsFragment.newPassword.getText().toString();
+        final String repeatPassword = settingsFragment.repetePassword.getText().toString();
 
+
+
+        if (TextUtils.isEmpty(newPassword))
+        {
+            Toast.makeText(getApplicationContext(), "Enter new password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (newPassword.trim().length() < 6)
+        {
+            Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters", Toast.LENGTH_SHORT).show();
+        }
+
+        if (TextUtils.isEmpty(repeatPassword))
+        {
+            Toast.makeText(getApplicationContext(), "Repeat new password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!newPassword.equals(repeatPassword))
+        {
+            Toast.makeText(getApplicationContext(), "Password and repeat password are not the same!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final ProgressDialog progressDialog = ProgressDialog.show(this, "Please wait...", "Processing...",true);
+
+        try {
+            loggedUser.updatePassword(newPassword.trim())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(MainActivity.this, "Password is updated, sign in with new password!", Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "In order to change password you need to sing out and then sign in again :(", Toast.LENGTH_SHORT).show();
+                                    }
+                                    progressDialog.dismiss();
+                                    settingsFragment.dialog.dismiss();
+                                    settingsFragment.signOut();
+                                }
+                            });
+        }catch (Throwable t){
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this, "Error, please try again.",Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void cancel_account_edit_click(View v)

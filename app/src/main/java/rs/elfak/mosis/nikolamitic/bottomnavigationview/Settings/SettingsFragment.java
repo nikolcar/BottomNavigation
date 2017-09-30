@@ -150,31 +150,30 @@ public class SettingsFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                mAuth.signOut();
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                getActivity().finish();
+                signOut();
             }
         });
 
-/*
+
+
         database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //User u = dataSnapshot.getValue(User.class);
+                User u = dataSnapshot.getValue(User.class);
 
-                User u = dataSnapshot.getChildren().iterator().next().getValue(User.class);
+                //User u = dataSnapshot.getChildren().iterator().next().getValue(User.class);
 
 
-                friends_status = u.showfriends;
-                players_status = u.showplayers;
-                workback_status = u.workback;
-                gpsRefresh = u.gpsrefresh;
+                friends_status = u.getShowfriends();
+                players_status = u.getShowplayers();
+                workback_status = u.getWorkback();
+                gpsRefresh = u.getGpsrefresh();
 
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
                 work_check.setChecked(workback_status);
-                //int pos = adapter.getPosition(gpsRefresh.toString());
-                //gpsSpinner.setSelection(pos);
+                int pos = adapter.getPosition(gpsRefresh.toString());
+                gpsSpinner.setSelection(pos);
             }
 
             @Override
@@ -183,7 +182,6 @@ public class SettingsFragment extends Fragment
             }
         });
 
-*/
         btnSave.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -248,6 +246,13 @@ public class SettingsFragment extends Fragment
         });
 
         return v;
+    }
+
+    public void signOut()
+    {
+        mAuth.signOut();
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+        getActivity().finish();
     }
 
     public void updatePoints(){

@@ -76,7 +76,6 @@ public class HomeFragment extends Fragment
 
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
-                //TODO add parking
                 View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 

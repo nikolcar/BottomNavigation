@@ -11,30 +11,27 @@ import java.util.Date;
 public class User
 {
     //public String uid;
-    public String firstName;
-    public String lastName;
-    public String nickname;
-    public String dateOfBirth;
+    private String firstName;
+    private String lastName;
+    private String nickname;
+    private String dateOfBirth;
 
-    public LatLng location;
-    public Integer points;
-    public ArrayList<String> friends;
-    public ArrayList<String> myPrivate;
-    public ArrayList<String> myFriendsPrivate;
+    private Double longitude;
+    private Double latitude;
 
-    public Integer gpsrefresh;
-    public Boolean showfriends;
-    public Boolean showplayers;
-    public Boolean workback;
+    //private LatLng location;
+    private Integer points;
+    private ArrayList<String> friends;
+    //private ArrayList<String> myPrivate;
+    //private ArrayList<String> myFriendsPrivate;
+
+    private Integer gpsrefresh;
+    private Boolean showfriends;
+    private Boolean showplayers;
+    private Boolean workback;
 
     public User()
     {
-        this.friends = new ArrayList<String>();
-        this.friends.add("");
-        this.myPrivate = new ArrayList<String>();
-        this.myPrivate.add("");
-        this.myFriendsPrivate = new ArrayList<String>();
-        this.myFriendsPrivate.add("");
     }
 
     public User(String firstName, String lastName, String nickname, String dateOfBirth)
@@ -44,14 +41,12 @@ public class User
         this.nickname = nickname;
         this.dateOfBirth=dateOfBirth;
 
-        this.location = new LatLng(0.0,0.0);
+        this.longitude = 0.0;
+        this.latitude = 0.0;
         this.points = 0;
-        this.friends = new ArrayList<String>();
-        this.friends.add("");
-        this.myPrivate = new ArrayList<String>();
-        this.myPrivate.add("");
-        this.myFriendsPrivate = new ArrayList<String>();
-        this.myFriendsPrivate.add("");
+
+        this.friends = new ArrayList<>();
+        friends.add("");
 
         this.gpsrefresh = 10;
         this.showfriends = true;
@@ -79,21 +74,6 @@ public class User
         return dateOfBirth;
     }
 
-    public ArrayList<String> getFriends()
-    {
-        return friends;
-    }
-
-    public ArrayList<String> getMyPrivate()
-    {
-        return myPrivate;
-    }
-
-    public ArrayList<String> getMyFriendsPrivate()
-    {
-        return myFriendsPrivate;
-    }
-
     public Integer getGpsrefresh()
     {
         return gpsrefresh;
@@ -112,11 +92,6 @@ public class User
     public Boolean getWorkback()
     {
         return workback;
-    }
-
-    public LatLng getLocation()
-    {
-        return this.location;
     }
 
     public Integer getPoints()
@@ -140,24 +115,9 @@ public class User
         this.dateOfBirth = dateOfBirth;
     }
 
-    public void setLocation(LatLng location) {
-        this.location = location;
-    }
 
     public void setPoints(Integer points) {
         this.points = points;
-    }
-
-    public void setFriends(ArrayList<String> friends) {
-        this.friends = friends;
-    }
-
-    public void setMyPrivate(ArrayList<String> myPrivate) {
-        this.myPrivate = myPrivate;
-    }
-
-    public void setMyFriendsPrivate(ArrayList<String> myFriendsPrivate) {
-        this.myFriendsPrivate = myFriendsPrivate;
     }
 
     public void setGpsrefresh(Integer gpsrefresh) {
@@ -174,5 +134,21 @@ public class User
 
     public void setWorkback(Boolean workback) {
         this.workback = workback;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 }
