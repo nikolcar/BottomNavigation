@@ -45,10 +45,8 @@ public class FriendsFragment extends Fragment
     private ArrayList<FriendModel> mFriends;
     FloatingActionButton btnAddFriend;
 
-    FirebaseDatabase database;
     FirebaseUser loggedUser;
     FirebaseAuth mAuth;
-    DatabaseReference userFriends;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -57,7 +55,6 @@ public class FriendsFragment extends Fragment
 
         mAuth = FirebaseAuth.getInstance();
         loggedUser = mAuth.getCurrentUser();
-        database = FirebaseDatabase.getInstance();
 
         lvHighscore = (ListView) view.findViewById(R.id.highscore_list);
         
@@ -82,7 +79,8 @@ public class FriendsFragment extends Fragment
         btnAddFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    addFriend("5236ee");
+                addFriend("Unx1u1DaUfbjVkEGZR4yPenIaNw2");
+                getFriendData("Unx1u1DaUfbjVkEGZR4yPenIaNw2");
             }
         });
 
@@ -91,7 +89,7 @@ public class FriendsFragment extends Fragment
 
     private void getFriendsFromServer()
     {
-        userFriends = database.getReference("users").child(loggedUser.getUid()).child("friends");
+        DatabaseReference userFriends = FirebaseDatabase.getInstance().getReference("users").child(loggedUser.getUid()).child("friends");
         //Toast.makeText(getActivity(), "Getting friends from server", Toast.LENGTH_SHORT).show();
         userFriends.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -99,60 +97,12 @@ public class FriendsFragment extends Fragment
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
                     String json = singleSnapshot.toString();
 
-                    final String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
+                    String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
 
                     //Toast.makeText(getActivity(), friendUid, Toast.LENGTH_SHORT).show();
 
                     if (!friendUid.equals("")) {
-                        database.getReference("users").child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Loading friends...", true);
-                                final User friend = dataSnapshot.getValue(User.class);
-                               // Toast.makeText(getActivity(), friend.getFirstName(), Toast.LENGTH_SHORT).show();
-
-                            if (friend != null) {
-                                StorageReference storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + friendUid + ".jpg");
-                                final long MEMORY = 10 * 1024 * 1024;
-
-                                storage.getBytes(MEMORY).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                    @Override
-                                    public void onSuccess(final byte[] bytes)
-                                    {
-                                        //TODO: don't deserialize like this
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                        bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
-
-                                        mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap));
-                                        mAdapter.notifyDataSetChanged();
-
-                                        bitmap = null;
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        //user exists, but doesn't have profile photo
-                                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
-                                        mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap));
-                                        mAdapter.notifyDataSetChanged();
-                                        bitmap = null;
-                                    }
-                                });
-                            } else {
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
-                                mFriends.add(new FriendModel("fake user\n" + friendUid, 0, bitmap));
-                                mAdapter.notifyDataSetChanged();
-                                bitmap = null;
-                            }
-
-                            progressDialog.dismiss();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        getFriendData(friendUid);
                     }
                 }
             }
@@ -164,6 +114,80 @@ public class FriendsFragment extends Fragment
         });
     }
 
+    private void getFriendData(final String friendUid)
+    {
+        FirebaseDatabase.getInstance().getReference("users").child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Loading friends...", true);
+                final User friend = dataSnapshot.getValue(User.class);
+                //Toast.makeText(getActivity(), findModelById(friendUid), Toast.LENGTH_SHORT).show();
+
+                if (friend != null) {
+                    StorageReference storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + friendUid + ".jpg");
+                    final long MEMORY = 10 * 1024 * 1024;
+
+                    storage.getBytes(MEMORY).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(final byte[] bytes)
+                        {
+                            //TODO: don't deserialize like this
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
+
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), 0, bitmap, friendUid));
+                            mAdapter.notifyDataSetChanged();
+                            updatePoints(friendUid);
+                            bitmap = null;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //user exists, but doesn't have profile photo
+                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), 0, bitmap, friendUid));
+                            mAdapter.notifyDataSetChanged();
+                            updatePoints(friendUid);
+                            bitmap = null;
+                        }
+                    });
+
+                } else {
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
+                    mFriends.add(new FriendModel("fake user\n" + friendUid, 0, bitmap, friendUid));
+                    mAdapter.notifyDataSetChanged();
+                    bitmap = null;
+                }
+
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    void updatePoints(final String friendUid)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference("users").child(friendUid).child("points").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int points = dataSnapshot.getValue(Integer.class);
+                int i = findModelById(friendUid);
+                mFriends.get(i).setPoints(points);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void addFriend(final String friendsUid)
     {
@@ -227,5 +251,19 @@ public class FriendsFragment extends Fragment
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    private int findModelById(String uId)
+    {
+        int i = 0;
+        while (i < mFriends.size())
+        {
+            FriendModel model = mFriends.get(i);
+            String fId = model.getuId();
+            if (fId.equals(uId))
+                break;
+            i++;
+        }
+        return i;
     }
 }
