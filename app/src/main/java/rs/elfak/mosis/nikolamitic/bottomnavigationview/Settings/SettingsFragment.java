@@ -54,6 +54,7 @@ import java.net.URL;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 import static android.app.Activity.RESULT_OK;
@@ -69,7 +70,7 @@ public class SettingsFragment extends Fragment
     private FloatingActionButton btnLogout;
 
     private Integer gpsRefresh;
-    private Boolean friends_status, players_status, workback_status;
+    public Boolean friends_status, players_status, workback_status;
     public Uri savedURI;
 
     public TextView tvName, tvPoints;
@@ -82,6 +83,8 @@ public class SettingsFragment extends Fragment
     private FirebaseUser loggedUser;
     private FirebaseDatabase database;
     private StorageReference storage;
+
+    private ArrayAdapter<CharSequence> adapter;
 
     static File localFileProfileImage = null;
 
@@ -101,8 +104,8 @@ public class SettingsFragment extends Fragment
 
         if(loggedUser!=null)
         {
-            updateInfo();
             tvName.setText(getArguments().getString("display_name"));
+            updateInfo();
         }
 
         btnChangePassword = (Button) v.findViewById(R.id.btn_change_password);
@@ -118,7 +121,7 @@ public class SettingsFragment extends Fragment
         friends_check = (CheckBox) v.findViewById(R.id.settings_show_friends);
 
         gpsSpinner = (Spinner) v.findViewById(R.id.gps_spinner);
-        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+        adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.gps_refresh_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         gpsSpinner.setAdapter(adapter);
@@ -150,33 +153,7 @@ public class SettingsFragment extends Fragment
             }
         });
 
-
-
-        database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User u = dataSnapshot.getValue(User.class);
-
-                //User u = dataSnapshot.getChildren().iterator().next().getValue(User.class);
-
-
-                friends_status = u.getShowfriends();
-                players_status = u.getShowplayers();
-                workback_status = u.getWorkback();
-                gpsRefresh = u.getGpsrefresh();
-
-                friends_check.setChecked(friends_status);
-                players_check.setChecked(players_status);
-                work_check.setChecked(workback_status);
-                int pos = adapter.getPosition(gpsRefresh.toString());
-                gpsSpinner.setSelection(pos);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        getSettingsFromServer();
 
         btnSave.setOnClickListener(new View.OnClickListener()
         {
@@ -242,6 +219,37 @@ public class SettingsFragment extends Fragment
         });
 
         return v;
+    }
+
+    public void getSettingsFromServer() {
+        database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User u = dataSnapshot.getValue(User.class);
+
+                friends_status = u.getShowfriends();
+                players_status = u.getShowplayers();
+                workback_status = u.getWorkback();
+                gpsRefresh = u.getGpsrefresh();
+
+                MainActivity activity = (MainActivity)getActivity();
+                if(players_status){
+                    activity.loadAllPlayersFromServer();
+                }
+
+                friends_check.setChecked(friends_status);
+                players_check.setChecked(players_status);
+                work_check.setChecked(workback_status);
+                int pos = adapter.getPosition(gpsRefresh.toString());
+                gpsSpinner.setSelection(pos);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void signOut()

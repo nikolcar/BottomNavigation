@@ -60,8 +60,8 @@ public class BitmapManipulation {
 
     public static Bitmap getMarkerBitmapFromView(@DrawableRes int resId, Context mContext) {
 
-        View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_friend_list, null);
-        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.item_friend_avatar);
+        View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_avatar_image, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.item_avatar);
         markerImageView.setImageResource(resId);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());

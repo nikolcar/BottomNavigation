@@ -34,6 +34,14 @@ public class User
     {
     }
 
+    public ArrayList<String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(ArrayList<String> friends) {
+        this.friends = friends;
+    }
+
     public User(String firstName, String lastName, String nickname, String dateOfBirth)
     {
         this.firstName = firstName;

@@ -44,11 +44,14 @@ public class FriendsFragment extends Fragment
 {
     private ListView lvHighscore;
     private FriendListAdapter mAdapter;
-    private ArrayList<FriendModel> mFriends;
+    public static ArrayList<FriendModel> mFriends;
+    public static ArrayList<String> friendsList;
     FloatingActionButton btnAddFriend;
 
     FirebaseUser loggedUser;
     FirebaseAuth mAuth;
+
+    public static boolean pauseWaitingForFriendsList = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -61,6 +64,7 @@ public class FriendsFragment extends Fragment
         lvHighscore = (ListView) view.findViewById(R.id.highscore_list);
         
         mFriends = new ArrayList<>();
+        friendsList = new ArrayList<>();
 
         mAdapter = new FriendListAdapter(getActivity().getApplicationContext(), mFriends);
         lvHighscore.setAdapter(mAdapter);
@@ -73,8 +77,6 @@ public class FriendsFragment extends Fragment
                Toast.makeText(getActivity(), "" + dataModel.getName(), Toast.LENGTH_SHORT).show();
            }
         });
-
-        getFriendsFromServer();
 
         btnAddFriend = (FloatingActionButton) view.findViewById(R.id.btn_add_friend);
 
@@ -89,7 +91,7 @@ public class FriendsFragment extends Fragment
         return view;
     }
 
-    private void getFriendsFromServer()
+    public void getFriendsFromServer()
     {
         DatabaseReference userFriends = FirebaseDatabase.getInstance().getReference("users").child(loggedUser.getUid()).child("friends");
         //Toast.makeText(getActivity(), "Getting friends from server", Toast.LENGTH_SHORT).show();
@@ -103,10 +105,12 @@ public class FriendsFragment extends Fragment
 
                     //Toast.makeText(getActivity(), friendUid, Toast.LENGTH_SHORT).show();
 
+                    friendsList.add(friendUid);
                     if (!friendUid.equals("")) {
                         getFriendData(friendUid);
                     }
                 }
+                pauseWaitingForFriendsList =false;
             }
 
             @Override

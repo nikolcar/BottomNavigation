@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,27 +31,38 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
-
 
 public class HomeFragment extends Fragment
 {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     FloatingActionButton btnAddParking;
 
-    private GoogleMap googleMap;
+    public GoogleMap googleMap;
     MapView mMapView;
+    public static HashMap<Parking, Marker> mapMarkersParkings = new HashMap<Parking, Marker>();
+    public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
+    public static HashMap<Marker, User> mapMarkerUser = new HashMap<Marker, User>();
+    public HashMap<String,Marker> friendsMarker;
+    public static HashMap<String,Marker> parkingsMarker;
+
+    private Circle distanceCircle;
 
     public Dialog dialog;
     public EditText etName, etDescription, etLongitude, etLatitude;
@@ -138,7 +150,7 @@ public class HomeFragment extends Fragment
                     return;
                 }
                 googleMap.setMyLocationEnabled(false);
-
+/*
                 LatLng currentLocation = new LatLng(43.318731, 21.891143);
 
                 // For dropping a marker at a point on the Map
@@ -153,19 +165,20 @@ public class HomeFragment extends Fragment
 
                 // For zooming automatically to the location of the marker
                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(15).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));*/
             }
         });
+
+        friendsMarker = new HashMap<>();
+        parkingsMarker = new HashMap<>();
 
         return view;
     }
 
     public void getGpsCoordinates()
     {
-        //TODO get user location
-        Double currentLat = 43.3151881;
-        Double currentLon = 21.9199866;
-
+        Double currentLat = 43.0;
+        Double currentLon = 21.0;
         if(currentLat!=null && currentLon!=null)
         {
             etLatitude.setText(String.valueOf(currentLat));
@@ -183,15 +196,6 @@ public class HomeFragment extends Fragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-    }
-
-    public Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
-    {
-        Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
-                Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),
-                Math.round(bitmapIn.getHeight() * scall_zero_to_one_f), false);
-
-        return bitmapOut;
     }
 
     @Override
