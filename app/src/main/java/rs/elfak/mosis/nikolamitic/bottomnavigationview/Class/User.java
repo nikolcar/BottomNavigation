@@ -1,6 +1,5 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Class;
 
-
 import android.util.ArraySet;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -34,20 +33,12 @@ public class User
     {
     }
 
-    public ArrayList<String> getFriends() {
-        return friends;
-    }
-
-    public void setFriends(ArrayList<String> friends) {
-        this.friends = friends;
-    }
-
     public User(String firstName, String lastName, String nickname, String dateOfBirth)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
-        this.dateOfBirth=dateOfBirth;
+        this.dateOfBirth = dateOfBirth;
 
         this.longitude = 0.0;
         this.latitude = 0.0;
@@ -67,9 +58,19 @@ public class User
         return firstName;
     }
 
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
+    }
+
     public String getLastName()
     {
         return lastName;
+    }
+
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
     }
 
     public String getNickname()
@@ -77,29 +78,39 @@ public class User
         return nickname;
     }
 
+    public void setNickname(String nickname)
+    {
+        this.nickname = nickname;
+    }
+
     public String getDateOfBirth()
     {
         return dateOfBirth;
     }
 
-    public Integer getGpsrefresh()
+    public void setDateOfBirth(String dateOfBirth)
     {
-        return gpsrefresh;
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public Boolean getShowfriends()
+    public Double getLongitude()
     {
-        return showfriends;
+        return longitude;
     }
 
-    public Boolean getShowplayers()
+    public void setLongitude(Double longitude)
     {
-        return showplayers;
+        this.longitude = longitude;
     }
 
-    public Boolean getWorkback()
+    public Double getLatitude()
     {
-        return workback;
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude)
+    {
+        this.latitude = latitude;
     }
 
     public Integer getPoints()
@@ -107,56 +118,58 @@ public class User
         return this.points;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-
-    public void setPoints(Integer points) {
+    public void setPoints(Integer points)
+    {
         this.points = points;
     }
 
-    public void setGpsrefresh(Integer gpsrefresh) {
+    public ArrayList<String> getFriends()
+    {
+        return friends;
+    }
+
+    public void setFriends(ArrayList<String> friends)
+    {
+        this.friends = friends;
+    }
+
+    public Integer getGpsrefresh()
+    {
+        return gpsrefresh;
+    }
+
+    public void setGpsrefresh(Integer gpsrefresh)
+    {
         this.gpsrefresh = gpsrefresh;
     }
 
-    public void setShowfriends(Boolean showfriends) {
+    public Boolean getShowfriends()
+    {
+        return showfriends;
+    }
+
+    public void setShowfriends(Boolean showfriends)
+    {
         this.showfriends = showfriends;
     }
 
-    public void setShowplayers(Boolean showplayers) {
+    public Boolean getShowplayers()
+    {
+        return showplayers;
+    }
+
+    public void setShowplayers(Boolean showplayers)
+    {
         this.showplayers = showplayers;
     }
 
-    public void setWorkback(Boolean workback) {
+    public Boolean getWorkback()
+    {
+        return workback;
+    }
+
+    public void setWorkback(Boolean workback)
+    {
         this.workback = workback;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
     }
 }

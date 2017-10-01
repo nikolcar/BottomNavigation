@@ -68,11 +68,9 @@ public class SignupActivity extends Activity
             @Override
             public void onClick(View v)
             {
-
                 // On button click show datepicker dialog
                 showDialog(DATE_PICKER_ID);
             }
-
         });
     }
 
@@ -137,39 +135,36 @@ public class SignupActivity extends Activity
 
         final ProgressDialog progressDialog = ProgressDialog.show(SignupActivity.this, "Please wait...", "Processing...",true);
 
-        (mAuth.createUserWithEmailAndPassword(email,password))
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
+        (mAuth.createUserWithEmailAndPassword(email,password)).addOnCompleteListener(new OnCompleteListener<AuthResult>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task)
+            {
+                progressDialog.dismiss();
+
+                if(task.isSuccessful())
                 {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
-                    {
-                        progressDialog.dismiss();
+                    String uid = task.getResult().getUser().getUid();
 
-                        if(task.isSuccessful())
-                        {
-                            String uid = task.getResult().getUser().getUid();
-
-                            addUserInDatabase(uid, firstName, lastName, nickname, dateOfBirth);
-                            Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-                            intent.putExtra("DISPLAY_NAME", firstName + " " + lastName + "\n" + nickname);
-                            startActivity(intent);
-                            finish();
-                        }
-                        else
-                        {
-                            Toast.makeText(SignupActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                    addUserInDatabase(uid, firstName, lastName, nickname, dateOfBirth);
+                    Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                    intent.putExtra("DISPLAY_NAME", firstName + " " + lastName + "\n" + nickname);
+                    startActivity(intent);
+                    finish();
+                }
+                else
+                {
+                    Toast.makeText(SignupActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void addUserInDatabase(String uid, String first, String last, String nick, String date)
     {
         User newUser = new User(first, last, nick, date);
         users.child(uid).setValue(newUser);
-        //database.getReference("scoreTable").child(uid).child("name").setValue(first + "," + nick + ", " + last);
-        //database.getReference("scoreTable").child(uid).child("points").setValue(0);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 

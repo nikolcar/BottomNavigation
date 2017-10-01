@@ -1,6 +1,5 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

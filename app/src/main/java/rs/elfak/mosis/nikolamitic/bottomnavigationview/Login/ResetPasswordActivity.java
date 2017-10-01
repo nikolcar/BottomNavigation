@@ -42,7 +42,7 @@ public class ResetPasswordActivity extends Activity
 
     public void reset_password_button_click(View v)
     {
-         email = etEmail.getText().toString();
+        email = etEmail.getText().toString();
 
         if (TextUtils.isEmpty(email))
         {
@@ -52,27 +52,26 @@ public class ResetPasswordActivity extends Activity
 
         final ProgressDialog progressDialog = ProgressDialog.show(ResetPasswordActivity.this, "Please wait...", "Processing...",true);
 
-        (mAuth.sendPasswordResetEmail(email))
-                .addOnCompleteListener(new OnCompleteListener<Void>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-                        progressDialog.dismiss();
+        (mAuth.sendPasswordResetEmail(email)).addOnCompleteListener(new OnCompleteListener<Void>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                progressDialog.dismiss();
 
-                        if(task.isSuccessful())
-                        {
-                            Toast.makeText(ResetPasswordActivity.this, "Email is sent", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(ResetPasswordActivity.this, LoginActivity.class);
-                            i.putExtra("Reset_Email",email);
-                            startActivity(i);
-                            finish();
-                        }
-                        else
-                        {
-                            Toast.makeText(ResetPasswordActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(ResetPasswordActivity.this, "Email is sent", Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(ResetPasswordActivity.this, LoginActivity.class);
+                    i.putExtra("Reset_Email",email);
+                    startActivity(i);
+                    finish();
+                }
+                else
+                {
+                    Toast.makeText(ResetPasswordActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }

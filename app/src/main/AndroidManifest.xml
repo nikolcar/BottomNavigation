@@ -50,6 +50,7 @@
         <activity android:name=".Login.ResetPasswordActivity" />
         <activity android:name=".Friends.FriendAddNewActivity" />
 
+        <service android:name=".MyLocationService"/>
     </application>
 
 </manifest>

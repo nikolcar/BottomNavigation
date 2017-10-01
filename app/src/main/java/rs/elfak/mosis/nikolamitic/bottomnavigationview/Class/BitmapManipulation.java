@@ -1,30 +1,34 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview.Class;
 
-        import android.content.Context;
-        import android.graphics.Bitmap;
-        import android.graphics.Canvas;
-        import android.graphics.Color;
-        import android.graphics.Paint;
-        import android.graphics.PorterDuff;
-        import android.graphics.PorterDuffXfermode;
-        import android.graphics.Rect;
-        import android.graphics.drawable.Drawable;
-        import android.support.annotation.DrawableRes;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.widget.ImageView;
-        import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
-public class BitmapManipulation {
-
-    public static Bitmap getCroppedBitmap(Bitmap bitmap) {
+public class BitmapManipulation
+{
+    public static Bitmap getCroppedBitmap(Bitmap bitmap)
+    {
         //scale bitmap so it takes less memory space
         double ratio=(double)bitmap.getWidth()/(double)bitmap.getHeight();
         int newHeight, newWidth;
-        if(bitmap.getHeight()>bitmap.getWidth()){
+        if(bitmap.getHeight()>bitmap.getWidth())
+        {
             newHeight=256;
             newWidth=(int)(newHeight/ratio);
-        }else{
+        }
+        else
+        {
             newWidth=256;
             newHeight=(int)(newWidth*ratio);
         }
@@ -33,7 +37,8 @@ public class BitmapManipulation {
 
         //creating new square bitmap
         int smallerSide = newHeight;
-        if(newWidth<newHeight){
+        if(newWidth<newHeight)
+        {
             smallerSide = newWidth;
         }
 
@@ -58,16 +63,15 @@ public class BitmapManipulation {
         return output;
     }
 
-    public static Bitmap getMarkerBitmapFromView(@DrawableRes int resId, Context mContext) {
-
+    public static Bitmap getMarkerBitmapFromView(@DrawableRes int resId, Context mContext)
+    {
         View customMarkerView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_avatar_image, null);
         ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.item_avatar);
         markerImageView.setImageResource(resId);
         customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
         customMarkerView.buildDrawingCache();
-        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(returnedBitmap);
         canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
         Drawable drawable = customMarkerView.getBackground();

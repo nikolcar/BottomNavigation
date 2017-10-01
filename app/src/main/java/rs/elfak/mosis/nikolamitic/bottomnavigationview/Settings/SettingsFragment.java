@@ -55,6 +55,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 import static android.app.Activity.RESULT_OK;
@@ -171,7 +172,21 @@ public class SettingsFragment extends Fragment
 
                 Toast.makeText(getActivity(), "Settings saved", Toast.LENGTH_SHORT).show();
 
-                //Snackbar.make(findViewById(android.R.id.content), "Please exit the app in order to apply the settings about showing players or friends", Snackbar.LENGTH_LONG).show();
+                MainActivity activity = (MainActivity)getActivity();
+
+                activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
+                activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
+
+                if(work_check.isChecked() & !activity.isMyServiceRunning(MyLocationService.class)){
+                    activity.startService(activity.backgroundService);
+                    Toast.makeText(getActivity(),"Starting background service",Toast.LENGTH_SHORT).show();
+                }
+
+                if (!work_check.isChecked() & activity.isMyServiceRunning(MyLocationService.class))
+                {
+                    activity.stopService(activity.backgroundService);
+                    Toast.makeText(getActivity(),"Stopping background service",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -235,11 +250,27 @@ public class SettingsFragment extends Fragment
                 MainActivity activity = (MainActivity)getActivity();
                 activity.loadPlayersFromServer(players_status, friends_status);
 
+                activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
+                activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
+
+                if(workback_status & !activity.isMyServiceRunning(MyLocationService.class)){
+                    activity.startService(activity.backgroundService);
+                    Toast.makeText(getActivity(),"Starting background service",Toast.LENGTH_SHORT).show();
+                }
+
+                if (!workback_status & activity.isMyServiceRunning(MyLocationService.class))
+                {
+                    activity.stopService(activity.backgroundService);
+                    Toast.makeText(getActivity(),"Stopping background service",Toast.LENGTH_SHORT).show();
+                }
+
+
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
                 work_check.setChecked(workback_status);
                 int pos = adapter.getPosition(gpsRefresh.toString());
                 gpsSpinner.setSelection(pos);
+
             }
 
             @Override
@@ -264,6 +295,7 @@ public class SettingsFragment extends Fragment
                 int points = dataSnapshot.getValue(Integer.class);
                 tvPoints = (TextView) getView().findViewById(R.id.item_friend_points);
                 tvPoints.setText(String.valueOf(points));
+                tvName.setText(loggedUser.getDisplayName());
             }
 
             @Override

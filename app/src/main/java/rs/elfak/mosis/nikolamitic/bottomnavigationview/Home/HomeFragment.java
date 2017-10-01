@@ -49,6 +49,9 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
+
 public class HomeFragment extends Fragment
 {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -69,7 +72,8 @@ public class HomeFragment extends Fragment
     public Spinner sType;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
 
         final Rect displayRectangle = new Rect();
@@ -84,8 +88,6 @@ public class HomeFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                //startActivity(new Intent(getActivity(), AddParkingActivity.class));
-
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
@@ -109,7 +111,6 @@ public class HomeFragment extends Fragment
 
         mMapView = (MapView) view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-
 
         mMapView.onResume(); // needed to get the map to display immediately
 
@@ -145,27 +146,25 @@ public class HomeFragment extends Fragment
 
 
                     //checkLocationPermission();
-
-
                     return;
                 }
                 googleMap.setMyLocationEnabled(false);
-/*
-                LatLng currentLocation = new LatLng(43.318731, 21.891143);
+
+                //LatLng currentLocation = new LatLng(43.318731, 21.891143);
 
                 // For dropping a marker at a point on the Map
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(currentLocation);
+                //MarkerOptions markerOptions = new MarkerOptions();
+                //markerOptions.position(currentLocation);
 
-                Bitmap markImage = BitmapFactory.decodeResource(getResources(), R.mipmap.me);
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(markImage,0.1f)));
-                markerOptions.title("You");
+                //Bitmap markImage = BitmapFactory.decodeResource(getResources(), R.mipmap.me);
+                //markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(markImage,0.1f)));
+                //markerOptions.title("You");
 
-                googleMap.addMarker(markerOptions);
+                //googleMap.addMarker(markerOptions);
 
                 // For zooming automatically to the location of the marker
-                CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(15).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));*/
+                //CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(15).build();
+                //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             }
         });
 
@@ -177,12 +176,10 @@ public class HomeFragment extends Fragment
 
     public void getGpsCoordinates()
     {
-        Double currentLat = 43.0;
-        Double currentLon = 21.0;
-        if(currentLat!=null && currentLon!=null)
+        if(latitude!=null && longitude!=null)
         {
-            etLatitude.setText(String.valueOf(currentLat));
-            etLongitude.setText(String.valueOf(currentLon));
+            etLatitude.setText(String.valueOf(latitude));
+            etLongitude.setText(String.valueOf(longitude));
         }
         else
         {
@@ -238,14 +235,13 @@ public class HomeFragment extends Fragment
         mMapView.onLowMemory();
     }
 
-    public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission. ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
+    public boolean checkLocationPermission()
+    {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission. ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION))
+            {
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -253,59 +249,60 @@ public class HomeFragment extends Fragment
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_location_permission)
                         .setMessage(R.string.text_location_permission)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
+                        {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
                                 //Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(getActivity(),
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
                             }
-                        })
-                        .create()
-                        .show();
-
-
-            } else {
+                        }).create().show();
+            }
+            else
+            {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
             return false;
-        } else {
+        }
+        else
+        {
             return true;
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case MY_PERMISSIONS_REQUEST_LOCATION:
+            {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
                     // permission was granted, yay! Do the
                     // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(getActivity(),
                             Manifest.permission. ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
+                            == PackageManager.PERMISSION_GRANTED)
+                    {
                         //Request location updates:
                         //locationManager.requestLocationUpdates(provider, 400, 1, this);
                     }
-
-                } else {
-
+                }
+                else
+                {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-
                 }
                 return;
             }
-
         }
     }
 }

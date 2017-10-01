@@ -47,8 +47,14 @@ public class FriendModel
         this.avatar = avatar;
     }
 
-    public String getuId() {
+    public String getuId()
+    {
         return uId;
+    }
+
+    public void setuId(String uId)
+    {
+        this.uId = uId;
     }
 }
 

@@ -76,6 +76,9 @@ public class MainActivity extends Activity
     private DatabaseReference parkings, users;
     private StorageReference storage;
 
+    private MyLocationService myLocationService;
+    public Intent backgroundService;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
     {
@@ -185,6 +188,9 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         mAuth = FirebaseAuth.getInstance();
 
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -219,6 +225,8 @@ public class MainActivity extends Activity
 
             addFragments();
             changeFragment(1, true);
+
+            backgroundService = new Intent(this,MyLocationService.class);
 
             navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         }
@@ -294,8 +302,6 @@ public class MainActivity extends Activity
         final String newPassword = settingsFragment.newPassword.getText().toString();
         final String repeatPassword = settingsFragment.repetePassword.getText().toString();
 
-
-
         if (TextUtils.isEmpty(newPassword))
         {
             Toast.makeText(getApplicationContext(), "Enter new password!", Toast.LENGTH_SHORT).show();
@@ -321,23 +327,29 @@ public class MainActivity extends Activity
 
         final ProgressDialog progressDialog = ProgressDialog.show(this, "Please wait...", "Processing...",true);
 
-        try {
-            loggedUser.updatePassword(newPassword.trim())
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(MainActivity.this, "Password is updated, sign in with new password!", Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Toast.makeText(MainActivity.this, "In order to change password you need to sing out and then sign in again :(", Toast.LENGTH_SHORT).show();
-                                    }
-                                    progressDialog.dismiss();
-                                    settingsFragment.dialog.dismiss();
-                                    settingsFragment.signOut();
-                                }
-                            });
-        }catch (Throwable t){
+        try
+        {
+            loggedUser.updatePassword(newPassword.trim()).addOnCompleteListener(new OnCompleteListener<Void>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<Void> task)
+                {
+                    if (task.isSuccessful())
+                    {
+                        Toast.makeText(MainActivity.this, "Password is updated, sign in with new password!", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(MainActivity.this, "In order to change password you need to sing out and then sign in again :(", Toast.LENGTH_SHORT).show();
+                    }
+                    progressDialog.dismiss();
+                    settingsFragment.dialog.dismiss();
+                    settingsFragment.signOut();
+                }
+            });
+        }
+        catch (Throwable t)
+        {
             progressDialog.dismiss();
             Toast.makeText(MainActivity.this, "Error, please try again.",Toast.LENGTH_SHORT).show();
         }
@@ -370,7 +382,8 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 0 || requestCode == 1)
@@ -381,65 +394,82 @@ public class MainActivity extends Activity
 
                 if (data != null)
                     settingsFragment.savedURI = data.getData();
-/*
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(settingsFragment.savedURI).build();
-                progressDialog.dismiss();
-                loggedUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-*/
+
+                //                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(settingsFragment.savedURI).build();
+//                progressDialog.dismiss();
+//                loggedUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+
                 storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
-                storage.putFile(settingsFragment.savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                storage.putFile(settingsFragment.savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+                {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                    {
                         settingsFragment.setProfilePhoto();
                         progressDialog.dismiss();
                         Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener()
+                {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
+                    public void onFailure(@NonNull Exception e)
+                    {
                         Toast.makeText(MainActivity.this, "Failed to upload picture, please try again!", Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
                 });
                 settingsFragment.dialog.dismiss();
             }
-            else {
+            else
+            {
                 Toast.makeText(MainActivity.this, "Action canceled!", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
         Log.d(TAG, "onStart");
         mAuth.addAuthStateListener(authListener);
     }
 
     @Override
-    public void onStop() {
+    public void onStop()
+    {
         super.onStop();
         Log.d(TAG, "onStop");
-        if (authListener != null) {
+        if (authListener != null)
+        {
             mAuth.removeAuthStateListener(authListener);
         }
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
         Log.d(TAG, "onPause");
+        if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
+        {
+            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
+            stopService(backgroundService);
+        }
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
+    public boolean isMyServiceRunning(Class<?> serviceClass)
+    {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.getName().equals(service.service.getClassName()))
+            {
                 return true;
             }
         }
@@ -447,60 +477,76 @@ public class MainActivity extends Activity
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+        if (backgroundService != null)
+            stopService(backgroundService);
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         Log.d(TAG, "onResume");
         OnResume();
     }
 
-    public void OnResume() {
-        if(loggedUser!=null){
-            friendsFragment.friendsList.clear();
-            friendsFragment.mFriends.clear();
-
-            if(homeFragment.googleMap!=null){
+    public void OnResume()
+    {
+        if(loggedUser!=null)
+        {
+            if(homeFragment.googleMap!=null)
+            {
                 homeFragment.googleMap.clear();
             }
 
             friendsFragment.getFriendsFromServer();
             friendsFragment.pauseWaitingForFriendsList=true;
 
-            Runnable r2 = new Runnable() {
+            Runnable r2 = new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     homeFragment.mapMarkersParkings.clear();
                     homeFragment.mapUserIdMarker.clear();
                     homeFragment.mapMarkerUser.clear();
 
-                    while(friendsFragment.pauseWaitingForFriendsList){
-                        synchronized (this) {
-                            try {
+                    while(friendsFragment.pauseWaitingForFriendsList)
+                    {
+                        synchronized (this)
+                        {
+                            try
+                            {
                                 wait(100);
                                 //Log.d(TAG,"Waiting 100ms");
-                            } catch (InterruptedException e) {
+                            }
+                            catch (InterruptedException e)
+                            {
                                 e.printStackTrace();
                             }
                         }
                     }
 
-                    while(homeFragment.googleMap==null){
-                        synchronized (this) {
-                            try {
+                    while(homeFragment.googleMap==null)
+                    {
+                        synchronized (this)
+                        {
+                            try
+                            {
                                 wait(100);
                                 //Log.d(TAG,"Waiting 100ms");
-                            } catch (InterruptedException e) {
+                            }
+                            catch (InterruptedException e)
+                            {
                                 e.printStackTrace();
                             }
                         }
                     }
 
-                    settingsFragment.getSettingsFromServer();   //loadAllPlayersFromServer() must be inside this function
+                    settingsFragment.getSettingsFromServer();   //loadUsersFromServer() must be inside this function
                     loadParkingsFromServer();
                 }
             };
@@ -509,13 +555,14 @@ public class MainActivity extends Activity
         }
     }
 
-
     private void loadParkingsFromServer()
     {
         //https://firebase.google.com/docs/database/android/lists-of-data
-        ChildEventListener childEventListener = new ChildEventListener() {
+        ChildEventListener childEventListener = new ChildEventListener()
+        {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 final Parking parking = dataSnapshot.getValue(Parking.class);
                 Log.d(TAG, "onChildAdded:" + parking.getName());
@@ -526,38 +573,45 @@ public class MainActivity extends Activity
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
                 //We don't have a ability to change a landmark
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot dataSnapshot)
+            {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
                 //We don't have a ability to change a landmark
             }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
                 //We don't have a ability to move a landmark in DB.
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
             }
         };
         parkings.addChildEventListener(childEventListener);
     }
 
-    public void loadAllPlayersFromServer() {
-
+    public void loadAllPlayersFromServer()
+    {
         //https://firebase.google.com/docs/database/android/lists-of-data
-        ChildEventListener childEventListener = new ChildEventListener() {
+        ChildEventListener childEventListener = new ChildEventListener()
+        {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                if(settingsFragment.players_status){
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
+            {
+                if(settingsFragment.players_status)
+                {
                     //Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                     final User user = dataSnapshot.getValue(User.class);
                     //Log.d(TAG, "onChildAdded:" + user.firstName + " uid:" + user.uid);
@@ -569,51 +623,54 @@ public class MainActivity extends Activity
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                //Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 User user = dataSnapshot.getValue(User.class);
-                //Log.d(TAG, "onChildChanged:" + user.firstName + " uid:" + user.uid);
-
                 String uid = dataSnapshot.getKey();
 
                 Marker mMarker;
                 mMarker = homeFragment.mapUserIdMarker.get(uid);
 
-                if(mMarker!=null) {
+                if(mMarker!=null)
+                {
                     //Log.d(TAG,"Brisem marker");
                     mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
-                    /*
-                    if (loggedUser.getUid().equals(uid))
-                    {
-                        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(),user.getLongitude())).zoom(15).build();
-                        homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-                    }
-                    */
-                }else{
+                    //                    if (loggedUser.getUid().equals(uid))
+                    //                    {
+                    //                        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(),user.getLongitude())).zoom(15).build();
+                    //                        homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+                    //                    }
+                }
+                else
+                {
                     //Log.d(TAG,"Ne brisem marker");
                 }
 
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot dataSnapshot)
+            {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
             }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
             }
         };
         users.addChildEventListener(childEventListener);
     }
 
-    private Marker addMarkers(double lat, double lng, String title, String snippet, Bitmap icon, String uId, String parkingId, boolean secret){
+    private Marker addMarkers(double lat, double lng, String title, String snippet, Bitmap icon, String uId, String parkingId, boolean secret)
+    {
         Log.d(TAG,"addMarkers uid:" + uId);
         Marker marker = null;
         Float factor = 0.7f;
@@ -621,10 +678,12 @@ public class MainActivity extends Activity
         MarkerOptions mo = new MarkerOptions();
         mo.position(new LatLng(lat, lng));
         mo.title(title);
-        if(snippet!=null && !snippet.equals("")){
+        if(snippet!=null && !snippet.equals(""))
+        {
             mo.snippet(snippet);
         }
-        if(uId==null || uId.equals("")){
+        if(uId==null || uId.equals(""))
+        {
             if(secret)
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this),factor)));
@@ -633,17 +692,23 @@ public class MainActivity extends Activity
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this),factor)));
             }
-        }else{
-            if(uId.equals(loggedUser.getUid())){
+        }
+        else
+        {
+            if(uId.equals(loggedUser.getUid()))
+            {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.me, MainActivity.this),factor)));
-                /*
                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(lat,lng)).zoom(15).build();
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-                */
-            }else{
-                if(friendsFragment.friendsList.contains(uId)){
+            }
+            else
+            {
+                if(friendsFragment.friendsList.contains(uId))
+                {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this),0.6f)));
-                }else{
+                }
+                else
+                {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.user, MainActivity.this),0.5f)));
                 }
             }
@@ -651,15 +716,19 @@ public class MainActivity extends Activity
 
         marker = homeFragment.googleMap.addMarker(mo);
 
-        if(friendsFragment.friendsList.contains(uId)){
-            if(homeFragment.friendsMarker.containsKey(uId)){
+        if(friendsFragment.friendsList.contains(uId))
+        {
+            if(homeFragment.friendsMarker.containsKey(uId))
+            {
                 homeFragment.friendsMarker.remove(uId);
             }
             homeFragment.friendsMarker.put(uId, marker);
         }
 
-        if(uId==null || uId.equals("")){
-            if(homeFragment.parkingsMarker.containsKey(parkingId)){
+        if(uId==null || uId.equals(""))
+        {
+            if(homeFragment.parkingsMarker.containsKey(parkingId))
+            {
                 homeFragment.parkingsMarker.remove(parkingId);
             }
             homeFragment.parkingsMarker.put(parkingId, marker);
@@ -676,47 +745,59 @@ public class MainActivity extends Activity
         return bitmapOut;
     }
 
-    public void loadPlayersFromServer(Boolean players_status, Boolean friends_status) {
+    public void loadPlayersFromServer(Boolean players_status, Boolean friends_status)
+    {
         if(players_status & friends_status)
         {
             loadAllPlayersFromServer();
         }
-        else if(players_status)
-        {
-            loadUsersFromServer(false);
-        }
         else
         {
-            loadUsersFromServer(friends_status);
-            users.child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    User user = dataSnapshot.getValue(User.class);
+            if (players_status)
+            {
+                loadUsersFromServer(false);
+            }
+            else
+            {
+                users.child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        User user = dataSnapshot.getValue(User.class);
+                        String uid = dataSnapshot.getKey();
 
-                    String uid = dataSnapshot.getKey();
-                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
-                    homeFragment.mapUserIdMarker.put(uid, marker);
-                    homeFragment.mapMarkerUser.put(marker, user);
-                }
+                        Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
+                        homeFragment.mapUserIdMarker.put(uid, marker);
+                        homeFragment.mapMarkerUser.put(marker, user);
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError)
+                    {
+                        Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                if (friends_status)
+                    loadUsersFromServer(true);
+            }
         }
     }
 
-    private void loadUsersFromServer(final boolean friends) {
-
-        ChildEventListener childEventListener = new ChildEventListener() {
+    private void loadUsersFromServer(final boolean friends)
+    {
+        ChildEventListener childEventListener = new ChildEventListener()
+        {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 //Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 final User user = dataSnapshot.getValue(User.class);
                 //Log.d(TAG, "onChildAdded:" + user.firstName + " uid:" + user.uid);
                 String uid = dataSnapshot.getKey();
-                if (friendsFragment.friendsList.contains(uid)==friends) {
+                if (friendsFragment.friendsList.contains(uid)==friends)
+                {
                     Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
                     homeFragment.mapUserIdMarker.put(uid, marker);
                     homeFragment.mapMarkerUser.put(marker, user);
@@ -724,7 +805,8 @@ public class MainActivity extends Activity
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 //Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
                 User user = dataSnapshot.getValue(User.class);
                 //Log.d(TAG, "onChildChanged:" + user.firstName + " uid:" + user.uid);
@@ -734,7 +816,8 @@ public class MainActivity extends Activity
                 Marker mMarker;
                 mMarker = homeFragment.mapUserIdMarker.get(uid);
 
-                if(mMarker!=null) {
+                if(mMarker!=null)
+                {
                     //Log.d(TAG,"Brisem marker");
                     mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
                     /*
@@ -744,24 +827,28 @@ public class MainActivity extends Activity
                         homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
                     }
                     */
-                }else{
+                }
+                else
+                {
                     //Log.d(TAG,"Ne brisem marker");
                 }
-
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot dataSnapshot)
+            {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
             }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
+            {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
             }
         };
