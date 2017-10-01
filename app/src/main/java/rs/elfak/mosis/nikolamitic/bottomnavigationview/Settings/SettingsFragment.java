@@ -233,16 +233,13 @@ public class SettingsFragment extends Fragment
                 gpsRefresh = u.getGpsrefresh();
 
                 MainActivity activity = (MainActivity)getActivity();
-                if(players_status){
-                    activity.loadAllPlayersFromServer();
-                }
+                activity.loadPlayersFromServer(players_status, friends_status);
 
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
                 work_check.setChecked(workback_status);
                 int pos = adapter.getPosition(gpsRefresh.toString());
                 gpsSpinner.setSelection(pos);
-
             }
 
             @Override

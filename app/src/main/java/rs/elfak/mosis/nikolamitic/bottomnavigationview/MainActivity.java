@@ -43,6 +43,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -449,7 +450,6 @@ public class MainActivity extends Activity
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-
     }
 
     @Override
@@ -552,7 +552,6 @@ public class MainActivity extends Activity
     }
 
     public void loadAllPlayersFromServer() {
-        Log.d(TAG,"loadAllPlayersFromServer started");
 
         //https://firebase.google.com/docs/database/android/lists-of-data
         ChildEventListener childEventListener = new ChildEventListener() {
@@ -668,7 +667,6 @@ public class MainActivity extends Activity
         return marker;
     }
 
-
     public Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
     {
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
@@ -676,5 +674,97 @@ public class MainActivity extends Activity
                 Math.round(bitmapIn.getHeight() * scall_zero_to_one_f), false);
 
         return bitmapOut;
+    }
+
+    public void loadPlayersFromServer(Boolean players_status, Boolean friends_status) {
+        if(players_status & friends_status)
+        {
+            loadAllPlayersFromServer();
+        }
+        else if(players_status)
+        {
+            loadUsersFromServer(false);
+        }
+        else
+        {
+            loadUsersFromServer(friends_status);
+            users.child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+
+                    String uid = dataSnapshot.getKey();
+                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
+                    homeFragment.mapUserIdMarker.put(uid, marker);
+                    homeFragment.mapMarkerUser.put(marker, user);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void loadUsersFromServer(final boolean friends) {
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                //Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                final User user = dataSnapshot.getValue(User.class);
+                //Log.d(TAG, "onChildAdded:" + user.firstName + " uid:" + user.uid);
+                String uid = dataSnapshot.getKey();
+                if (friendsFragment.friendsList.contains(uid)==friends) {
+                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
+                    homeFragment.mapUserIdMarker.put(uid, marker);
+                    homeFragment.mapMarkerUser.put(marker, user);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                //Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+                User user = dataSnapshot.getValue(User.class);
+                //Log.d(TAG, "onChildChanged:" + user.firstName + " uid:" + user.uid);
+
+                String uid = dataSnapshot.getKey();
+
+                Marker mMarker;
+                mMarker = homeFragment.mapUserIdMarker.get(uid);
+
+                if(mMarker!=null) {
+                    //Log.d(TAG,"Brisem marker");
+                    mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
+                    /*
+                    if (loggedUser.getUid().equals(uid))
+                    {
+                        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(),user.getLongitude())).zoom(15).build();
+                        homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+                    }
+                    */
+                }else{
+                    //Log.d(TAG,"Ne brisem marker");
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+            }
+        };
+        users.addChildEventListener(childEventListener);
     }
 }
