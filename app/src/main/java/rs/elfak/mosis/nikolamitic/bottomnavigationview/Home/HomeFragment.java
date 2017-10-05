@@ -218,12 +218,11 @@ public class HomeFragment extends Fragment
         spinner.setSelection(adapter.getCount());
 
         search = (SearchView) view.findViewById(R.id.searchMap);
-        search.setQueryHint("Search Here");
+        search.setQueryHint("Select -->");
 
         if(!search.isFocused()) {
             search.clearFocus();
         }
-
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -260,12 +259,13 @@ public class HomeFragment extends Fragment
                 switch (position)
                 {
                     case 0:
-                        search.setQueryHint("Enter Name");
+                        search.setQueryHint("Enter name");
                         break;
                     case 1:
                         search.setQueryHint("In meters");
                         break;
                     case 2:
+                        search.setQueryHint("Enter type");
                         search.setQuery("Private/Public", false);
                         break;
                 }

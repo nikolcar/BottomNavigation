@@ -57,10 +57,10 @@
     </string-array>
 
     <string-array name="search_type">
-        <item>Name</item>
-        <item>Distance</item>
-        <item>Type</item>
-        <item>Select type of search</item>
+        <item>by name</item>
+        <item>by distance</item>
+        <item>by type</item>
+        <item>Type of search</item>
     </string-array>
 
 </resources>
