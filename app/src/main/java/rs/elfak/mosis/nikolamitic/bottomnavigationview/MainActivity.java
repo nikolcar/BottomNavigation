@@ -487,7 +487,7 @@ public class MainActivity extends Activity
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this),factor)));
             }
-            
+
             marker = homeFragment.googleMap.addMarker(mo);
         }
         else

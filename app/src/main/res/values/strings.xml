@@ -52,9 +52,15 @@
     </string-array>
 
     <string-array name="parking_type" color="@color/blue">
-        <item>All</item>
         <item>Public</item>
         <item>Private</item>
+    </string-array>
+
+    <string-array name="search_type">
+        <item>Name</item>
+        <item>Distance</item>
+        <item>Type</item>
+        <item>Select type of search</item>
     </string-array>
 
 </resources>

@@ -3,22 +3,35 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.widget.AutoCompleteTextView;
+import android.widget.FilterQueryProvider;
+import android.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
+import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
+import android.widget.ResourceCursorAdapter;
+import android.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +45,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -47,6 +61,7 @@ import java.util.HashMap;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
@@ -64,10 +79,13 @@ public class HomeFragment extends Fragment
     public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
     private Circle distanceCircle;
+    private int spinnerSelectedSearchOption;
+
 
     public Dialog dialog;
     public EditText etName, etDescription, etLongitude, etLatitude;
     public Spinner sType;
+    private SearchView search;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -170,7 +188,156 @@ public class HomeFragment extends Fragment
         //friendsMarker = new HashMap<>();
         //parkingsMarker = new HashMap<>();
 
+        Spinner spinner = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.search_type, android.R.layout.simple_spinner_item);
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView)v.findViewById(android.R.id.text1)).setText("");
+                    ((TextView)v.findViewById(android.R.id.text1)).setHint(getItem(getCount())); //"Hint to be displayed"
+                }
+
+                return v;
+            }
+
+            @Override
+            public int getCount() {
+                return super.getCount()-1; // you dont display last item. It is used as hint.
+            }
+
+        };
+        String[] myResArray = getResources().getStringArray(R.array.search_type);
+        adapter.addAll(myResArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(adapter.getCount());
+
+        search = (SearchView) view.findViewById(R.id.searchMap);
+        search.setQueryHint("Search Here");
+
+        if(!search.isFocused()) {
+            search.clearFocus();
+        }
+
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchMarker(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.length() > 4)
+                    searchMarker(newText);
+                return false;
+            }
+        });
+
+        search.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                for (Parking parking: mapMarkersParkings.keySet()) {
+                    mapMarkersParkings.get(parking).setVisible(true);
+                }
+                if (distanceCircle != null)
+                    distanceCircle.remove();
+                return false;
+            }
+        });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerSelectedSearchOption = position;
+                search.setQuery("",false);
+                switch (position)
+                {
+                    case 0:
+                        search.setQueryHint("Enter Name");
+                        break;
+                    case 1:
+                        search.setQueryHint("In meters");
+                        break;
+                    case 2:
+                        search.setQuery("Private/Public", false);
+                        break;
+                }
+                for (Parking parking: mapMarkersParkings.keySet()) {
+                    mapMarkersParkings.get(parking).setVisible(true);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         return view;
+    }
+
+    private void searchMarker(String query)
+    {
+        Marker mMarker = null;
+
+        if (distanceCircle != null)
+            distanceCircle.remove();
+
+        switch (spinnerSelectedSearchOption)
+        {
+            case 0: // searching by name
+                for (Parking parking: mapMarkersParkings.keySet())
+                {
+                    mMarker = mapMarkersParkings.get(parking);
+                    mMarker.setVisible(parking.getName().toLowerCase().startsWith(query.toLowerCase()));
+                    mMarker.showInfoWindow();
+                }
+                break;
+            case 1: // searching by distance
+                double lat = latitude;
+                double lon = longitude;
+                float q_distance;
+                try {
+                    q_distance = Float.parseFloat(query);
+                }catch (Exception e){
+                    Toast.makeText(getActivity(),"Please enter the float number!",Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                // Drawing circle
+                distanceCircle = googleMap.addCircle(new CircleOptions()
+                        .center(new LatLng(lat, lon))
+                        .radius(q_distance)
+                        .strokeColor(Color.rgb(0,0,255))
+                        .strokeWidth(5)
+                        .fillColor(Color.argb(128,255,255,255)));
+
+                for (Parking parking: mapMarkersParkings.keySet()) {
+                    mMarker = mapMarkersParkings.get(parking);
+                    float distance = MyLocationService.distanceBetween((float)lat,(float)lon, (float)mMarker.getPosition().latitude, (float)mMarker.getPosition().longitude);
+                    mMarker.setVisible(distance <= q_distance);
+                }
+                break;
+            case 2: // searching by category
+                for (Parking parking: mapMarkersParkings.keySet()) {
+                    mMarker = mapMarkersParkings.get(parking);
+                    if(parking.isSecret()) {
+                        mMarker.setVisible((new String("private")).startsWith(query.toLowerCase()));
+                    }
+                    else
+                    {
+                        mMarker.setVisible((new String("public")).startsWith(query.toLowerCase()));
+                    }
+                }
+                break;
+        }
     }
 
     public void getGpsCoordinates()
