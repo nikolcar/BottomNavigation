@@ -89,7 +89,7 @@ public class MainActivity extends Activity
             {
                 case R.id.navigation_home:
                     Log.d(TAG, "navigation_home");
-                    OnResume();
+                    //OnResume();
                     newClicked = 1;
                     break;
                 case R.id.navigation_friends:
@@ -220,14 +220,11 @@ public class MainActivity extends Activity
             setContentView(R.layout.activity_main);
 
             BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-            //select home on start
             navigation.setSelectedItemId(R.id.navigation_home);
 
             addFragments();
             changeFragment(1, true);
-
             backgroundService = new Intent(this,MyLocationService.class);
-
             navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         }
         else
@@ -297,141 +294,6 @@ public class MainActivity extends Activity
         homeFragment.dialog.dismiss();
     }
 
-    public void change_password_click(View v)
-    {
-        final String newPassword = settingsFragment.newPassword.getText().toString();
-        final String repeatPassword = settingsFragment.repetePassword.getText().toString();
-
-        if (TextUtils.isEmpty(newPassword))
-        {
-            Toast.makeText(getApplicationContext(), "Enter new password!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (newPassword.trim().length() < 6)
-        {
-            Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters", Toast.LENGTH_SHORT).show();
-        }
-
-        if (TextUtils.isEmpty(repeatPassword))
-        {
-            Toast.makeText(getApplicationContext(), "Repeat new password!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!newPassword.equals(repeatPassword))
-        {
-            Toast.makeText(getApplicationContext(), "Password and repeat password are not the same!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "Please wait...", "Processing...",true);
-
-        try
-        {
-            loggedUser.updatePassword(newPassword.trim()).addOnCompleteListener(new OnCompleteListener<Void>()
-            {
-                @Override
-                public void onComplete(@NonNull Task<Void> task)
-                {
-                    if (task.isSuccessful())
-                    {
-                        Toast.makeText(MainActivity.this, "Password is updated, sign in with new password!", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, "In order to change password you need to sing out and then sign in again :(", Toast.LENGTH_SHORT).show();
-                    }
-                    progressDialog.dismiss();
-                    settingsFragment.dialog.dismiss();
-                    settingsFragment.signOut();
-                }
-            });
-        }
-        catch (Throwable t)
-        {
-            progressDialog.dismiss();
-            Toast.makeText(MainActivity.this, "Error, please try again.",Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void cancel_account_edit_click(View v)
-    {
-        settingsFragment.dialog.dismiss();
-    }
-
-    public void camera_click(View v)
-    {
-        Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "WorkingWithPhotosApp");
-        imagesFolder.mkdirs();
-
-        File image = new File(imagesFolder, "QR_1.png");
-        settingsFragment.savedURI = Uri.fromFile(image);
-
-        imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, settingsFragment.savedURI);
-
-        startActivityForResult(imageIntent, 0);
-    }
-
-    public void gallery_click(View v)
-    {
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto , 1);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 0 || requestCode == 1)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                final ProgressDialog progressDialog = ProgressDialog.show(this, "Please wait...", "Processing...",true);
-
-                if (data != null)
-                    settingsFragment.savedURI = data.getData();
-
-                //                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(settingsFragment.savedURI).build();
-//                progressDialog.dismiss();
-//                loggedUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
-                storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
-                storage.putFile(settingsFragment.savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
-                {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-                    {
-                        settingsFragment.setProfilePhoto();
-                        progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener()
-                {
-                    @Override
-                    public void onFailure(@NonNull Exception e)
-                    {
-                        Toast.makeText(MainActivity.this, "Failed to upload picture, please try again!", Toast.LENGTH_SHORT).show();
-                        progressDialog.dismiss();
-                    }
-                });
-                settingsFragment.dialog.dismiss();
-            }
-            else
-            {
-                Toast.makeText(MainActivity.this, "Action canceled!", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     @Override
     public void onStart()
     {
@@ -490,10 +352,10 @@ public class MainActivity extends Activity
     {
         super.onResume();
         Log.d(TAG, "onResume");
-        OnResume();
+        setParametars();
     }
 
-    public void OnResume()
+    public void setParametars()
     {
         if(loggedUser!=null)
         {
@@ -510,9 +372,9 @@ public class MainActivity extends Activity
                 @Override
                 public void run()
                 {
-                    homeFragment.mapMarkersParkings.clear();
+                    //TODO
                     homeFragment.mapUserIdMarker.clear();
-                    homeFragment.mapMarkerUser.clear();
+                    homeFragment.mapFriendIdMarker.clear();
 
                     while(friendsFragment.pauseWaitingForFriendsList)
                     {
@@ -566,7 +428,7 @@ public class MainActivity extends Activity
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 final Parking parking = dataSnapshot.getValue(Parking.class);
                 Log.d(TAG, "onChildAdded:" + parking.getName());
-                Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(), parking.getName(), parking.getDescription(), null, "", dataSnapshot.getKey(), parking.isSecret());
+                Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(), parking.getName(), parking.getDescription(), null, "", false, false, dataSnapshot.getKey(), parking.isSecret());
 
                 //Add to searchable HashMap
                 homeFragment.mapMarkersParkings.put(parking, marker);
@@ -602,74 +464,7 @@ public class MainActivity extends Activity
         parkings.addChildEventListener(childEventListener);
     }
 
-    public void loadAllPlayersFromServer()
-    {
-        //https://firebase.google.com/docs/database/android/lists-of-data
-        ChildEventListener childEventListener = new ChildEventListener()
-        {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
-            {
-                if(settingsFragment.players_status)
-                {
-                    //Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
-                    final User user = dataSnapshot.getValue(User.class);
-                    //Log.d(TAG, "onChildAdded:" + user.firstName + " uid:" + user.uid);
-                    String uid = dataSnapshot.getKey();
-                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(),user.getNickname(), "", null, uid, "", false);
-                    homeFragment.mapUserIdMarker.put(uid, marker);
-                    homeFragment.mapMarkerUser.put(marker, user);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
-            {
-                User user = dataSnapshot.getValue(User.class);
-                String uid = dataSnapshot.getKey();
-
-                Marker mMarker;
-                mMarker = homeFragment.mapUserIdMarker.get(uid);
-
-                if(mMarker!=null)
-                {
-                    //Log.d(TAG,"Brisem marker");
-                    mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
-                    //                    if (loggedUser.getUid().equals(uid))
-                    //                    {
-                    //                        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(),user.getLongitude())).zoom(15).build();
-                    //                        homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-                    //                    }
-                }
-                else
-                {
-                    //Log.d(TAG,"Ne brisem marker");
-                }
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot)
-            {
-                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
-            {
-                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
-            }
-        };
-        users.addChildEventListener(childEventListener);
-    }
-
-    private Marker addMarkers(double lat, double lng, String title, String snippet, Bitmap icon, String uId, String parkingId, boolean secret)
+    private Marker addMarkers(double lat, double lng, String title, String snippet, Bitmap icon, String uId, boolean friends_status, boolean player_status, String parkingId, boolean secret)
     {
         Log.d(TAG,"addMarkers uid:" + uId);
         Marker marker = null;
@@ -692,6 +487,8 @@ public class MainActivity extends Activity
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this),factor)));
             }
+            
+            marker = homeFragment.googleMap.addMarker(mo);
         }
         else
         {
@@ -700,39 +497,32 @@ public class MainActivity extends Activity
                 mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.me, MainActivity.this),factor)));
                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(lat,lng)).zoom(15).build();
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+                marker = homeFragment.googleMap.addMarker(mo);
+                homeFragment.mapUserIdMarker.put(uId, marker);
             }
             else
             {
                 if(friendsFragment.friendsList.contains(uId))
                 {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this),0.6f)));
+                    mo.visible(friends_status);
+
+                    marker = homeFragment.googleMap.addMarker(mo);
+                    homeFragment.mapFriendIdMarker.put(uId, marker);
                 }
                 else
                 {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.user, MainActivity.this),0.5f)));
+                    mo.visible(player_status);
+
+                    marker = homeFragment.googleMap.addMarker(mo);
+                    homeFragment.mapUserIdMarker.put(uId, marker);
+
                 }
             }
         }
 
-        marker = homeFragment.googleMap.addMarker(mo);
-
-        if(friendsFragment.friendsList.contains(uId))
-        {
-            if(homeFragment.friendsMarker.containsKey(uId))
-            {
-                homeFragment.friendsMarker.remove(uId);
-            }
-            homeFragment.friendsMarker.put(uId, marker);
-        }
-
-        if(uId==null || uId.equals(""))
-        {
-            if(homeFragment.parkingsMarker.containsKey(parkingId))
-            {
-                homeFragment.parkingsMarker.remove(parkingId);
-            }
-            homeFragment.parkingsMarker.put(parkingId, marker);
-        }
         return marker;
     }
 
@@ -745,93 +535,54 @@ public class MainActivity extends Activity
         return bitmapOut;
     }
 
-    public void loadPlayersFromServer(Boolean players_status, Boolean friends_status)
+    public void changeVisibility(boolean playersOptionChanged, boolean friendsOptionChanged)
     {
-        if(players_status & friends_status)
+        if (playersOptionChanged)
         {
-            loadAllPlayersFromServer();
-        }
-        else
-        {
-            if (players_status)
+            for (Marker mMarker : homeFragment.mapUserIdMarker.values())
             {
-                loadUsersFromServer(false);
+                mMarker.setVisible(!mMarker.isVisible());
             }
-            else
+
+            homeFragment.mapUserIdMarker.get(loggedUser.getUid()).setVisible(true);
+        }
+
+        if(friendsOptionChanged)
+        {
+            for (Marker mMarker : homeFragment.mapFriendIdMarker.values())
             {
-                users.child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener()
-                {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
-                    {
-                        User user = dataSnapshot.getValue(User.class);
-                        String uid = dataSnapshot.getKey();
-
-                        Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
-                        homeFragment.mapUserIdMarker.put(uid, marker);
-                        homeFragment.mapMarkerUser.put(marker, user);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError)
-                    {
-                        Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                if (friends_status)
-                    loadUsersFromServer(true);
+                mMarker.setVisible(!mMarker.isVisible());
             }
         }
     }
 
-    private void loadUsersFromServer(final boolean friends)
+    public void loadPlayersFromServer(final Boolean players_status, final Boolean friends_status)
     {
         ChildEventListener childEventListener = new ChildEventListener()
         {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
             {
-                //Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
-                final User user = dataSnapshot.getValue(User.class);
-                //Log.d(TAG, "onChildAdded:" + user.firstName + " uid:" + user.uid);
-                String uid = dataSnapshot.getKey();
-                if (friendsFragment.friendsList.contains(uid)==friends)
-                {
-                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, "", false);
-                    homeFragment.mapUserIdMarker.put(uid, marker);
-                    homeFragment.mapMarkerUser.put(marker, user);
-                }
+                    final User user = dataSnapshot.getValue(User.class);
+                    String uid = dataSnapshot.getKey();
+                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, friends_status, players_status, "", false);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
             {
-                //Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
                 User user = dataSnapshot.getValue(User.class);
-                //Log.d(TAG, "onChildChanged:" + user.firstName + " uid:" + user.uid);
-
                 String uid = dataSnapshot.getKey();
 
                 Marker mMarker;
                 mMarker = homeFragment.mapUserIdMarker.get(uid);
 
-                if(mMarker!=null)
+                if(mMarker==null)
                 {
-                    //Log.d(TAG,"Brisem marker");
-                    mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
-                    /*
-                    if (loggedUser.getUid().equals(uid))
-                    {
-                        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(),user.getLongitude())).zoom(15).build();
-                        homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-                    }
-                    */
+                    mMarker = homeFragment.mapFriendIdMarker.get(uid);
                 }
-                else
-                {
-                    //Log.d(TAG,"Ne brisem marker");
-                }
+
+                mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
             }
 
             @Override

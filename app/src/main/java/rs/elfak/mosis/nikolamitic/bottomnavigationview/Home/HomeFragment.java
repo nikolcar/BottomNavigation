@@ -61,9 +61,7 @@ public class HomeFragment extends Fragment
     MapView mMapView;
     public static HashMap<Parking, Marker> mapMarkersParkings = new HashMap<Parking, Marker>();
     public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
-    public static HashMap<Marker, User> mapMarkerUser = new HashMap<Marker, User>();
-    public HashMap<String,Marker> friendsMarker;
-    public static HashMap<String,Marker> parkingsMarker;
+    public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
     private Circle distanceCircle;
 
@@ -168,8 +166,9 @@ public class HomeFragment extends Fragment
             }
         });
 
-        friendsMarker = new HashMap<>();
-        parkingsMarker = new HashMap<>();
+        //TODO
+        //friendsMarker = new HashMap<>();
+        //parkingsMarker = new HashMap<>();
 
         return view;
     }

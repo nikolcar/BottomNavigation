@@ -104,7 +104,6 @@ public class FriendsFragment extends Fragment
         pauseWaitingForFriendsList =true;
         final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Loading friends...",true);
         DatabaseReference userFriends = FirebaseDatabase.getInstance().getReference("users").child(loggedUser.getUid()).child("friends");
-        //Toast.makeText(getActivity(), "Getting friends from server", Toast.LENGTH_SHORT).show();
         userFriends.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -116,12 +115,11 @@ public class FriendsFragment extends Fragment
 
                     String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
 
-                    //Toast.makeText(getActivity(), friendUid, Toast.LENGTH_SHORT).show();
-
-                    friendsList.add(friendUid);
                     if (!friendUid.equals(""))
                     {
                         getFriendData(friendUid);
+                        if(!friendsList.contains(friendUid))
+                            friendsList.add(friendUid);
                     }
                 }
                 progressDialog.dismiss();
@@ -131,7 +129,6 @@ public class FriendsFragment extends Fragment
             @Override
             public void onCancelled(DatabaseError databaseError)
             {
-                //Log.e(TAG, "onCancelled", databaseError.toException());
             }
         });
     }
@@ -145,7 +142,6 @@ public class FriendsFragment extends Fragment
             {
                 final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Loading friends...", true);
                 final User friend = dataSnapshot.getValue(User.class);
-                //Toast.makeText(getActivity(), findModelById(friendUid), Toast.LENGTH_SHORT).show();
 
                 if (friend != null)
                 {
@@ -164,7 +160,6 @@ public class FriendsFragment extends Fragment
                             mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
                             updatePoints(friendUid);
-
                             mAdapter.notifyDataSetChanged();
                         }
                     }).addOnFailureListener(new OnFailureListener()
@@ -177,7 +172,6 @@ public class FriendsFragment extends Fragment
                             mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
                             updatePoints(friendUid);
-
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -200,7 +194,6 @@ public class FriendsFragment extends Fragment
 
                     mAdapter.notifyDataSetChanged();
                 }
-
                 progressDialog.dismiss();
             }
 
