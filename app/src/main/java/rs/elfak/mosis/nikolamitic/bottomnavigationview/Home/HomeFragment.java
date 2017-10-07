@@ -3,30 +3,17 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.widget.AutoCompleteTextView;
-import android.widget.FilterQueryProvider;
-import android.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
-import android.widget.ResourceCursorAdapter;
 import android.widget.SearchView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,32 +24,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.DistanceSearchStrategy;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.NameSearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.SearchStrategy;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.TypeSearchStrategy;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
@@ -79,8 +57,7 @@ public class HomeFragment extends Fragment
     public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
     private Circle distanceCircle;
-    private int spinnerSelectedSearchOption;
-
+    private SearchStrategy searchStrategy = null;
 
     public Dialog dialog;
     public EditText etName, etDescription, etLongitude, etLatitude;
@@ -165,6 +142,7 @@ public class HomeFragment extends Fragment
                     return;
                 }
                 googleMap.setMyLocationEnabled(false);
+                googleMap.getUiSettings().setMapToolbarEnabled(false);
 
                 //LatLng currentLocation = new LatLng(43.318731, 21.891143);
 
@@ -189,9 +167,8 @@ public class HomeFragment extends Fragment
         //parkingsMarker = new HashMap<>();
 
         Spinner spinner = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.search_type, android.R.layout.simple_spinner_item);
 
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
+        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -212,71 +189,85 @@ public class HomeFragment extends Fragment
 
         };
         String[] myResArray = getResources().getStringArray(R.array.search_type);
-        adapter.addAll(myResArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(adapter.getCount());
+        spinnerAdapter.addAll(myResArray);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(spinnerAdapter.getCount());
 
         search = (SearchView) view.findViewById(R.id.searchMap);
         search.setQueryHint("Select -->");
 
-        if(!search.isFocused()) {
+        if(!search.isFocused())
+        {
             search.clearFocus();
         }
 
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String query)
+            {
                 searchMarker(query);
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.length() > 4)
+            public boolean onQueryTextChange(String newText)
+            {
+                if (newText.length() > 1)
                     searchMarker(newText);
                 return false;
             }
         });
 
-        search.setOnCloseListener(new SearchView.OnCloseListener() {
+        search.setOnCloseListener(new SearchView.OnCloseListener()
+        {
             @Override
-            public boolean onClose() {
-                for (Parking parking: mapMarkersParkings.keySet()) {
+            public boolean onClose()
+            {
+                for (Parking parking: mapMarkersParkings.keySet())
+                {
                     mapMarkersParkings.get(parking).setVisible(true);
                 }
+
                 if (distanceCircle != null)
                     distanceCircle.remove();
+
                 return false;
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                spinnerSelectedSearchOption = position;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
                 search.setQuery("",false);
                 switch (position)
                 {
                     case 0:
+                        setSearchStrategy(new NameSearchStrategy());
                         search.setQueryHint("Enter name");
                         break;
                     case 1:
+                        setSearchStrategy(new DistanceSearchStrategy());
                         search.setQueryHint("In meters");
                         break;
                     case 2:
+                        setSearchStrategy(new TypeSearchStrategy());
                         search.setQueryHint("Enter type");
                         search.setQuery("Private/Public", false);
                         break;
                 }
-                for (Parking parking: mapMarkersParkings.keySet()) {
+                for (Parking parking: mapMarkersParkings.keySet())
+                {
                     mapMarkersParkings.get(parking).setVisible(true);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onNothingSelected(AdapterView<?> parent)
+            {
             }
         });
 
@@ -285,58 +276,16 @@ public class HomeFragment extends Fragment
 
     private void searchMarker(String query)
     {
-        Marker mMarker = null;
-
         if (distanceCircle != null)
             distanceCircle.remove();
 
-        switch (spinnerSelectedSearchOption)
+        if (searchStrategy != null)
         {
-            case 0: // searching by name
-                for (Parking parking: mapMarkersParkings.keySet())
-                {
-                    mMarker = mapMarkersParkings.get(parking);
-                    mMarker.setVisible(parking.getName().toLowerCase().startsWith(query.toLowerCase()));
-                    mMarker.showInfoWindow();
-                }
-                break;
-            case 1: // searching by distance
-                double lat = latitude;
-                double lon = longitude;
-                float q_distance;
-                try {
-                    q_distance = Float.parseFloat(query);
-                }catch (Exception e){
-                    Toast.makeText(getActivity(),"Please enter the float number!",Toast.LENGTH_SHORT).show();
-                    break;
-                }
-
-                // Drawing circle
-                distanceCircle = googleMap.addCircle(new CircleOptions()
-                        .center(new LatLng(lat, lon))
-                        .radius(q_distance)
-                        .strokeColor(Color.rgb(0,0,255))
-                        .strokeWidth(5)
-                        .fillColor(Color.argb(128,255,255,255)));
-
-                for (Parking parking: mapMarkersParkings.keySet()) {
-                    mMarker = mapMarkersParkings.get(parking);
-                    float distance = MyLocationService.distanceBetween((float)lat,(float)lon, (float)mMarker.getPosition().latitude, (float)mMarker.getPosition().longitude);
-                    mMarker.setVisible(distance <= q_distance);
-                }
-                break;
-            case 2: // searching by category
-                for (Parking parking: mapMarkersParkings.keySet()) {
-                    mMarker = mapMarkersParkings.get(parking);
-                    if(parking.isSecret()) {
-                        mMarker.setVisible((new String("private")).startsWith(query.toLowerCase()));
-                    }
-                    else
-                    {
-                        mMarker.setVisible((new String("public")).startsWith(query.toLowerCase()));
-                    }
-                }
-                break;
+            searchStrategy.search(query, mapMarkersParkings);
+        }
+        else
+        {
+            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -349,7 +298,7 @@ public class HomeFragment extends Fragment
         }
         else
         {
-            Toast.makeText(getActivity(),"Please turn on GPS",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
             etLatitude.setText("unknown");
             etLongitude.setText("unknown");
         }
@@ -470,5 +419,22 @@ public class HomeFragment extends Fragment
                 return;
             }
         }
+    }
+
+
+    private void setSearchStrategy(SearchStrategy newSearchStrategy)
+    {
+        this.searchStrategy = newSearchStrategy;
+    }
+
+    public void setCircle(LatLng latLng, float q_distance)
+    {
+        // Drawing circle
+        this.distanceCircle = this.googleMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(q_distance)
+                .strokeColor(Color.rgb(0,0,255))
+                .strokeWidth(5)
+                .fillColor(Color.argb(128,255,255,255)));
     }
 }

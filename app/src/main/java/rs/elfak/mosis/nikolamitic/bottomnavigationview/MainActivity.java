@@ -65,7 +65,7 @@ public class MainActivity extends Activity
     private static final String TAG = "Locate Parking";
 
     int clicked = 1, newClicked =0;
-    static HomeFragment homeFragment;
+    public static HomeFragment homeFragment;
     FriendsFragment friendsFragment;
     SettingsFragment settingsFragment;
     Fragment newFragment;

@@ -102,6 +102,9 @@ public class FriendsFragment extends Fragment
         friendsList.clear();
         mFriends.clear();
         pauseWaitingForFriendsList =true;
+
+        getFriendData(loggedUser.getUid());
+
         final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Loading friends...",true);
         DatabaseReference userFriends = FirebaseDatabase.getInstance().getReference("users").child(loggedUser.getUid()).child("friends");
         userFriends.addListenerForSingleValueEvent(new ValueEventListener()

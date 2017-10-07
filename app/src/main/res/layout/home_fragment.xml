@@ -24,7 +24,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/searchMap"
-                    android:layout_weight="0.5"/>
+                    android:layout_weight="0.5"
+                    android:searchIcon="@drawable/ic_search_blue_24dp"
+                    android:searchHintIcon="@drawable/ic_search_blue_24dp"
+                    android:closeIcon="@drawable/ic_close_blue_24dp" />
 
                 <Spinner
                     android:id="@+id/spinnerMapSearchCategory"
