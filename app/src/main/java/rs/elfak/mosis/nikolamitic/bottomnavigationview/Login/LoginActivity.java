@@ -86,25 +86,24 @@ public class LoginActivity extends Activity
 
         final ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Please wait...", "Processing...",true);
 
-        (mAuth.signInWithEmailAndPassword(email,password))
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
-                    {
-                        progressDialog.dismiss();
+        (mAuth.signInWithEmailAndPassword(email,password)).addOnCompleteListener(new OnCompleteListener<AuthResult>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task)
+            {
+                progressDialog.dismiss();
 
-                        if(task.isSuccessful())
-                        {
-                            Toast.makeText(LoginActivity.this, "Log in successful", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        }
-                        else
-                        {
-                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(LoginActivity.this, "Log in successful", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
+                else
+                {
+                    Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }

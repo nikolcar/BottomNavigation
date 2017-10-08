@@ -120,20 +120,19 @@ public class SettingsFragment extends Fragment
         gpsSpinner.setAdapter(adapter);
 
         //TODO spinner selector
-        gpsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        gpsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
                 gpsRefresh = Integer.parseInt(parent.getItemAtPosition(position).toString());
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onNothingSelected(AdapterView<?> parent)
+            {
             }
-
         });
-
-
 
         btnLogout.setOnClickListener(new View.OnClickListener()
         {
@@ -190,7 +189,8 @@ public class SettingsFragment extends Fragment
         btnChangePassword.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
                 //TODO change password
@@ -269,9 +269,11 @@ public class SettingsFragment extends Fragment
                     }
                 });
 
-                cancelChange.setOnClickListener(new View.OnClickListener() {
+                cancelChange.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         dialog.dismiss();
                     }
                 });
@@ -299,9 +301,11 @@ public class SettingsFragment extends Fragment
                 Button btnCamera = (Button) dialog.findViewById(R.id.camera);
                 Button btnGallery = (Button) dialog.findViewById(R.id.gallery);
 
-                btnCamera.setOnClickListener(new View.OnClickListener() {
+                btnCamera.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
                         File imagesFolder = new File(Environment.getExternalStorageDirectory(), "WorkingWithPhotosApp");
@@ -316,9 +320,11 @@ public class SettingsFragment extends Fragment
                     }
                 });
 
-                btnGallery.setOnClickListener(new View.OnClickListener() {
+                btnGallery.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(pickPhoto , 1);
                     }
@@ -331,10 +337,13 @@ public class SettingsFragment extends Fragment
         return v;
     }
 
-    public void getSettingsFromServer() {
-        database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getSettingsFromServer()
+    {
+        database.getReference("users").child(loggedUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 User u = dataSnapshot.getValue(User.class);
 
                 friends_status = u.getShowfriends();
@@ -348,7 +357,8 @@ public class SettingsFragment extends Fragment
                 activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
                 activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
 
-                if(workback_status & !activity.isMyServiceRunning(MyLocationService.class)){
+                if(workback_status & !activity.isMyServiceRunning(MyLocationService.class))
+                {
                     activity.startService(activity.backgroundService);
                     Toast.makeText(getActivity(),"Starting background service",Toast.LENGTH_SHORT).show();
                 }
@@ -359,28 +369,30 @@ public class SettingsFragment extends Fragment
                     Toast.makeText(getActivity(),"Stopping background service",Toast.LENGTH_SHORT).show();
                 }
 
-
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
                 work_check.setChecked(workback_status);
                 int pos = adapter.getPosition(gpsRefresh.toString());
                 gpsSpinner.setSelection(pos);
-
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-    public void updateInfo(){
+    public void updateInfo()
+    {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.getReference("users").child(loggedUser.getUid()).child("points").addValueEventListener(new ValueEventListener() {
+        database.getReference("users").child(loggedUser.getUid()).child("points").addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 int points = dataSnapshot.getValue(Integer.class);
                 tvPoints = (TextView) getView().findViewById(R.id.item_friend_points);
                 tvPoints.setText(String.valueOf(points));
@@ -388,8 +400,8 @@ public class SettingsFragment extends Fragment
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onCancelled(DatabaseError databaseError)
+            {
             }
         });
 
@@ -421,27 +433,36 @@ public class SettingsFragment extends Fragment
         try
         {
             localFileProfileImage = File.createTempFile("profileImage",".jpg");
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
 
         StorageReference storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
-        storage.getFile(localFileProfileImage).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+        storage.getFile(localFileProfileImage).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>()
+        {
             @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot)
+            {
                 Bitmap bitmap = BitmapFactory.decodeFile(localFileProfileImage.getAbsolutePath());
-                if(bitmap!=null){
+                if(bitmap!=null)
+                {
                     bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
                     ivAvatar.setImageBitmap(bitmap);
                     bitmap = null;
-                }else{
+                }
+                else
+                {
                 }
 
             }
-        }).addOnFailureListener(new OnFailureListener() {
+        })
+        .addOnFailureListener(new OnFailureListener()
+        {
             @Override
-            public void onFailure(@NonNull Exception exception) {
+            public void onFailure(@NonNull Exception exception)
+            {
                 //Toast.makeText(MainActivity.this, "Error downloading/saving profile image", Toast.LENGTH_SHORT).show();
                 //TODO: Can't display this, maybe user doesn't have a profile photo
             }
@@ -488,7 +509,8 @@ public class SettingsFragment extends Fragment
                         progressDialog.dismiss();
                         Toast.makeText(getActivity(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(new OnFailureListener()
+                })
+                .addOnFailureListener(new OnFailureListener()
                 {
                     @Override
                     public void onFailure(@NonNull Exception e)

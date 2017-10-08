@@ -37,8 +37,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
@@ -164,9 +162,11 @@ public class HomeFragment extends Fragment
                 });
 
                 Button btnCancelParking = (Button) dialog.findViewById(R.id.btn_cancel_parking);
-                btnCancelParking.setOnClickListener(new View.OnClickListener() {
+                btnCancelParking.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         dialog.dismiss();
                     }
                 });
@@ -247,19 +247,16 @@ public class HomeFragment extends Fragment
             }
         });
 
-        //TODO
-        //friendsMarker = new HashMap<>();
-        //parkingsMarker = new HashMap<>();
-
         Spinner spinner = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
 
         ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
 
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
                 View v = super.getView(position, convertView, parent);
-                if (position == getCount()) {
+                if (position == getCount())
+                {
                     ((TextView)v.findViewById(android.R.id.text1)).setText("");
                     ((TextView)v.findViewById(android.R.id.text1)).setHint(getItem(getCount())); //"Hint to be displayed"
                 }
@@ -268,11 +265,13 @@ public class HomeFragment extends Fragment
             }
 
             @Override
-            public int getCount() {
+            public int getCount()
+            {
                 return super.getCount()-1; // you dont display last item. It is used as hint.
             }
 
         };
+
         String[] myResArray = getResources().getStringArray(R.array.search_type);
         spinnerAdapter.addAll(myResArray);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

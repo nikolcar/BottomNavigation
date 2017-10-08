@@ -193,11 +193,14 @@ public class MainActivity extends Activity
 
         mAuth = FirebaseAuth.getInstance();
 
-        authListener = new FirebaseAuth.AuthStateListener() {
+        authListener = new FirebaseAuth.AuthStateListener()
+        {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
+            {
                 loggedUser = firebaseAuth.getCurrentUser();
-                if (loggedUser == null) {
+                if (loggedUser == null)
+                {
                     // user auth state is changed - user is null
                     // launch login activity
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));

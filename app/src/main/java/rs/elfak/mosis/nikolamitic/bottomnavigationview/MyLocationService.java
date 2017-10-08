@@ -54,7 +54,8 @@ public class MyLocationService extends Service
     private Long timeLastNotification = 0L;
 
 
-    public static float distanceBetween(float lat1, float lng1, float lat2, float lng2) {
+    public static float distanceBetween(float lat1, float lng1, float lat2, float lng2)
+    {
         double earthRadius = 6371000; //meters
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
@@ -203,7 +204,6 @@ public class MyLocationService extends Service
             @Override
             public void onCancelled(DatabaseError databaseError)
             {
-
             }
         });
 
@@ -295,12 +295,14 @@ public class MyLocationService extends Service
     private boolean firstNotification = true;
     NotificationCompat.Builder mBuilder = null;
 
-    private void showNotification(int uid,String text) {
+    private void showNotification(int uid,String text)
+    {
         vibrationAndSoundNotification();
 
         mNotificationId = uid;
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if(firstNotification){
+        if(firstNotification)
+        {
             firstNotification = false;
             mBuilder = new NotificationCompat.Builder(this)
                     .setOnlyAlertOnce(true)
@@ -319,18 +321,6 @@ public class MyLocationService extends Service
             PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(resultPendingIntent);
         }
-
-//        switch (uid)
-//        {
-//            case 1:
-//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.friend)).setContentTitle("The friend is nearby");;
-//                break;
-//            case 2:
-//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.occupied)).setContentTitle("The public parking is nearby");;
-//                break;
-//            default:
-//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.free)).setContentTitle("The private parking is nearby");;
-//        }
 
         Bitmap icon = null;
         String what = "";
@@ -359,26 +349,27 @@ public class MyLocationService extends Service
         System.gc(); //force garbage collector
     }
 
-    private void vibrationAndSoundNotification() {
+    private void vibrationAndSoundNotification()
+    {
         Long time = System.currentTimeMillis()/1000;
 
-        if(time-timeLastNotification>TIME_BETWEEN_NOTIFICATIONS){//notify user only every TIME_BETWEEN_NOTIFICATIONS seconds
+        if(time-timeLastNotification>TIME_BETWEEN_NOTIFICATIONS)
+        {   //notify user only every TIME_BETWEEN_NOTIFICATIONS seconds
             timeLastNotification = time;
 
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(500);
 
-            try {
+            try
+            {
                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 r.play();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
-
-
     }
-
-
 }
