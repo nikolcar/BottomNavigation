@@ -4,17 +4,24 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -24,13 +31,26 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
@@ -44,16 +64,17 @@ public class MainActivity extends Activity
 {
     private static final String TAG = "Locate Parking";
 
-    private int clicked = 1, newClicked =0;
-    private static HomeFragment homeFragment;
-    private FriendsFragment friendsFragment;
-    private SettingsFragment settingsFragment;
-    private Fragment newFragment;
+    int clicked = 1, newClicked =0;
+    public static HomeFragment homeFragment;
+    FriendsFragment friendsFragment;
+    static SettingsFragment settingsFragment;
+    Fragment newFragment;
 
     private FirebaseAuth.AuthStateListener authListener;
-    static private FirebaseAuth mAuth;
-    static private FirebaseUser loggedUser;
-    static private DatabaseReference parkings, users;
+    private FirebaseAuth mAuth;
+    static public FirebaseUser loggedUser;
+    private DatabaseReference parkings, users;
+    private StorageReference storage;
 
     private MyLocationService myLocationService;
     public Intent backgroundService;
@@ -68,6 +89,7 @@ public class MainActivity extends Activity
             {
                 case R.id.navigation_home:
                     Log.d(TAG, "navigation_home");
+                    //OnResume();
                     newClicked = 1;
                     break;
                 case R.id.navigation_friends:
@@ -82,8 +104,8 @@ public class MainActivity extends Activity
 
             if( 0 < newClicked && newClicked < 4 && clicked != newClicked)
             {
-                changeFragment(clicked, false);
                 changeFragment(newClicked, true);
+                changeFragment(clicked, false);
                 clicked = newClicked;
                 return true;
             }
@@ -106,15 +128,15 @@ public class MainActivity extends Activity
         ft.hide(friendsFragment);
 
 
-//        Bundle fragment = new Bundle();
-//        Bundle extras = getIntent().getExtras();
-//        String display_name = loggedUser.getDisplayName();
-//        if (extras != null)
-//            display_name = getIntent().getStringExtra("DISPLAY_NAME");
-//
-//        fragment.putString("display_name", display_name);
+        Bundle fragment = new Bundle();
+        Bundle extras = getIntent().getExtras();
+        String display_name = loggedUser.getDisplayName();
+        if (extras != null)
+            display_name= getIntent().getStringExtra("DISPLAY_NAME");
+
+        fragment.putString("display_name", display_name);
         settingsFragment = new SettingsFragment();
-//        settingsFragment.setArguments(fragment);
+        settingsFragment.setArguments(fragment);
 
         ft.add(R.id.fragmentContainer, settingsFragment);
         ft.hide(settingsFragment);
@@ -170,7 +192,6 @@ public class MainActivity extends Activity
         StrictMode.setThreadPolicy(policy);
 
         mAuth = FirebaseAuth.getInstance();
-//      SignOut();
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -237,11 +258,11 @@ public class MainActivity extends Activity
     {
         super.onPause();
         Log.d(TAG, "onPause");
-        if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
-        {
-            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
-            stopService(backgroundService);
-        }
+//        if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
+//        {
+//            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
+//            stopService(backgroundService);
+//        }
     }
 
     public boolean isMyServiceRunning(Class<?> serviceClass)
@@ -261,7 +282,6 @@ public class MainActivity extends Activity
     protected void onDestroy()
     {
         super.onDestroy();
-
         Log.d(TAG, "onDestroy");
 //        if (backgroundService != null)
 //            stopService(backgroundService);
@@ -446,7 +466,7 @@ public class MainActivity extends Activity
         return marker;
     }
 
-    public Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
+    public static Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
     {
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
                 Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),
@@ -524,32 +544,5 @@ public class MainActivity extends Activity
             }
         };
         users.addChildEventListener(childEventListener);
-    }
-
-    static public HomeFragment getHomeFragment()
-    {
-        return homeFragment;
-    }
-
-    public static FirebaseUser getLoggedUser()
-    {
-        return loggedUser;
-    }
-
-    public static DatabaseReference getParkings()
-    {
-        return parkings;
-    }
-
-    public static DatabaseReference getUsers()
-    {
-        return users;
-    }
-
-    public void SignOut()
-    {
-        mAuth.signOut();
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        finish();
     }
 }

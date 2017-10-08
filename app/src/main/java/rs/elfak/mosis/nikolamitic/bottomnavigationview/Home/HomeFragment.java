@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -36,6 +35,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -55,7 +55,7 @@ import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.
 public class HomeFragment extends Fragment
 {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    FloatingActionButton btnAddParking;
+    FloatingActionButton btnAddNewParking;
 
     public GoogleMap googleMap;
     MapView mMapView;
@@ -79,9 +79,9 @@ public class HomeFragment extends Fragment
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
         final LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
 
-        btnAddParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
+        btnAddNewParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
 
-        btnAddParking.setOnClickListener(new View.OnClickListener()
+        btnAddNewParking.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -98,24 +98,11 @@ public class HomeFragment extends Fragment
 
                 final EditText etName = (EditText) dialog.findViewById(R.id.add_parking_name);
                 final EditText etDescription = (EditText) dialog.findViewById(R.id.add_parking_desc);
-                final Spinner sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
-
                 final EditText etLatitude = (EditText) dialog.findViewById(R.id.add_parking_lati);
                 final EditText etLongitude = (EditText) dialog.findViewById(R.id.add_parking_long);
-                if(latitude!=null && longitude!=null)
-                {
-                    etLatitude.setText(String.valueOf(latitude));
-                    etLongitude.setText(String.valueOf(longitude));
-                }
-                else
-                {
-                    Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
-                    etLatitude.setText("unknown");
-                    etLongitude.setText("unknown");
-                }
+                final Spinner sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
 
                 Button btnAddParking = (Button) dialog.findViewById(R.id.btn_add_parking);
-                Button btnCancelParking = (Button) dialog.findViewById(R.id.btn_cancel_parking);
 
                 btnAddParking.setOnClickListener(new View.OnClickListener()
                 {
@@ -126,7 +113,6 @@ public class HomeFragment extends Fragment
                         final String description = etDescription.getText().toString();
 
                         Double longitude, latitude;
-
                         try
                         {
                             latitude = Double.parseDouble(etLatitude.getText().toString());
@@ -134,8 +120,7 @@ public class HomeFragment extends Fragment
                         }
                         catch (Throwable t)
                         {
-                            Toast.makeText(getActivity(), "Turn on GPS first!", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            Toast.makeText(getActivity(),"Turn on GPS first!", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -155,12 +140,11 @@ public class HomeFragment extends Fragment
                             return;
                         }
 
-                        //TODO add date
-                        Date date = Calendar.getInstance().getTime();
+                        //Date date = Calendar.getInstance().getTime();
 
-                        String uid = MainActivity.getLoggedUser().getUid();
-                        DatabaseReference parkings = MainActivity.getParkings();
-                        DatabaseReference users = MainActivity.getUsers();
+                        String uid = MainActivity.loggedUser.getUid();
+                        DatabaseReference parkings = FirebaseDatabase.getInstance().getReference("parkings");
+                        DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
 
                         Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
                         String key = parkings.push().getKey();
@@ -179,14 +163,25 @@ public class HomeFragment extends Fragment
                     }
                 });
 
-                btnCancelParking.setOnClickListener(new View.OnClickListener()
-                {
+                Button btnCancelParking = (Button) dialog.findViewById(R.id.btn_cancel_parking);
+                btnCancelParking.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
+                    public void onClick(View v) {
                         dialog.dismiss();
                     }
                 });
+
+                if(latitude!=null && longitude!=null)
+                {
+                    etLatitude.setText(String.valueOf(latitude));
+                    etLongitude.setText(String.valueOf(longitude));
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
+                    etLatitude.setText("unknown");
+                    etLongitude.setText("unknown");
+                }
 
                 dialog.show();
             }

@@ -57,5 +57,3 @@ public class FriendModel
         this.uId = uId;
     }
 }
-
-

@@ -64,7 +64,7 @@ public class FriendsFragment extends Fragment
         loggedUser = mAuth.getCurrentUser();
 
         lvHighscore = (ListView) view.findViewById(R.id.highscore_list);
-        
+
         mFriends = new ArrayList<>();
         friendsList = new ArrayList<>();
 

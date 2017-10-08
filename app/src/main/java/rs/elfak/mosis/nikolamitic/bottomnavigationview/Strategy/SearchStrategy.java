@@ -9,5 +9,3 @@ public interface SearchStrategy
 {
     public void search(String query, HashMap<Parking, Marker> mapMarkersParkings);
 }
-
-

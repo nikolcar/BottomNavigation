@@ -67,7 +67,7 @@ public class SettingsFragment extends Fragment
 
     private Spinner gpsSpinner;
 
-    private Integer gpsRefresh;
+    public Integer gpsRefresh;
     public Uri savedURI;
 
     private TextView tvName, tvPoints;

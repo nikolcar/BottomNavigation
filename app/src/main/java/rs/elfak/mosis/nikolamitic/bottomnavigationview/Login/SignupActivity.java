@@ -29,9 +29,6 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
-
 public class SignupActivity extends Activity
 {
     private EditText txtFirstName, txtLastName, txtNickname, txtEmailAddress, txtPassword,  txtRepeatPassword;
@@ -166,7 +163,7 @@ public class SignupActivity extends Activity
 
     private void addUserInDatabase(String uid, String first, String last, String nick, String date)
     {
-        User newUser = new User(first, last, nick, date, longitude, latitude);
+        User newUser = new User(first, last, nick, date);
         users.child(uid).setValue(newUser);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -210,4 +207,3 @@ public class SignupActivity extends Activity
         }
     };
 }
-

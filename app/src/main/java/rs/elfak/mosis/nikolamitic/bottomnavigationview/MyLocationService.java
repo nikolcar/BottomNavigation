@@ -1,35 +1,58 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 
+import android.animation.ArgbEvaluator;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapMarkersParkings;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
+
 public class MyLocationService extends Service
 {
     private static final String TAG = "MyLocationService";
     private LocationManager mLocationManager = null;
+    private static final int NOTIFY_DISTANCE = 500;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
+    private static final long TIME_BETWEEN_NOTIFICATIONS = 60L;
+
     public static Double longitude;
     public static Double latitude;
     private FirebaseDatabase database;
     private String loggedUserUid;
     public static int myPoints = 0;
+    private Long timeLastNotification = 0L;
+
 
     public static float distanceBetween(float lat1, float lng1, float lat2, float lng2) {
         double earthRadius = 6371000; //meters
@@ -61,20 +84,68 @@ public class MyLocationService extends Service
             mLastLocation.set(location);
             mLastLocation.set(location);
 
-            longitude=location.getLongitude();
-            latitude=location.getLatitude();
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+
+            double myNewLat, myNewLon;
+            myNewLat = latitude;
+            myNewLon = longitude;
 
             DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
             String uid = MainActivity.loggedUser.getUid();
 
-            users.child(uid).child("latitude").setValue(latitude);
-            users.child(uid).child("longitude").setValue(longitude);
+            users.child(uid).child("latitude").setValue(myNewLat);
+            users.child(uid).child("longitude").setValue(myNewLon);
 
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            //Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
-            v.vibrate(1000);
-            Toast.makeText(MyLocationService.this, "Your location: " + longitude + " " + latitude + " ",Toast.LENGTH_LONG).show();
+            //v.vibrate(1000);
+            //Toast.makeText(MyLocationService.this, "Your location: " + myNewLat + " " + myNewLon + " ", Toast.LENGTH_LONG).show();
+
+            for (String key : mapFriendIdMarker.keySet())
+            {
+                Marker marker = mapFriendIdMarker.get(key);
+                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+                if (distanceFromMarker < NOTIFY_DISTANCE)
+                {
+                    showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
+                }
+                else
+                {
+                    //deleteNotification(this,1);
+                }
+            }
+
+            float minDistance = NOTIFY_DISTANCE;
+            Marker minDistanceMarker = null;
+            boolean minDistanceSecret = false;
+
+            for (Parking key : mapMarkersParkings.keySet())
+            {
+                Marker marker = mapMarkersParkings.get(key);
+                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+
+                if (distanceFromMarker < NOTIFY_DISTANCE)
+                {
+                    if (distanceFromMarker < minDistance)
+                    {
+                        minDistance = distanceFromMarker;
+                        minDistanceMarker = marker;
+                        minDistanceSecret = key.isSecret();
+                    }
+                }
+            }
+
+            if(minDistanceMarker!=null)
+            {
+                int type = 2;
+                if(minDistanceSecret)
+                    type = 3;
+
+                showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
+            }
         }
+
 
         @Override
         public void onProviderDisabled(String provider)
@@ -218,4 +289,96 @@ public class MyLocationService extends Service
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
+
+    private int mNotificationId;
+    //Some things we only have to set the first time.
+    private boolean firstNotification = true;
+    NotificationCompat.Builder mBuilder = null;
+
+    private void showNotification(int uid,String text) {
+        vibrationAndSoundNotification();
+
+        mNotificationId = uid;
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if(firstNotification){
+            firstNotification = false;
+            mBuilder = new NotificationCompat.Builder(this)
+                    .setOnlyAlertOnce(true)
+                    .setPriority(Notification.PRIORITY_MAX);
+
+            // Creates an explicit intent for an Activity in your app
+            Intent resultIntent = new Intent(this, MainActivity.class);
+
+            // The stack builder object will contain an artificial back stack for the started Activity.
+            // This ensures that navigating backward from the Activity leads out of your application to the Home screen.
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            // Adds the back stack for the Intent (but not the Intent itself)
+            stackBuilder.addParentStack(MainActivity.class);
+            // Adds the Intent that starts the Activity to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+        }
+
+//        switch (uid)
+//        {
+//            case 1:
+//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.friend)).setContentTitle("The friend is nearby");;
+//                break;
+//            case 2:
+//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.occupied)).setContentTitle("The public parking is nearby");;
+//                break;
+//            default:
+//                mBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.free)).setContentTitle("The private parking is nearby");;
+//        }
+
+        Bitmap icon = null;
+        String what = "";
+
+        if(uid==1)
+        {
+            icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.friend), 0.1f);
+            what = "friend";
+        }
+        else
+            if(uid==2)
+            {
+                icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.occupied), 0.1f);
+                what ="public parking";
+            }
+            else
+            {
+                icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.free), 0.1f);
+                what ="private parking";
+            }
+
+        mBuilder.setSmallIcon(R.mipmap.privateparking).setLargeIcon(icon).setContentTitle("The "+what+" is near");
+
+        mBuilder.setContentText(text);
+        mNotificationManager.notify(mNotificationId, mBuilder.build());
+        System.gc(); //force garbage collector
+    }
+
+    private void vibrationAndSoundNotification() {
+        Long time = System.currentTimeMillis()/1000;
+
+        if(time-timeLastNotification>TIME_BETWEEN_NOTIFICATIONS){//notify user only every TIME_BETWEEN_NOTIFICATIONS seconds
+            timeLastNotification = time;
+
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(500);
+
+            try {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+
 }
