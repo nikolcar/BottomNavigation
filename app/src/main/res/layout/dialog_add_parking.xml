@@ -159,8 +159,7 @@
                     android:paddingStart="15dp">
 
                     <Button
-                        android:id="@+id/add_parking"
-                        android:onClick="add_parking_click"
+                        android:id="@+id/btn_add_parking"
                         android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -170,8 +169,7 @@
                         android:background="@color/blue"/>
 
                     <Button
-                        android:id="@+id/cancel_parking"
-                        android:onClick="cancel_parking_click"
+                        android:id="@+id/btn_cancel_parking"
                         android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

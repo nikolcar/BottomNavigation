@@ -33,15 +33,15 @@ public class User
     {
     }
 
-    public User(String firstName, String lastName, String nickname, String dateOfBirth)
+    public User(String firstName, String lastName, String nickname, String dateOfBirth, Double longitude, Double latitude)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
         this.dateOfBirth = dateOfBirth;
 
-        this.longitude = 0.0;
-        this.latitude = 0.0;
+        this.longitude = longitude;
+        this.latitude = latitude;
         this.points = 0;
 
         this.friends = new ArrayList<>();

@@ -8,11 +8,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,10 +35,14 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.database.DatabaseReference;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.DistanceSearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.NameSearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
@@ -60,8 +67,6 @@ public class HomeFragment extends Fragment
     private SearchStrategy searchStrategy = null;
 
     public Dialog dialog;
-    public EditText etName, etDescription, etLongitude, etLatitude;
-    public Spinner sType;
     private SearchView search;
 
     @Override
@@ -91,13 +96,98 @@ public class HomeFragment extends Fragment
                 TextView tvTitle = (TextView) dialog.findViewById(R.id.add_parking_title);
                 tvTitle.setText(R.string.Add_new_parking);
 
-                etName = (EditText) dialog.findViewById(R.id.add_parking_name);
-                etDescription = (EditText) dialog.findViewById(R.id.add_parking_desc);
-                etLatitude = (EditText) dialog.findViewById(R.id.add_parking_lati);
-                etLongitude = (EditText) dialog.findViewById(R.id.add_parking_long);
-                sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
+                final EditText etName = (EditText) dialog.findViewById(R.id.add_parking_name);
+                final EditText etDescription = (EditText) dialog.findViewById(R.id.add_parking_desc);
+                final Spinner sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
 
-                getGpsCoordinates();
+                final EditText etLatitude = (EditText) dialog.findViewById(R.id.add_parking_lati);
+                final EditText etLongitude = (EditText) dialog.findViewById(R.id.add_parking_long);
+                if(latitude!=null && longitude!=null)
+                {
+                    etLatitude.setText(String.valueOf(latitude));
+                    etLongitude.setText(String.valueOf(longitude));
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
+                    etLatitude.setText("unknown");
+                    etLongitude.setText("unknown");
+                }
+
+                Button btnAddParking = (Button) dialog.findViewById(R.id.btn_add_parking);
+                Button btnCancelParking = (Button) dialog.findViewById(R.id.btn_cancel_parking);
+
+                btnAddParking.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        final String name = etName.getText().toString();
+                        final String description = etDescription.getText().toString();
+
+                        Double longitude, latitude;
+
+                        try
+                        {
+                            latitude = Double.parseDouble(etLatitude.getText().toString());
+                            longitude = Double.parseDouble(etLongitude.getText().toString());
+                        }
+                        catch (Throwable t)
+                        {
+                            Toast.makeText(getActivity(), "Turn on GPS first!", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            return;
+                        }
+
+                        String text = sType.getSelectedItem().toString();
+
+                        final boolean secret = (text.equals("Private"));
+
+                        if (TextUtils.isEmpty(name))
+                        {
+                            Toast.makeText(getActivity(), "Enter parking name!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (TextUtils.isEmpty(description))
+                        {
+                            Toast.makeText(getActivity(), "Enter parking description!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        //TODO add date
+                        Date date = Calendar.getInstance().getTime();
+
+                        String uid = MainActivity.getLoggedUser().getUid();
+                        DatabaseReference parkings = MainActivity.getParkings();
+                        DatabaseReference users = MainActivity.getUsers();
+
+                        Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
+                        String key = parkings.push().getKey();
+                        parkings.child(key).setValue(newParking);
+
+                        if(secret)
+                        {
+                            users.child(uid).child("myPrivate").push().setValue(key);
+                        }
+
+                        //TODO add points
+                        //users.child(uid).child("points").
+
+                        Toast.makeText(getActivity(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
+
+                btnCancelParking.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+
                 dialog.show();
             }
         });
@@ -286,21 +376,6 @@ public class HomeFragment extends Fragment
         else
         {
             Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void getGpsCoordinates()
-    {
-        if(latitude!=null && longitude!=null)
-        {
-            etLatitude.setText(String.valueOf(latitude));
-            etLongitude.setText(String.valueOf(longitude));
-        }
-        else
-        {
-            Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
-            etLatitude.setText("unknown");
-            etLongitude.setText("unknown");
         }
     }
 
