@@ -60,6 +60,11 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
 
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.*;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.NOTIFY_DISTANCE;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
+
 public class MainActivity extends Activity
 {
     private static final String TAG = "Locate Parking";
@@ -381,21 +386,21 @@ public class MainActivity extends Activity
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
             {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-                //We don't have a ability to change a landmark
+                //We don't have a ability to change a parking
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot)
             {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
-                //We don't have a ability to change a landmark
+                //We don't have a ability to change a parking
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
             {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
-                //We don't have a ability to move a landmark in DB.
+                //We don't have a ability to move a parking in DB.
             }
 
             @Override
@@ -514,6 +519,7 @@ public class MainActivity extends Activity
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
             {
+                Log.d("Main Activity","change friend loc");
                 User user = dataSnapshot.getValue(User.class);
                 String uid = dataSnapshot.getKey();
 
@@ -526,6 +532,8 @@ public class MainActivity extends Activity
                 }
 
                 mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
+
+//                myLocationService.showFriendsInRadius(mMarker);
             }
 
             @Override

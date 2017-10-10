@@ -41,7 +41,7 @@ public class MyLocationService extends Service
 {
     private static final String TAG = "MyLocationService";
     private LocationManager mLocationManager = null;
-    private static final int NOTIFY_DISTANCE = 500;
+    public static final int NOTIFY_DISTANCE = 500;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
     private static final long TIME_BETWEEN_NOTIFICATIONS = 60L;
@@ -88,63 +88,19 @@ public class MyLocationService extends Service
             longitude = location.getLongitude();
             latitude = location.getLatitude();
 
-            double myNewLat, myNewLon;
-            myNewLat = latitude;
-            myNewLon = longitude;
-
             DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
             String uid = MainActivity.loggedUser.getUid();
 
-            users.child(uid).child("latitude").setValue(myNewLat);
-            users.child(uid).child("longitude").setValue(myNewLon);
+            users.child(uid).child("latitude").setValue(latitude);
+            users.child(uid).child("longitude").setValue(longitude);
 
             //Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
             //v.vibrate(1000);
             //Toast.makeText(MyLocationService.this, "Your location: " + myNewLat + " " + myNewLon + " ", Toast.LENGTH_LONG).show();
 
-            for (String key : mapFriendIdMarker.keySet())
-            {
-                Marker marker = mapFriendIdMarker.get(key);
-                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
-                if (distanceFromMarker < NOTIFY_DISTANCE)
-                {
-                    showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
-                }
-                else
-                {
-                    //deleteNotification(this,1);
-                }
-            }
-
-            float minDistance = NOTIFY_DISTANCE;
-            Marker minDistanceMarker = null;
-            boolean minDistanceSecret = false;
-
-            for (Parking key : mapMarkersParkings.keySet())
-            {
-                Marker marker = mapMarkersParkings.get(key);
-                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
-
-                if (distanceFromMarker < NOTIFY_DISTANCE)
-                {
-                    if (distanceFromMarker < minDistance)
-                    {
-                        minDistance = distanceFromMarker;
-                        minDistanceMarker = marker;
-                        minDistanceSecret = key.isSecret();
-                    }
-                }
-            }
-
-            if(minDistanceMarker!=null)
-            {
-                int type = 2;
-                if(minDistanceSecret)
-                    type = 3;
-
-                showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
-            }
+            showFriendsInRadius();
+            showParkingInRadius();
         }
 
 
@@ -166,6 +122,80 @@ public class MyLocationService extends Service
             Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
+
+    private void showParkingInRadius()
+    {
+        double myNewLat, myNewLon;
+        myNewLat = latitude;
+        myNewLon = longitude;
+
+        float minDistance = NOTIFY_DISTANCE;
+        Marker minDistanceMarker = null;
+        boolean minDistanceSecret = false;
+
+        for (Parking key : mapMarkersParkings.keySet())
+        {
+            Marker marker = mapMarkersParkings.get(key);
+            Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+
+            if (distanceFromMarker < NOTIFY_DISTANCE)
+            {
+                if (distanceFromMarker < minDistance)
+                {
+                    minDistance = distanceFromMarker;
+                    minDistanceMarker = marker;
+                    minDistanceSecret = key.isSecret();
+                }
+            }
+        }
+
+        if(minDistanceMarker!=null)
+        {
+            int type = 2;
+            if(minDistanceSecret)
+                type = 3;
+
+            showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
+        }
+    }
+
+    public void showFriendsInRadius(/*Marker marker*/)
+    {
+        double myNewLat, myNewLon;
+        myNewLat = latitude;
+        myNewLon = longitude;
+
+//        if (marker == null)
+//        {
+            for (String key : mapFriendIdMarker.keySet())
+            {
+                Marker marker = mapFriendIdMarker.get(key);
+                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+                if (distanceFromMarker < NOTIFY_DISTANCE)
+                {
+                    showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
+                }
+                else
+                {
+                    //deleteNotification(this,1);
+                }
+            }
+//        }
+//        else
+//        {
+//            Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+//            if (distanceFromMarker < NOTIFY_DISTANCE)
+//            {
+//                showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
+//            }
+//            else
+//            {
+//                //deleteNotification(this,1);
+//            }
+//        }
+    }
+
+
 
     //    LocationListener[] mLocationListeners = new LocationListener[]
 //    {
@@ -295,7 +325,7 @@ public class MyLocationService extends Service
     private boolean firstNotification = true;
     NotificationCompat.Builder mBuilder = null;
 
-    private void showNotification(int uid,String text)
+    public void showNotification(int uid, String text)
     {
         vibrationAndSoundNotification();
 
@@ -327,24 +357,24 @@ public class MyLocationService extends Service
 
         if(uid==1)
         {
-            icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.friend), 0.1f);
+            icon = BitmapFactory.decodeResource(getResources(), R.mipmap.friend);
             what = "friend";
         }
         else
             if(uid==2)
             {
-                icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.occupied), 0.1f);
+                icon = BitmapFactory.decodeResource(getResources(), R.mipmap.occupied);
                 what ="public parking";
             }
             else
             {
-                icon = MainActivity.bitmapSizeByScall(BitmapFactory.decodeResource(getResources(), R.mipmap.free), 0.1f);
+                icon = BitmapFactory.decodeResource(getResources(), R.mipmap.free);
                 what ="private parking";
             }
 
         mBuilder.setSmallIcon(R.mipmap.privateparking).setLargeIcon(icon).setContentTitle("The "+what+" is near");
 
-        mBuilder.setContentText(text);
+        mBuilder.setContentText(text).setAutoCancel(true);
         mNotificationManager.notify(mNotificationId, mBuilder.build());
         System.gc(); //force garbage collector
     }

@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -118,6 +119,8 @@ public class SettingsFragment extends Fragment
                 R.array.gps_refresh_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         gpsSpinner.setAdapter(adapter);
+        gpsSpinner.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+
 
         //TODO spinner selector
         gpsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()

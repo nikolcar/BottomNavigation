@@ -131,8 +131,7 @@
                         android:entries="@array/gps_refresh_array"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:popupBackground="@color/white"
-                        android:backgroundTint="@color/blue" />
+                        android:popupBackground="@color/white" />
 
                 </LinearLayout>
 

@@ -4,7 +4,8 @@
     <item
         android:id="@+id/navigation_logo"
         android:checkable="false"
-        android:icon="@mipmap/privateparking" />
+        android:icon="@mipmap/privateparking"
+        android:title="Locate Parking" />
 
     <item
         android:id="@+id/navigation_home"

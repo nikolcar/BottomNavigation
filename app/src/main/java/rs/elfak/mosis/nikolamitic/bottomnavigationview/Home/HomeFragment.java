@@ -6,16 +6,17 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -277,9 +278,14 @@ public class HomeFragment extends Fragment
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setSelection(spinnerAdapter.getCount());
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+
 
         search = (SearchView) view.findViewById(R.id.searchMap);
-        search.setQueryHint("Select -->");
+        search.setQueryHint("Select type first");
+        EditText searchEditText = (EditText)search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(getResources().getColor(R.color.blue));
+        searchEditText.setTextSize(15);
 
         if(!search.isFocused())
         {
@@ -331,16 +337,17 @@ public class HomeFragment extends Fragment
                 {
                     case 0:
                         setSearchStrategy(new NameSearchStrategy());
-                        search.setQueryHint("Enter name");
+                        setSearch("Enter name");
                         break;
                     case 1:
                         setSearchStrategy(new DistanceSearchStrategy());
-                        search.setQueryHint("In meters");
+                        setSearch("In meters");
                         break;
                     case 2:
                         setSearchStrategy(new TypeSearchStrategy());
-                        search.setQueryHint("Enter type");
-                        search.setQuery("Private/Public", false);
+                        setSearch("Private or Public");
+//                        setSearch("Enter type");
+//                        search.setQuery("Private/Public", false);
                         break;
                 }
                 for (Parking parking: mapMarkersParkings.keySet())
@@ -356,6 +363,13 @@ public class HomeFragment extends Fragment
         });
 
         return view;
+    }
+
+    private void setSearch(String hint)
+    {
+        search.setQueryHint(hint);
+        search.setIconified(false);
+        search.requestFocusFromTouch();
     }
 
     private void searchMarker(String query)

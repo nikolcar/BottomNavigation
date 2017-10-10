@@ -8,6 +8,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity.homeFragment;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.distanceBetween;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
 
@@ -46,7 +47,7 @@ public class DistanceSearchStrategy implements SearchStrategy
         for (Parking parking : mapMarkersParkings.keySet())
         {
             mMarker = mapMarkersParkings.get(parking);
-            float distance = MyLocationService.distanceBetween((float) mLatitude, (float) mLongitude, (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
+            float distance = distanceBetween((float) mLatitude, (float) mLongitude, (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
             mMarker.setVisible(distance <= q_distance);
         }
     }
