@@ -429,11 +429,11 @@ public class MainActivity extends Activity
         {
             if(secret)
             {
-                mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this),factor)));
+                mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this)));
             }
             else
             {
-                mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this),factor)));
+                mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this)));
             }
 
             marker = homeFragment.googleMap.addMarker(mo);
@@ -442,7 +442,7 @@ public class MainActivity extends Activity
         {
             if(uId.equals(loggedUser.getUid()))
             {
-                mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.me, MainActivity.this),factor)));
+                mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.me, MainActivity.this)));
                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(lat,lng)).zoom(15).build();
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
@@ -453,7 +453,7 @@ public class MainActivity extends Activity
             {
                 if(friendsFragment.friendsList.contains(uId))
                 {
-                    mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this),0.6f)));
+                    mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this)));
                     mo.visible(friends_status);
 
                     marker = homeFragment.googleMap.addMarker(mo);
@@ -461,8 +461,9 @@ public class MainActivity extends Activity
                 }
                 else
                 {
-                    mo.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.user, MainActivity.this),0.5f)));
+                    mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.user, MainActivity.this)));
                     mo.visible(player_status);
+
 
                     marker = homeFragment.googleMap.addMarker(mo);
                     homeFragment.mapUserIdMarker.put(uId, marker);
