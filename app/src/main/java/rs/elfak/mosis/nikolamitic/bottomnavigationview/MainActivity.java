@@ -16,6 +16,7 @@ import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -248,6 +249,8 @@ public class MainActivity extends Activity
         super.onStart();
         Log.d(TAG, "onStart");
         mAuth.addAuthStateListener(authListener);
+        friendsFragment.getFriendsFromServer();
+        friendsFragment.pauseWaitingForFriendsList=true;
     }
 
     @Override
@@ -312,8 +315,6 @@ public class MainActivity extends Activity
                 homeFragment.googleMap.clear();
             }
 
-            friendsFragment.getFriendsFromServer();
-            friendsFragment.pauseWaitingForFriendsList=true;
 
             Runnable r2 = new Runnable()
             {

@@ -52,6 +52,11 @@
         <activity android:name=".Login.ResetPasswordActivity" />
         <activity android:name=".Friends.FriendAddNewActivity" />
 
+        <activity android:name=".Bluetooth.DeviceListActivity"
+            android:label="@string/select_device"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
+
         <service android:name=".MyLocationService"
             android:enabled="true"
             android:exported="true" />

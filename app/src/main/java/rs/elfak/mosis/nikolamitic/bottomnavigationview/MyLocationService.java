@@ -220,8 +220,9 @@ public class MyLocationService extends Service
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
 
-        int settingsGpsRefreshTime = intent.getIntExtra("settingsGpsRefreshTime", 1);
-        loggedUserUid = intent.getStringExtra("loggedUserUid");
+        //TODO
+        int settingsGpsRefreshTime = 1;//MainActivity.settingsFragment.gpsRefresh;
+        loggedUserUid = MainActivity.loggedUser.getUid();
 
         database.getReference("users").child(loggedUserUid).child("points").addListenerForSingleValueEvent(new ValueEventListener()
         {
