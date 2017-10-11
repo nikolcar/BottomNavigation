@@ -121,8 +121,6 @@ public class SettingsFragment extends Fragment
         gpsSpinner.setAdapter(adapter);
         gpsSpinner.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
 
-
-        //TODO spinner selector
         gpsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -196,7 +194,6 @@ public class SettingsFragment extends Fragment
             {
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
-                //TODO change password
                 View layout = layoutInflater.inflate(R.layout.dialog_change_password, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 
@@ -292,7 +289,6 @@ public class SettingsFragment extends Fragment
             {
                 dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
 
-                //TODO change image
                 View layout = layoutInflater.inflate(R.layout.dialog_change_photo, null);
                 layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
 

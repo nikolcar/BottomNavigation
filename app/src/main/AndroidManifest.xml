@@ -52,7 +52,9 @@
         <activity android:name=".Login.ResetPasswordActivity" />
         <activity android:name=".Friends.FriendAddNewActivity" />
 
-        <service android:name=".MyLocationService"/>
+        <service android:name=".MyLocationService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

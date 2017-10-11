@@ -332,6 +332,9 @@ public class HomeFragment extends Fragment
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
+                if (distanceCircle != null & position!=1)
+                    distanceCircle.remove();
+
                 search.setQuery("",false);
                 switch (position)
                 {
@@ -350,6 +353,7 @@ public class HomeFragment extends Fragment
 //                        search.setQuery("Private/Public", false);
                         break;
                 }
+
                 for (Parking parking: mapMarkersParkings.keySet())
                 {
                     mapMarkersParkings.get(parking).setVisible(true);
@@ -374,9 +378,6 @@ public class HomeFragment extends Fragment
 
     private void searchMarker(String query)
     {
-        if (distanceCircle != null)
-            distanceCircle.remove();
-
         if (searchStrategy != null)
         {
             searchStrategy.search(query, mapMarkersParkings);
@@ -512,6 +513,8 @@ public class HomeFragment extends Fragment
 
     public void setCircle(LatLng latLng, float q_distance)
     {
+        if (distanceCircle != null)
+            distanceCircle.remove();
         // Drawing circle
         this.distanceCircle = this.googleMap.addCircle(new CircleOptions()
                 .center(latLng)

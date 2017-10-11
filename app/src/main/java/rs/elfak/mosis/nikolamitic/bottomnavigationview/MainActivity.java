@@ -291,8 +291,8 @@ public class MainActivity extends Activity
     {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-//        if (backgroundService != null)
-//            stopService(backgroundService);
+        if (backgroundService != null)
+            stopService(backgroundService);
     }
 
     @Override
@@ -443,7 +443,7 @@ public class MainActivity extends Activity
             if(uId.equals(loggedUser.getUid()))
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.me, MainActivity.this)));
-                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(lat,lng)).zoom(15).build();
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(lat,lng)).zoom(16).build();
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
                 marker = homeFragment.googleMap.addMarker(mo);
