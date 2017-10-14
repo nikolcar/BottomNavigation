@@ -53,3 +53,12 @@ Sa sledećim funkcionalnostima
   <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/startApp.png" width="250"/>
 </p>
 
+Moqup aplikacije
+
+<p align="center">  
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/moqup.png"/>
+</p>
+
+<br>
+<a href="https://trello.com/locateparkingmosisapp"> Trello direktorijum </a>
+
