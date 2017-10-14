@@ -14,26 +14,42 @@ Aplikacija se sastoji od:
 
 Sa sledećim funkcionalnostima
 
-- Registracija na sistemu unosom osnovnih podataka (ime, prezime, nadimak, datum dođenja, email adrese, šifre).
+- Registracija na sistem unosom osnovnih podataka (ime, prezime, nadimak, datum dođenja, email adrese, šifre).
 - Logovanje na sistem email-adresom i šifrom, mogućnost promene šifre preko mail-a.
 
 <p align="center">  
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" width="200"/>
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png" width="150"/>
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" width="100"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" width="250"/>
 </p>
 
-- Prikaz trenutne lokacije korisnika na mapi, kao i prikaz parkinga.
+- Real-time prikaz trenutne lokacije korisnika na mapi, kao i prikaz parkinga.
+- Dodavanje parkinga, na trenutnoj lokaciji korisnika.
 - Pretraživanje parkinga po imenu, po radijusu u odnosu na korisnika (u metrima) i po tipu (private/public).
 - Klikom na informaciju o parkingu, korisnik može dobiti i direkciju do istog. Tada se u bazi pamti kada je korisnik zatražio direkciju do određenog parkinga.
-- Dodavanje parkinga, na trenutnoj lokaciji korisnika.
+
+<p align="center">  
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/addParking.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/radiusSearch.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/typeSearch.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/direction.png" width="250"/>
+</p>
 
 - Prikaz rang liste prijatelja.
 - Dodavanje prijatelja preko bluetooth-a.
 
+<p align="center">  
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/highscore.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/bluetooth.png" width="250"/>
+</p>
+
 - Korisnik može videti svoje podatke, može promeniti šifru i sliku.
-- Korisnik može da izabere da li želi da vidi svoje prijatelje na mapi, kao i druge korisnike aplikacije.
+- Korisnik može da izabere da li želi da vidi svoje prijatelje na mapi, kao i druge korisnike aplikacije. Prikaz prijatelja je takođe real-time.
 - Startovanje i stopiranje background servisa, koji šalje notifikaciju, kada je korisnik blizu nekog parkinga ili prijatelja.
 - Logout.
 
+<p align="center">  
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/settings.png" width="250"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/startApp.png" width="250"/>
+</p>
 
