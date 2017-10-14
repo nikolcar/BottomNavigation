@@ -505,7 +505,7 @@ public class MainActivity extends Activity
         }
     }
 
-    public void loadPlayersFromServer(final Boolean players_status, final Boolean friends_status)
+    public void loadUsersFromServer(final Boolean players_status, final Boolean friends_status)
     {
         ChildEventListener childEventListener = new ChildEventListener()
         {
@@ -533,6 +533,12 @@ public class MainActivity extends Activity
                 }
 
                 mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
+
+//                if(uid == loggedUser.getUid())
+//                {
+//                    CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(), user.getLongitude())).build();
+//                    homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+//                }
 
 //                myLocationService.showFriendsInRadius(mMarker);
             }

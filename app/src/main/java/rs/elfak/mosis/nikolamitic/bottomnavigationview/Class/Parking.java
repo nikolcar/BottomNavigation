@@ -16,7 +16,7 @@ public class Parking
     private String adderId;
     private boolean secret;
     //private Date date;
-    //public String pid;
+    public String pid;
 
     public Parking()
     {
@@ -32,6 +32,7 @@ public class Parking
 
         this.adderId = uid;
         this.secret = secret;
+
     }
 
     public String getName()
@@ -92,5 +93,15 @@ public class Parking
     public void setSecret(boolean secret)
     {
         this.secret = secret;
+    }
+
+    public String getPid()
+    {
+        return pid;
+    }
+
+    public void setPid(String pid)
+    {
+        this.pid = pid;
     }
 }

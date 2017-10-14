@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -66,6 +67,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Statistic;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.DistanceSearchStrategy;
@@ -184,6 +186,7 @@ public class HomeFragment extends Fragment
 
                         Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
                         String key = parkings.push().getKey();
+                        newParking.setPid(key);
                         parkings.child(key).setValue(newParking);
 
                         //TODO private
@@ -303,7 +306,7 @@ public class HomeFragment extends Fragment
                                         {
                                             dialog.dismiss();
 
-                                            for (Parking parking: mapParkingsMarkers.keySet())
+                                            for (Parking parking : mapParkingsMarkers.keySet())
                                             {
                                                 mapParkingsMarkers.get(parking).setVisible(false);
                                             }
@@ -312,10 +315,17 @@ public class HomeFragment extends Fragment
 
                                             changeVisibility(true);
 
-                                            getDirection(latitude, longitude, parking.getLatitude(),parking.getLongitude());
+                                            getDirection(latitude, longitude, parking.getLatitude(), parking.getLongitude());
 
-                                            CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(20).tilt(90).build();
+                                            CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
                                             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+
+                                            DateTime now = new DateTime();
+                                            DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
+                                            Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parking.getPid(), now.toString());
+                                            String key = statistic.push().getKey();
+                                            statistic.child(key).setValue(stat);
 
 //                                            getNavigation(latitude, longitude, parking.getLatitude(),parking.getLongitude());
                                         }

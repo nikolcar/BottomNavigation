@@ -52,7 +52,6 @@ import java.net.URL;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
@@ -401,7 +400,7 @@ public class SettingsFragment extends Fragment
                 gpsRefresh = u.getGpsrefresh();
 
                 MainActivity activity = (MainActivity)getActivity();
-                activity.loadPlayersFromServer(players_status, friends_status);
+                activity.loadUsersFromServer(players_status, friends_status);
 
                 activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
                 activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
