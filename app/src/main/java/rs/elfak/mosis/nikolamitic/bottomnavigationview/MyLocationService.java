@@ -36,10 +36,8 @@ import com.google.firebase.database.ValueEventListener;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapMarkersParkings;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingsMarkers;
 
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 public class MyLocationService extends Service
 {

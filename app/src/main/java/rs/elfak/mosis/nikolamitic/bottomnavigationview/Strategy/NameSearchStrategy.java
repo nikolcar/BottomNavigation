@@ -13,7 +13,7 @@ public class NameSearchStrategy implements SearchStrategy
             Marker mMarker = null;
 
             mMarker = mapParkingsMarkers.get(parking);
-            mMarker.setVisible(parking.getName().toLowerCase().startsWith(query.toLowerCase()));
+            mMarker.setVisible(parking.getName().toLowerCase().contains(query.toLowerCase()));
             mMarker.showInfoWindow();
         }
     }

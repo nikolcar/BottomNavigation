@@ -40,6 +40,12 @@
 
             </LinearLayout>
 
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/search_layout"/>
+
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/btn_cancel_direction_mode"
                 android:layout_width="wrap_content"
@@ -49,13 +55,6 @@
                 android:layout_below="@id/search_layout"
                 android:layout_alignEnd="@id/search_layout"
                 android:visibility="gone"/>
-
-
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/search_layout"/>
 
         </RelativeLayout>
 

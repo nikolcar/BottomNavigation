@@ -72,8 +72,8 @@ public class MainActivity extends Activity
 
     int clicked = 1, newClicked =0;
     public static HomeFragment homeFragment;
-    FriendsFragment friendsFragment;
-    static SettingsFragment settingsFragment;
+    public FriendsFragment friendsFragment;
+    public SettingsFragment settingsFragment;
     Fragment newFragment;
 
     private FirebaseAuth.AuthStateListener authListener;
@@ -249,7 +249,6 @@ public class MainActivity extends Activity
         super.onStart();
         Log.d(TAG, "onStart");
         mAuth.addAuthStateListener(authListener);
-        setParametars();
     }
 
     @Override
@@ -302,6 +301,7 @@ public class MainActivity extends Activity
     {
         super.onResume();
         Log.d(TAG, "onResume");
+//        setParametars();
     }
 
     public void setParametars()
@@ -313,8 +313,6 @@ public class MainActivity extends Activity
                 homeFragment.googleMap.clear();
             }
 
-            friendsFragment.getFriendsFromServer();
-            friendsFragment.pauseWaitingForFriendsList=true;
 
             Runnable r2 = new Runnable()
             {
@@ -366,7 +364,7 @@ public class MainActivity extends Activity
         }
     }
 
-    private void loadParkingsFromServer()
+    public void loadParkingsFromServer()
     {
         //https://firebase.google.com/docs/database/android/lists-of-data
         ChildEventListener childEventListener = new ChildEventListener()

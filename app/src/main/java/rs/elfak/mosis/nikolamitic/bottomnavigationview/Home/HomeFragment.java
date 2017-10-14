@@ -33,10 +33,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -78,6 +80,7 @@ import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.
 public class HomeFragment extends Fragment
 {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final int ADD_POINTS_NEW_PARKING = 5;
 
     public GoogleMap googleMap;
     MapView mMapView;
@@ -177,19 +180,21 @@ public class HomeFragment extends Fragment
 
                         String uid = MainActivity.loggedUser.getUid();
                         DatabaseReference parkings = FirebaseDatabase.getInstance().getReference("parkings");
-                        DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
+                        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
                         Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
                         String key = parkings.push().getKey();
                         parkings.child(key).setValue(newParking);
 
-                        if(secret)
-                        {
-                            users.child(uid).child("myPrivate").push().setValue(key);
-                        }
+                        //TODO private
+//                        if(secret)
+//                        {
+//                            database.child("myPrivate").push().setValue(key);
+//                        }
 
-                        //TODO add points
-                        //users.child(uid).child("points").
+                        Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_PARKING + " points!",Toast.LENGTH_SHORT).show();
+                        MyLocationService.myPoints += ADD_POINTS_NEW_PARKING;
+                        database.child("points").setValue(MyLocationService.myPoints);
 
                         Toast.makeText(getActivity(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
@@ -233,6 +238,9 @@ public class HomeFragment extends Fragment
                 {
                     mapParkingsMarkers.get(parking).setVisible(true);
                 }
+
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(15).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
                 changeVisibility(false);
             }
@@ -293,6 +301,8 @@ public class HomeFragment extends Fragment
                                     {
                                         public void onClick(DialogInterface dialog, int which)
                                         {
+                                            dialog.dismiss();
+
                                             for (Parking parking: mapParkingsMarkers.keySet())
                                             {
                                                 mapParkingsMarkers.get(parking).setVisible(false);
@@ -303,6 +313,11 @@ public class HomeFragment extends Fragment
                                             changeVisibility(true);
 
                                             getDirection(latitude, longitude, parking.getLatitude(),parking.getLongitude());
+
+                                            CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(20).tilt(90).build();
+                                            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+//                                            getNavigation(latitude, longitude, parking.getLatitude(),parking.getLongitude());
                                         }
                                     })
                                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
@@ -523,7 +538,6 @@ public class HomeFragment extends Fragment
         }
         */
         mMapView.onResume();
-        changeVisibility(false);
     }
 
     @Override
@@ -694,14 +708,19 @@ public class HomeFragment extends Fragment
         }
 
         addPolyline(result, this.googleMap);
+
     }
 
     private void addPolyline(DirectionsResult results, GoogleMap mMap)
     {
+        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Calculate route...",true);
+
         if(direction!=null)
             direction.remove();
                     
         List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
         direction = mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(10).color(Color.BLUE));
+
+        progressDialog.dismiss();
     }
 }

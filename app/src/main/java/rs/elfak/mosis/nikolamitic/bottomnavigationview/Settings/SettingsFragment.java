@@ -334,6 +334,55 @@ public class SettingsFragment extends Fragment
             }
         });
 
+        Runnable r2 = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                //TODO
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.homeFragment.mapUserIdMarker.clear();
+                mainActivity.homeFragment.mapFriendIdMarker.clear();
+
+                while(mainActivity.friendsFragment.pauseWaitingForFriendsList)
+                {
+                    synchronized (this)
+                    {
+                        try
+                        {
+                            wait(100);
+                            //Log.d(TAG,"Waiting 100ms");
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                while(mainActivity.homeFragment.googleMap==null)
+                {
+                    synchronized (this)
+                    {
+                        try
+                        {
+                            wait(100);
+                            //Log.d(TAG,"Waiting 100ms");
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                getSettingsFromServer();   //loadUsersFromServer() must be inside this function
+                mainActivity.loadParkingsFromServer();
+            }
+        };
+        Thread loadEverythingFromServer = new Thread(r2);
+        loadEverythingFromServer.start();
+
         return v;
     }
 

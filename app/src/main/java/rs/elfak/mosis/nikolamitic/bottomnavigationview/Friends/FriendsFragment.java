@@ -37,6 +37,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,6 +62,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendListAdapter;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendModel;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
@@ -125,6 +128,9 @@ public class FriendsFragment extends Fragment
             }
         });
 
+        getFriendsFromServer();
+        pauseWaitingForFriendsList = true;
+
         return view;
     }
 
@@ -133,7 +139,6 @@ public class FriendsFragment extends Fragment
         friendsList.clear();
         mFriends.clear();
         mAdapter.clear();
-        pauseWaitingForFriendsList =true;
 
         getFriendData(loggedUser.getUid());
 
@@ -435,6 +440,11 @@ public class FriendsFragment extends Fragment
                                                             Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_FRIEND + " points!",Toast.LENGTH_SHORT).show();
                                                             MyLocationService.myPoints += ADD_POINTS_NEW_FRIEND;
                                                             database.child("points").setValue(MyLocationService.myPoints);
+
+                                                            Marker friendMarker = HomeFragment.mapUserIdMarker.get(friendsUid);
+                                                            HomeFragment.mapUserIdMarker.remove(friendsUid);
+                                                            friendMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, getActivity())));
+                                                            HomeFragment.mapFriendIdMarker.put(friendsUid, friendMarker);
                                                         }
                                                     }
 
