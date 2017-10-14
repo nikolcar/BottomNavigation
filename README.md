@@ -18,9 +18,9 @@ Sa sledećim funkcionalnostima
 - Logovanje na sistem email-adresom i šifrom, mogućnost promene šifre preko mail-a.
 
 <p align="center">  
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" style="width: 20px;"/>
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png" style="width: 200px;"/>
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" style="width: 200px;"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" width="200"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png" width="150"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" width="100"/>
 </p>
 
 - Prikaz trenutne lokacije korisnika na mapi, kao i prikaz parkinga.
