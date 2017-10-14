@@ -17,6 +17,12 @@ Sa sledećim funkcionalnostima
 - Registracija na sistemu unosom osnovnih podataka (ime, prezime, nadimak, datum dođenja, email adrese, šifre).
 - Logovanje na sistem email-adresom i šifrom, mogućnost promene šifre preko mail-a.
 
+<p align="center">  
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png"/>
+</p>
+
 - Prikaz trenutne lokacije korisnika na mapi, kao i prikaz parkinga.
 - Pretraživanje parkinga po imenu, po radijusu u odnosu na korisnika (u metrima) i po tipu (private/public).
 - Klikom na informaciju o parkingu, korisnik može dobiti i direkciju do istog. Tada se u bazi pamti kada je korisnik zatražio direkciju do određenog parkinga.
@@ -30,4 +36,4 @@ Sa sledećim funkcionalnostima
 - Startovanje i stopiranje background servisa, koji šalje notifikaciju, kada je korisnik blizu nekog parkinga ili prijatelja.
 - Logout.
 
-za više informacija pogledajte <a href=">ovde</a>.
+
