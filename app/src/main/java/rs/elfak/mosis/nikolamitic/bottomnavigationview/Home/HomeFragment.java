@@ -3,18 +3,23 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.view.LayoutInflater;
@@ -23,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,13 +41,31 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.TravelMode;
+import com.google.maps.android.PolyUtil;
 
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.DistanceSearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.NameSearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
@@ -54,11 +78,11 @@ import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.
 public class HomeFragment extends Fragment
 {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    FloatingActionButton btnAddNewParking;
 
     public GoogleMap googleMap;
     MapView mMapView;
-    public static HashMap<Parking, Marker> mapMarkersParkings = new HashMap<Parking, Marker>();
+    public static HashMap<Parking, Marker> mapParkingsMarkers = new HashMap<Parking, Marker>();
+    public static HashMap<Marker, Parking> mapMarkersParkings = new HashMap<Marker, Parking>();
     public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
     public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
@@ -66,7 +90,13 @@ public class HomeFragment extends Fragment
     private SearchStrategy searchStrategy = null;
 
     public Dialog dialog;
+    private Polyline direction;
+
+
     private SearchView search;
+    private Spinner sSearchType;
+    private FloatingActionButton btnAddNewParking, btnCancelDirections;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -79,6 +109,10 @@ public class HomeFragment extends Fragment
         final LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
 
         btnAddNewParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
+        btnCancelDirections = (FloatingActionButton) view.findViewById(R.id.btn_cancel_direction_mode);
+        sSearchType = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
+        search = (SearchView) view.findViewById(R.id.searchMap);
+
 
         btnAddNewParking.setOnClickListener(new View.OnClickListener()
         {
@@ -188,6 +222,22 @@ public class HomeFragment extends Fragment
             }
         });
 
+
+        btnCancelDirections.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                direction.remove();
+                for (Parking parking: mapParkingsMarkers.keySet())
+                {
+                    mapParkingsMarkers.get(parking).setVisible(true);
+                }
+
+                changeVisibility(false);
+            }
+        });
+
         mMapView = (MapView) view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
@@ -230,6 +280,43 @@ public class HomeFragment extends Fragment
                 googleMap.setMyLocationEnabled(false);
                 googleMap.getUiSettings().setMapToolbarEnabled(false);
 
+                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(final Marker marker) {
+                        final Parking parking = mapMarkersParkings.get(marker);
+                        if(parking!=null)
+                        {
+                            dialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle("Get direction to " + parking.getName() + " parking?")
+                                    .setMessage("Are you sure you want to get direction to \n\n" + parking.getName() + "\n" + parking.getDescription())
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                                    {
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            for (Parking parking: mapParkingsMarkers.keySet())
+                                            {
+                                                mapParkingsMarkers.get(parking).setVisible(false);
+                                            }
+
+                                            marker.setVisible(true);
+
+                                            changeVisibility(true);
+
+                                            getDirection(latitude, longitude, parking.getLatitude(),parking.getLongitude());
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+                                    {
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            Toast.makeText(getActivity(), "You declined parking direction!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .setIcon(R.mipmap.logo).show();
+                        }
+                    }
+                });
+
                 //LatLng currentLocation = new LatLng(43.318731, 21.891143);
 
                 // For dropping a marker at a point on the Map
@@ -248,7 +335,6 @@ public class HomeFragment extends Fragment
             }
         });
 
-        Spinner spinner = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
 
         ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
 
@@ -276,12 +362,49 @@ public class HomeFragment extends Fragment
         String[] myResArray = getResources().getStringArray(R.array.search_type);
         spinnerAdapter.addAll(myResArray);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(spinnerAdapter.getCount());
-        spinner.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+        sSearchType.setAdapter(spinnerAdapter);
+        sSearchType.setSelection(spinnerAdapter.getCount());
+        sSearchType.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
 
+        sSearchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                if (distanceCircle != null & position!=1)
+                    distanceCircle.remove();
 
-        search = (SearchView) view.findViewById(R.id.searchMap);
+                search.setQuery("",false);
+                switch (position)
+                {
+                    case 0:
+                        setSearchStrategy(new NameSearchStrategy());
+                        setSearch("Enter name");
+                        break;
+                    case 1:
+                        setSearchStrategy(new DistanceSearchStrategy());
+                        setSearch("In meters");
+                        break;
+                    case 2:
+                        setSearchStrategy(new TypeSearchStrategy());
+                        setSearch("Private or Public");
+//                        setSearch("Enter type");
+//                        search.setQuery("Private/Public", false);
+                        break;
+                }
+
+                for (Parking parking: mapParkingsMarkers.keySet())
+                {
+                    mapParkingsMarkers.get(parking).setVisible(true);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+            }
+        });
+
         search.setQueryHint("Select type first");
         EditText searchEditText = (EditText)search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.blue));
@@ -315,9 +438,9 @@ public class HomeFragment extends Fragment
             @Override
             public boolean onClose()
             {
-                for (Parking parking: mapMarkersParkings.keySet())
+                for (Parking parking: mapParkingsMarkers.keySet())
                 {
-                    mapMarkersParkings.get(parking).setVisible(true);
+                    mapParkingsMarkers.get(parking).setVisible(true);
                 }
 
                 if (distanceCircle != null)
@@ -327,46 +450,35 @@ public class HomeFragment extends Fragment
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                if (distanceCircle != null & position!=1)
-                    distanceCircle.remove();
-
-                search.setQuery("",false);
-                switch (position)
-                {
-                    case 0:
-                        setSearchStrategy(new NameSearchStrategy());
-                        setSearch("Enter name");
-                        break;
-                    case 1:
-                        setSearchStrategy(new DistanceSearchStrategy());
-                        setSearch("In meters");
-                        break;
-                    case 2:
-                        setSearchStrategy(new TypeSearchStrategy());
-                        setSearch("Private or Public");
-//                        setSearch("Enter type");
-//                        search.setQuery("Private/Public", false);
-                        break;
-                }
-
-                for (Parking parking: mapMarkersParkings.keySet())
-                {
-                    mapMarkersParkings.get(parking).setVisible(true);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent)
-            {
-            }
-        });
 
         return view;
+    }
+
+    private void changeVisibility(boolean b)
+    {
+//        ImageView clearButton = (ImageView) search.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+//        EditText searchEditText = (EditText) search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+
+        if(b)
+        {
+            btnCancelDirections.setVisibility(View.VISIBLE);
+//            searchEditText.setText("Exit direction mode");
+
+            search.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            btnCancelDirections.setVisibility(View.GONE);
+            search.setVisibility(View.VISIBLE);
+//            searchEditText.setText("Select type first");
+        }
+
+//        clearButton.setEnabled(!b);
+//        searchEditText.setEnabled(!b);
+//        search.setSubmitButtonEnabled(!b);
+
+        sSearchType.setEnabled(!b);
+
     }
 
     private void setSearch(String hint)
@@ -380,7 +492,7 @@ public class HomeFragment extends Fragment
     {
         if (searchStrategy != null)
         {
-            searchStrategy.search(query, mapMarkersParkings);
+            searchStrategy.search(query, mapParkingsMarkers);
         }
         else
         {
@@ -411,6 +523,13 @@ public class HomeFragment extends Fragment
         }
         */
         mMapView.onResume();
+        changeVisibility(false);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
     }
 
     @Override
@@ -522,5 +641,67 @@ public class HomeFragment extends Fragment
                 .strokeColor(Color.rgb(0,0,255))
                 .strokeWidth(5)
                 .fillColor(Color.argb(128,255,255,255)));
+    }
+
+    public void getNavigation(double latitudeCurr, double longitudeCurr, double latitudeDest, double longitudeDest)
+    {
+        final Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?" + "saddr="
+                        + latitudeCurr + "," + longitudeCurr + "&daddr="
+                        + latitudeDest + "," + longitudeDest));
+
+        intent.setClassName("com.google.android.apps.maps",
+                "com.google.android.maps.MapsActivity");
+
+        startActivity(intent);
+    }
+
+    private GeoApiContext getGeoContext()
+    {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext.setQueryRateLimit(3)
+                .setApiKey(getString(R.string.directionsApiKey))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+    public void getDirection(double latOrig, double lonOrig, double latDest, double lonDest)
+    {
+        DateTime now = new DateTime();
+
+        DirectionsResult result = null;
+
+        try
+        {
+            result = DirectionsApi.newRequest(getGeoContext())
+                    .mode(TravelMode.DRIVING)
+                    .origin(new com.google.maps.model.LatLng(latOrig, lonOrig))
+                    .destination(new com.google.maps.model.LatLng(latDest, lonDest))
+                    .departureTime(now).await();
+        }
+        catch (ApiException e)
+        {
+            e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        addPolyline(result, this.googleMap);
+    }
+
+    private void addPolyline(DirectionsResult results, GoogleMap mMap)
+    {
+        if(direction!=null)
+            direction.remove();
+                    
+        List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
+        direction = mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(10).color(Color.BLUE));
     }
 }

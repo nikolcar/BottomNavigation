@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -18,7 +18,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="1">
+                android:weightSum="1"
+                android:id="@+id/search_layout">
 
                 <android.support.v7.widget.SearchView
                     android:layout_width="match_parent"
@@ -39,12 +40,24 @@
 
             </LinearLayout>
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/btn_cancel_direction_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                app:srcCompat="@drawable/ic_clear_white_24dp"
+                android:layout_below="@id/search_layout"
+                android:layout_alignEnd="@id/search_layout"
+                android:visibility="gone"/>
+
+
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_below="@id/search_layout"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_add_new_parking"

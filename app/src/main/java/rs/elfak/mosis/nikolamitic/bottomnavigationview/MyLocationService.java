@@ -24,7 +24,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,8 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapMarkersParkings;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingsMarkers;
+
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
 public class MyLocationService extends Service
@@ -133,9 +137,9 @@ public class MyLocationService extends Service
         Marker minDistanceMarker = null;
         boolean minDistanceSecret = false;
 
-        for (Parking key : mapMarkersParkings.keySet())
+        for (Parking key : mapParkingsMarkers.keySet())
         {
-            Marker marker = mapMarkersParkings.get(key);
+            Marker marker = mapParkingsMarkers.get(key);
             Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
 
             if (distanceFromMarker < NOTIFY_DISTANCE)
@@ -154,6 +158,10 @@ public class MyLocationService extends Service
             int type = 2;
             if(minDistanceSecret)
                 type = 3;
+
+            //MainActivity.homeFragment.getNavigation(myNewLat, myNewLon, minDistanceMarker.getPosition().latitude, minDistanceMarker.getPosition().longitude);
+            //MainActivity.homeFragment.getDirection(myNewLat, myNewLon, minDistanceMarker.getPosition().latitude, minDistanceMarker.getPosition().longitude);
+
 
             showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
         }

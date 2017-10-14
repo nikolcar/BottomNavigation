@@ -8,12 +8,12 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.SearchStrategy;
 public class TypeSearchStrategy implements SearchStrategy
 {
     @Override
-    public void search(String query, HashMap<Parking, Marker> mapMarkersParkings)
+    public void search(String query, HashMap<Parking, Marker> mapParkingsMarkers)
     {
         Marker mMarker = null;
-        for (Parking parking: mapMarkersParkings.keySet())
+        for (Parking parking: mapParkingsMarkers.keySet())
         {
-            mMarker = mapMarkersParkings.get(parking);
+            mMarker = mapParkingsMarkers.get(parking);
             if(parking.isSecret())
             {
                 mMarker.setVisible((new String("private")).startsWith(query.toLowerCase()));

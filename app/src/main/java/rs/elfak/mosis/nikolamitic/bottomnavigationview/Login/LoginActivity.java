@@ -48,8 +48,8 @@ public class LoginActivity extends Activity
         }
 
         //TODO remove default values
-        inputEmail.setText("mitic.nikolca94@gmail.com");
-        inputPassword.setText("nikolcar");
+//        inputEmail.setText("mitic.nikolca94@gmail.com");
+//        inputPassword.setText("nikolcar");
 
         mAuth = FirebaseAuth.getInstance();
     }

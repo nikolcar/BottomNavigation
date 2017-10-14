@@ -32,7 +32,7 @@
     <string name="change_image">CHANGE IMAGE</string>
 
     <string name="work_in_back">Work in background</string>
-    <string name="show_players">Show other players on the map</string>
+    <string name="show_players">Show other users on the map</string>
     <string name="show_friends">Show friends on the map</string>
     <string name="gps_refresh">GPS refresh time</string>
     <string name="about">by nikolcar</string>
@@ -83,5 +83,6 @@
     <string name="discoverable">Make discoverable</string>
     <string name="title_activity_devicelist">Device List</string>
     <string name="title_player_info">Player info</string>
+    <string name="directionsApiKey">AIzaSyAPMXnzeKDxdofUT2VRA_CaraGBodv6RCI</string>
 
 </resources>

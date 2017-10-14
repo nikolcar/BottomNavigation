@@ -249,8 +249,7 @@ public class MainActivity extends Activity
         super.onStart();
         Log.d(TAG, "onStart");
         mAuth.addAuthStateListener(authListener);
-        friendsFragment.getFriendsFromServer();
-        friendsFragment.pauseWaitingForFriendsList=true;
+        setParametars();
     }
 
     @Override
@@ -303,7 +302,6 @@ public class MainActivity extends Activity
     {
         super.onResume();
         Log.d(TAG, "onResume");
-        setParametars();
     }
 
     public void setParametars()
@@ -315,6 +313,8 @@ public class MainActivity extends Activity
                 homeFragment.googleMap.clear();
             }
 
+            friendsFragment.getFriendsFromServer();
+            friendsFragment.pauseWaitingForFriendsList=true;
 
             Runnable r2 = new Runnable()
             {
@@ -380,7 +380,8 @@ public class MainActivity extends Activity
                 Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(), parking.getName(), parking.getDescription(), null, "", false, false, dataSnapshot.getKey(), parking.isSecret());
 
                 //Add to searchable HashMap
-                homeFragment.mapMarkersParkings.put(parking, marker);
+                homeFragment.mapParkingsMarkers.put(parking, marker);
+                homeFragment.mapMarkersParkings.put(marker, parking);
             }
 
             @Override

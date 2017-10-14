@@ -275,66 +275,6 @@ public class FriendsFragment extends Fragment
         });
     }
 
-//    private void addFriend(final String friendsUid)
-//    {
-//        new AlertDialog.Builder(getActivity())
-//                .setTitle("Confirm friend request")
-//                .setMessage("Are you sure you want to become friends with a device\n + connectedDeviceName + \nUserID( + friendsUid + )")
-//                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-//                {
-//                    public void onClick(DialogInterface dialog, int which)
-//                    {
-//                        final String myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                        final DatabaseReference dbRef = database.getReference("users").child(myUid).child("friends");
-//                        dbRef.addListenerForSingleValueEvent(new ValueEventListener()
-//                        {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot)
-//                            {
-//                                List<String> friendsList = new ArrayList<>();
-//
-//                                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren())
-//                                {
-//                                    String json = singleSnapshot.toString();
-//                                    //TODO: deserialize via class, not like this
-//                                    String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
-//                                    friendsList.add(friendUid);
-//                                }
-//
-//                                if (friendsList.contains(friendsUid))
-//                                {
-//                                    Toast.makeText(getActivity(), "You already have this friend!", Toast.LENGTH_SHORT).show();
-//                                }
-//                                else
-//                                {
-//                                    friendsList.add(friendsUid); //adding new friendship
-//                                    database.getReference("users").child(myUid).child("friends").setValue(friendsList);
-//
-//                                    Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_FRIEND + " points!",Toast.LENGTH_SHORT).show();
-//                                    MyLocationService.myPoints += ADD_POINTS_NEW_FRIEND;
-//                                    FirebaseDatabase.getInstance().getReference("users").child(myUid).child("points").setValue(MyLocationService.myPoints);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError)
-//                            {
-//                                //Log.e(TAG, "onCancelled", databaseError.toException());
-//                            }
-//
-//                        });
-//                    }
-//                })
-//                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
-//                {
-//                    public void onClick(DialogInterface dialog, int which)
-//                    {
-//                        Toast.makeText(getActivity(), "You declined friend request", Toast.LENGTH_SHORT).show();
-//                    }
-//                }).setIcon(android.R.drawable.ic_dialog_alert).show();
-//    }
-
     private int findModelById(String uId)
     {
         int i = 0;
@@ -454,7 +394,7 @@ public class FriendsFragment extends Fragment
                             public void run() {
                                 new AlertDialog.Builder(getActivity())
                                         .setTitle("Confirm friend request")
-                                        .setMessage("Are you sure you want to become friends with a device\n" + connectedDeviceName + "\nUserID " + friendsUid)
+                                        .setMessage("Are you sure you want to become friends with a device\n\n" + connectedDeviceName)
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                                         {
                                             public void onClick(DialogInterface dialog, int which)
