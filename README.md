@@ -18,7 +18,7 @@ Sa sledećim funkcionalnostima
 - Logovanje na sistem email-adresom i šifrom, mogućnost promene šifre preko mail-a.
 
 <p align="center">  
-  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" style="width: 200px;"/>
+  <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/registration.png" style="width: 20px;"/>
   <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/login.png" style="width: 200px;"/>
   <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" style="width: 200px;"/>
 </p>
