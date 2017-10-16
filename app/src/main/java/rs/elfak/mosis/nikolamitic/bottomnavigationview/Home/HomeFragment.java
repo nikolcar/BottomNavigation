@@ -12,15 +12,12 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.view.LayoutInflater;
@@ -29,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,11 +42,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
@@ -61,7 +54,6 @@ import com.google.maps.android.PolyUtil;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -521,7 +513,8 @@ public class HomeFragment extends Fragment
         }
         else
         {
-            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 

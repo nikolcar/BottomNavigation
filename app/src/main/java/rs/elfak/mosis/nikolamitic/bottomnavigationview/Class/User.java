@@ -17,9 +17,8 @@ public class User
 
     private Double longitude;
     private Double latitude;
-
-    //private LatLng location;
     private Integer points;
+
     private ArrayList<String> friends;
     //private ArrayList<String> myPrivate;
     //private ArrayList<String> myFriendsPrivate;

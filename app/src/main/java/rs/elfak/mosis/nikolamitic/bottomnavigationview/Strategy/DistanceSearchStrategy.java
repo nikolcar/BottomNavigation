@@ -27,7 +27,8 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         catch (Exception e)
         {
-            Toast.makeText(homeFragment.getActivity(),"Please enter the float number!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(homeFragment.getActivity(),"Please enter the float number!",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -38,7 +39,8 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         else
         {
-            Toast.makeText(homeFragment.getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(homeFragment.getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 
@@ -47,7 +49,8 @@ public class DistanceSearchStrategy implements SearchStrategy
         for (Parking parking : mapParkingsMarkers.keySet())
         {
             mMarker = mapParkingsMarkers.get(parking);
-            float distance = distanceBetween((float) mLatitude, (float) mLongitude, (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
+            float distance = distanceBetween((float) mLatitude, (float) mLongitude,
+                    (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
             mMarker.setVisible(distance <= q_distance);
         }
     }

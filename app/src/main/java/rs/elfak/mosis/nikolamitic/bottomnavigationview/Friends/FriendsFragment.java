@@ -16,17 +16,10 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -60,10 +53,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Bluetooth.ChatService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Bluetooth.DeviceListActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendListAdapter;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendModel;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 
@@ -199,7 +189,8 @@ public class FriendsFragment extends Fragment
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
 
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " +
+                                    friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
                             updatePoints(friendUid);
                             mAdapter.notifyDataSetChanged();
@@ -211,7 +202,8 @@ public class FriendsFragment extends Fragment
                         {
                             //user exists, but doesn't have profile photo
                             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " + friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
+                            mFriends.add(new FriendModel(friend.getFirstName() + " " +
+                                    friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
                             bitmap = null;
                             updatePoints(friendUid);
                             mAdapter.notifyDataSetChanged();

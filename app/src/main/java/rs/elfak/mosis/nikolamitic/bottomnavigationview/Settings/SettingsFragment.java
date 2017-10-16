@@ -52,6 +52,8 @@ import java.net.URL;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
@@ -340,10 +342,10 @@ public class SettingsFragment extends Fragment
             {
                 //TODO
                 MainActivity mainActivity = (MainActivity) getActivity();
-                mainActivity.homeFragment.mapUserIdMarker.clear();
-                mainActivity.homeFragment.mapFriendIdMarker.clear();
+                HomeFragment.mapUserIdMarker.clear();
+                HomeFragment.mapFriendIdMarker.clear();
 
-                while(mainActivity.friendsFragment.pauseWaitingForFriendsList)
+                while(FriendsFragment.pauseWaitingForFriendsList)
                 {
                     synchronized (this)
                     {
@@ -359,7 +361,7 @@ public class SettingsFragment extends Fragment
                     }
                 }
 
-                while(mainActivity.homeFragment.googleMap==null)
+                while(MainActivity.homeFragment.googleMap==null)
                 {
                     synchronized (this)
                     {

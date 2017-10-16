@@ -4,27 +4,18 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,26 +23,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
@@ -60,11 +39,6 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends.FriendsFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Login.LoginActivity;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
-
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.*;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.NOTIFY_DISTANCE;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
 
 public class MainActivity extends Activity
 {
@@ -320,10 +294,10 @@ public class MainActivity extends Activity
                 public void run()
                 {
                     //TODO
-                    homeFragment.mapUserIdMarker.clear();
-                    homeFragment.mapFriendIdMarker.clear();
+                    HomeFragment.mapUserIdMarker.clear();
+                    HomeFragment.mapFriendIdMarker.clear();
 
-                    while(friendsFragment.pauseWaitingForFriendsList)
+                    while(FriendsFragment.pauseWaitingForFriendsList)
                     {
                         synchronized (this)
                         {
@@ -366,46 +340,38 @@ public class MainActivity extends Activity
 
     public void loadParkingsFromServer()
     {
-        //https://firebase.google.com/docs/database/android/lists-of-data
         ChildEventListener childEventListener = new ChildEventListener()
-        {
-            @Override
+        {   @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
             {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 final Parking parking = dataSnapshot.getValue(Parking.class);
                 Log.d(TAG, "onChildAdded:" + parking.getName());
-                Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(), parking.getName(), parking.getDescription(), null, "", false, false, dataSnapshot.getKey(), parking.isSecret());
+                Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(),
+                        parking.getName(), parking.getDescription(), null, "", false, false,
+                        dataSnapshot.getKey(), parking.isSecret());
 
                 //Add to searchable HashMap
-                homeFragment.mapParkingsMarkers.put(parking, marker);
-                homeFragment.mapMarkersParkings.put(marker, parking);
+                HomeFragment.mapParkingsMarkers.put(parking, marker);
+                HomeFragment.mapMarkersParkings.put(marker, parking);
             }
-
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
-            {
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
                 //We don't have a ability to change a parking
             }
-
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot)
-            {
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
                 //We don't have a ability to change a parking
             }
-
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
-            {
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
                 //We don't have a ability to move a parking in DB.
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+            public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
             }
         };
@@ -447,17 +413,17 @@ public class MainActivity extends Activity
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
                 marker = homeFragment.googleMap.addMarker(mo);
-                homeFragment.mapUserIdMarker.put(uId, marker);
+                HomeFragment.mapUserIdMarker.put(uId, marker);
             }
             else
             {
-                if(friendsFragment.friendsList.contains(uId))
+                if(FriendsFragment.friendsList.contains(uId))
                 {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this)));
                     mo.visible(friends_status);
 
                     marker = homeFragment.googleMap.addMarker(mo);
-                    homeFragment.mapFriendIdMarker.put(uId, marker);
+                    HomeFragment.mapFriendIdMarker.put(uId, marker);
                 }
                 else
                 {
@@ -466,7 +432,7 @@ public class MainActivity extends Activity
 
 
                     marker = homeFragment.googleMap.addMarker(mo);
-                    homeFragment.mapUserIdMarker.put(uId, marker);
+                    HomeFragment.mapUserIdMarker.put(uId, marker);
 
                 }
             }
@@ -488,17 +454,17 @@ public class MainActivity extends Activity
     {
         if (playersOptionChanged)
         {
-            for (Marker mMarker : homeFragment.mapUserIdMarker.values())
+            for (Marker mMarker : HomeFragment.mapUserIdMarker.values())
             {
                 mMarker.setVisible(!mMarker.isVisible());
             }
 
-            homeFragment.mapUserIdMarker.get(loggedUser.getUid()).setVisible(true);
+            HomeFragment.mapUserIdMarker.get(loggedUser.getUid()).setVisible(true);
         }
 
         if(friendsOptionChanged)
         {
-            for (Marker mMarker : homeFragment.mapFriendIdMarker.values())
+            for (Marker mMarker : HomeFragment.mapFriendIdMarker.values())
             {
                 mMarker.setVisible(!mMarker.isVisible());
             }
@@ -508,56 +474,47 @@ public class MainActivity extends Activity
     public void loadUsersFromServer(final Boolean players_status, final Boolean friends_status)
     {
         ChildEventListener childEventListener = new ChildEventListener()
-        {
-            @Override
+        {   @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName)
             {
                     final User user = dataSnapshot.getValue(User.class);
                     String uid = dataSnapshot.getKey();
-                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(), user.getNickname(), "", null, uid, friends_status, players_status, "", false);
+                    Marker marker = addMarkers(user.getLatitude(), user.getLongitude(),
+                            user.getNickname(), "", null, uid, friends_status, players_status, "", false);
             }
-
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
             {
-                Log.d("Main Activity","change friend loc");
                 User user = dataSnapshot.getValue(User.class);
                 String uid = dataSnapshot.getKey();
 
                 Marker mMarker;
-                mMarker = homeFragment.mapUserIdMarker.get(uid);
+                mMarker = HomeFragment.mapUserIdMarker.get(uid);
 
                 if(mMarker==null)
                 {
-                    mMarker = homeFragment.mapFriendIdMarker.get(uid);
+                    mMarker = HomeFragment.mapFriendIdMarker.get(uid);
                 }
 
                 mMarker.setPosition(new LatLng(user.getLatitude(), user.getLongitude()));
-
 //                if(uid == loggedUser.getUid())
 //                {
 //                    CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(user.getLatitude(), user.getLongitude())).build();
-//                    homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+//                    HomeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 //                }
 
 //                myLocationService.showFriendsInRadius(mMarker);
             }
-
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot)
-            {
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
             }
-
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName)
-            {
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+            public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "postComments:onCancelled", databaseError.toException());
             }
         };

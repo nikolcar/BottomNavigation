@@ -7,8 +7,6 @@ import java.util.Date;
 public class Parking
 {
     private String name;
-    //private LatLng location;
-
     private Double longitude;
     private Double latitude;
 
