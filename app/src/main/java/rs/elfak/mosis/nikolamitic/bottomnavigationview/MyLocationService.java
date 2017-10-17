@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
 
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingsMarkers;
@@ -101,6 +102,7 @@ public class MyLocationService extends Service
             //v.vibrate(1000);
             //Toast.makeText(MyLocationService.this, "Your location: " + myNewLat + " " + myNewLon + " ", Toast.LENGTH_LONG).show();
 
+            deleteAllNotifications(getApplicationContext());
             showFriendsInRadius();
             showParkingInRadius();
         }
@@ -226,8 +228,6 @@ public class MyLocationService extends Service
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
 
-        //TODO
-        int settingsGpsRefreshTime = 1;//MainActivity.settingsFragment.gpsRefresh;
         loggedUserUid = MainActivity.loggedUser.getUid();
 
         database.getReference("users").child(loggedUserUid).child("points").addListenerForSingleValueEvent(new ValueEventListener()
@@ -260,7 +260,7 @@ public class MyLocationService extends Service
         {
             mLocationManager.requestLocationUpdates(
                     LocationManager.PASSIVE_PROVIDER,
-                    LOCATION_INTERVAL,
+                    LOCATION_INTERVAL/*SettingsFragment.gpsRefresh*/,
                     LOCATION_DISTANCE,
                     mLocationListeners[0]
             );
@@ -408,5 +408,13 @@ public class MyLocationService extends Service
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void deleteAllNotifications(Context ctx)
+    {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        for(int i =1; i<4; i++)
+            nMgr.cancel(i);
     }
 }

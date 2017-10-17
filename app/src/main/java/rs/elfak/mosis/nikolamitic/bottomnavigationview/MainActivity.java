@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -237,15 +238,28 @@ public class MainActivity extends Activity
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        if(!isMyServiceRunning(MyLocationService.class))
+        {
+            startService(backgroundService);
+            Toast.makeText(this,"Starting background service",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     protected void onPause()
     {
         super.onPause();
         Log.d(TAG, "onPause");
-//        if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
-//        {
-//            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
-//            stopService(backgroundService);
-//        }
+
+        if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
+        {
+            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
+            stopService(backgroundService);
+        }
     }
 
     public boolean isMyServiceRunning(Class<?> serviceClass)
@@ -270,73 +284,6 @@ public class MainActivity extends Activity
             stopService(backgroundService);
     }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.d(TAG, "onResume");
-//        setParametars();
-    }
-
-    public void setParametars()
-    {
-        if(loggedUser!=null)
-        {
-            if(homeFragment.googleMap!=null)
-            {
-                homeFragment.googleMap.clear();
-            }
-
-
-            Runnable r2 = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    //TODO
-                    HomeFragment.mapUserIdMarker.clear();
-                    HomeFragment.mapFriendIdMarker.clear();
-
-                    while(FriendsFragment.pauseWaitingForFriendsList)
-                    {
-                        synchronized (this)
-                        {
-                            try
-                            {
-                                wait(100);
-                                //Log.d(TAG,"Waiting 100ms");
-                            }
-                            catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    while(homeFragment.googleMap==null)
-                    {
-                        synchronized (this)
-                        {
-                            try
-                            {
-                                wait(100);
-                                //Log.d(TAG,"Waiting 100ms");
-                            }
-                            catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    settingsFragment.getSettingsFromServer();   //loadUsersFromServer() must be inside this function
-                    loadParkingsFromServer();
-                }
-            };
-            Thread loadEverythingFromServer = new Thread(r2);
-            loadEverythingFromServer.start();
-        }
-    }
 
     public void loadParkingsFromServer()
     {

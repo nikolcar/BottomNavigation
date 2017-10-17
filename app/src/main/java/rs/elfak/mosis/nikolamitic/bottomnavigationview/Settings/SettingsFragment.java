@@ -70,7 +70,7 @@ public class SettingsFragment extends Fragment
 
     private Spinner gpsSpinner;
 
-    public Integer gpsRefresh;
+    public static Integer gpsRefresh = 10;
     public Uri savedURI;
 
     private TextView tvName, tvPoints;
@@ -156,7 +156,9 @@ public class SettingsFragment extends Fragment
                 boolean friends = friends_check.isChecked();
                 boolean players = players_check.isChecked();
 
-                database.getReference("users").child(loggedUser.getUid()).child("workback").setValue(work_check.isChecked());
+                workback_status = work_check.isChecked();
+
+                database.getReference("users").child(loggedUser.getUid()).child("workback").setValue(workback_status);
                 database.getReference("users").child(loggedUser.getUid()).child("showplayers").setValue(players);
                 database.getReference("users").child(loggedUser.getUid()).child("showfriends").setValue(friends);
                 database.getReference("users").child(loggedUser.getUid()).child("gpsrefresh").setValue(gpsRefresh);
@@ -166,26 +168,10 @@ public class SettingsFragment extends Fragment
                 Toast.makeText(getActivity(), "Settings saved", Toast.LENGTH_SHORT).show();
 
                 MainActivity activity = (MainActivity)getActivity();
-
                 activity.changeVisibility(players_status != players, friends_status != friends);
 
                 players_status = players;
                 friends_status = friends;
-
-                activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
-                activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
-
-                if(work_check.isChecked() & !activity.isMyServiceRunning(MyLocationService.class))
-                {
-                    activity.startService(activity.backgroundService);
-                    Toast.makeText(getActivity(),"Starting background service",Toast.LENGTH_SHORT).show();
-                }
-
-                if (!work_check.isChecked() & activity.isMyServiceRunning(MyLocationService.class))
-                {
-                    activity.stopService(activity.backgroundService);
-                    Toast.makeText(getActivity(),"Stopping background service",Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
@@ -403,21 +389,6 @@ public class SettingsFragment extends Fragment
 
                 MainActivity activity = (MainActivity)getActivity();
                 activity.loadUsersFromServer(players_status, friends_status);
-
-                activity.backgroundService.putExtra("settingsGpsRefreshTime", gpsRefresh);
-                activity.backgroundService.putExtra("loggedUserUid", loggedUser.getUid());
-
-                if(workback_status & !activity.isMyServiceRunning(MyLocationService.class))
-                {
-                    activity.startService(activity.backgroundService);
-                    Toast.makeText(getActivity(),"Starting background service",Toast.LENGTH_SHORT).show();
-                }
-
-                if (!workback_status & activity.isMyServiceRunning(MyLocationService.class))
-                {
-                    activity.stopService(activity.backgroundService);
-                    Toast.makeText(getActivity(),"Stopping background service",Toast.LENGTH_SHORT).show();
-                }
 
                 friends_check.setChecked(friends_status);
                 players_check.setChecked(players_status);
