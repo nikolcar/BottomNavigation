@@ -55,9 +55,7 @@ public class MainActivity extends Activity
     private FirebaseAuth mAuth;
     static public FirebaseUser loggedUser;
     private DatabaseReference parkings, users;
-    private StorageReference storage;
 
-    private MyLocationService myLocationService;
     public Intent backgroundService;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -69,16 +67,12 @@ public class MainActivity extends Activity
             switch (item.getItemId())
             {
                 case R.id.navigation_home:
-                    Log.d(TAG, "navigation_home");
-                    //OnResume();
                     newClicked = 1;
                     break;
                 case R.id.navigation_friends:
-                    Log.d(TAG, "navigation_friends");
                     newClicked = 2;
                     break;
                 case R.id.navigation_settings:
-                    Log.d(TAG, "navigation_settings");
                     newClicked = 3;
                     break;
             }
@@ -93,7 +87,6 @@ public class MainActivity extends Activity
 
             return false;
         }
-
     };
 
     void addFragments()
@@ -108,17 +101,7 @@ public class MainActivity extends Activity
         ft.add(R.id.fragmentContainer, friendsFragment);
         ft.hide(friendsFragment);
 
-
-        Bundle fragment = new Bundle();
-        Bundle extras = getIntent().getExtras();
-        String display_name = loggedUser.getDisplayName();
-        if (extras != null)
-            display_name= getIntent().getStringExtra("DISPLAY_NAME");
-
-        fragment.putString("display_name", display_name);
         settingsFragment = new SettingsFragment();
-        settingsFragment.setArguments(fragment);
-
         ft.add(R.id.fragmentContainer, settingsFragment);
         ft.hide(settingsFragment);
 
@@ -150,20 +133,6 @@ public class MainActivity extends Activity
         ft.commit();
     }
 
-    public void disableDoubleSelect(int i)
-    {
-        Menu menu = null;
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.navigation, menu);
-
-        menu.getItem(1).setCheckable(true);
-        menu.getItem(2).setCheckable(true);
-        menu.getItem(3).setCheckable(true);
-
-        menu.getItem(i).setCheckable(false);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -182,8 +151,6 @@ public class MainActivity extends Activity
                 loggedUser = firebaseAuth.getCurrentUser();
                 if (loggedUser == null)
                 {
-                    // user auth state is changed - user is null
-                    // launch login activity
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 }
@@ -222,7 +189,6 @@ public class MainActivity extends Activity
     public void onStart()
     {
         super.onStart();
-        Log.d(TAG, "onStart");
         mAuth.addAuthStateListener(authListener);
     }
 
@@ -230,7 +196,6 @@ public class MainActivity extends Activity
     public void onStop()
     {
         super.onStop();
-        Log.d(TAG, "onStop");
         if (authListener != null)
         {
             mAuth.removeAuthStateListener(authListener);
@@ -241,11 +206,10 @@ public class MainActivity extends Activity
     protected void onResume()
     {
         super.onResume();
-        Log.d(TAG, "onResume");
         if(!isMyServiceRunning(MyLocationService.class))
         {
             startService(backgroundService);
-            Toast.makeText(this,"Starting background service",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"Starting background service",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -253,12 +217,10 @@ public class MainActivity extends Activity
     protected void onPause()
     {
         super.onPause();
-        Log.d(TAG, "onPause");
-
         if(!settingsFragment.workback_status && isMyServiceRunning(MyLocationService.class))
         {
-            Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
             stopService(backgroundService);
+            //Toast.makeText(this,"Stopping background service",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -279,7 +241,6 @@ public class MainActivity extends Activity
     protected void onDestroy()
     {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
         if (backgroundService != null)
             stopService(backgroundService);
     }
@@ -295,12 +256,15 @@ public class MainActivity extends Activity
                 final Parking parking = dataSnapshot.getValue(Parking.class);
                 Log.d(TAG, "onChildAdded:" + parking.getName());
                 Marker marker = addMarkers(parking.getLatitude(), parking.getLongitude(),
-                        parking.getName(), parking.getDescription(), null, "", false, false,
-                        dataSnapshot.getKey(), parking.isSecret());
+                        parking.getName(), parking.getDescription(), "", false, false,
+                        parking.isSecret(), parking.getAdderId());
 
-                //Add to searchable HashMap
-                HomeFragment.mapParkingsMarkers.put(parking, marker);
-                HomeFragment.mapMarkersParkings.put(marker, parking);
+                if(marker != null)
+                {
+                    //Add to searchable HashMap
+                    HomeFragment.mapParkingsMarkers.put(parking, marker);
+                    HomeFragment.mapMarkersParkings.put(marker, parking);
+                }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
@@ -325,7 +289,7 @@ public class MainActivity extends Activity
         parkings.addChildEventListener(childEventListener);
     }
 
-    private Marker addMarkers(double lat, double lng, String title, String snippet, Bitmap icon, String uId, boolean friends_status, boolean player_status, String parkingId, boolean secret)
+    private Marker addMarkers(double lat, double lng, String title, String snippet, String uId, boolean friends_status, boolean player_status, boolean secret, String adderId)
     {
         Log.d(TAG,"addMarkers uid:" + uId);
         Marker marker = null;
@@ -334,22 +298,27 @@ public class MainActivity extends Activity
         MarkerOptions mo = new MarkerOptions();
         mo.position(new LatLng(lat, lng));
         mo.title(title);
+
         if(snippet!=null && !snippet.equals(""))
         {
             mo.snippet(snippet);
         }
+
         if(uId==null || uId.equals(""))
         {
             if(secret)
             {
-                mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this)));
+                if(adderId.equals(loggedUser.getUid()) || FriendsFragment.friendsList.contains(adderId))
+                {
+                    mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this)));
+                    marker = homeFragment.googleMap.addMarker(mo);
+                }
             }
             else
             {
                 mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.occupied, MainActivity.this)));
+                marker = homeFragment.googleMap.addMarker(mo);
             }
-
-            marker = homeFragment.googleMap.addMarker(mo);
         }
         else
         {
@@ -388,15 +357,6 @@ public class MainActivity extends Activity
         return marker;
     }
 
-    public static Bitmap bitmapSizeByScall(Bitmap bitmapIn, float scall_zero_to_one_f)
-    {
-        Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
-                Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),
-                Math.round(bitmapIn.getHeight() * scall_zero_to_one_f), false);
-
-        return bitmapOut;
-    }
-
     public void changeVisibility(boolean playersOptionChanged, boolean friendsOptionChanged)
     {
         if (playersOptionChanged)
@@ -427,7 +387,7 @@ public class MainActivity extends Activity
                     final User user = dataSnapshot.getValue(User.class);
                     String uid = dataSnapshot.getKey();
                     Marker marker = addMarkers(user.getLatitude(), user.getLongitude(),
-                            user.getNickname(), "", null, uid, friends_status, players_status, "", false);
+                            user.getFirstName()+" "+user.getLastName(), user.getNickname(), uid, friends_status, players_status, false, "");
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
