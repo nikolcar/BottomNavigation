@@ -5,15 +5,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import java.util.HashMap;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity.homeFragment;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.distanceBetween;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
 
 public class DistanceSearchStrategy implements SearchStrategy
 {
+    MainActivity mainActivity;
     @Override
     public void search(String query, HashMap<Parking, Marker> mapParkingsMarkers)
     {
@@ -27,7 +27,7 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         catch (Exception e)
         {
-            Toast.makeText(homeFragment.getActivity(),"Please enter the float number!",
+            Toast.makeText(mainActivity,"Please enter the float number!",
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -39,12 +39,12 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         else
         {
-            Toast.makeText(homeFragment.getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT)
+            Toast.makeText(mainActivity,"Please turn on GPS!",Toast.LENGTH_SHORT)
                     .show();
             return;
         }
 
-        homeFragment.setCircle(new LatLng(mLatitude, mLongitude), q_distance);
+        mainActivity.getHomeFragment().setCircle(new LatLng(mLatitude, mLongitude), q_distance);
 
         for (Parking parking : mapParkingsMarkers.keySet())
         {
@@ -53,5 +53,10 @@ public class DistanceSearchStrategy implements SearchStrategy
                     (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
             mMarker.setVisible(distance <= q_distance);
         }
+    }
+
+    public DistanceSearchStrategy(MainActivity mainActivity)
+    {
+        this.mainActivity = mainActivity;
     }
 }

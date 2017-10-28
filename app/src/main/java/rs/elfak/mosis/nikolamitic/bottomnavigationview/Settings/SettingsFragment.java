@@ -98,7 +98,6 @@ public class SettingsFragment extends Fragment
 
         if(loggedUser!=null)
         {
-            tvName.setText(getArguments().getString("display_name"));
             updateInfo();
         }
 
@@ -347,7 +346,7 @@ public class SettingsFragment extends Fragment
                     }
                 }
 
-                while(MainActivity.homeFragment.googleMap==null)
+                while(mainActivity.getHomeFragment().googleMap==null)
                 {
                     synchronized (this)
                     {

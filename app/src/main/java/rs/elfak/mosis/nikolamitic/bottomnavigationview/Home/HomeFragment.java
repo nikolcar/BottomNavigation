@@ -399,7 +399,7 @@ public class HomeFragment extends Fragment
                         setSearch("Enter name");
                         break;
                     case 1:
-                        setSearchStrategy(new DistanceSearchStrategy());
+                        setSearchStrategy(new DistanceSearchStrategy((MainActivity) getActivity()));
                         setSearch("In meters");
                         break;
                     case 2:
