@@ -30,7 +30,6 @@ public class Parking
 
         this.adderId = uid;
         this.secret = secret;
-
     }
 
     public String getName()

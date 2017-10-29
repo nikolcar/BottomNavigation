@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment
     private static final int ADD_POINTS_NEW_PARKING = 5;
 
     public GoogleMap googleMap;
-    MapView mMapView;
+    private MapView mMapView;
     public static HashMap<Parking, Marker> mapParkingsMarkers = new HashMap<Parking, Marker>();
     public static HashMap<Marker, Parking> mapMarkersParkings = new HashMap<Marker, Parking>();
     public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
@@ -86,14 +86,12 @@ public class HomeFragment extends Fragment
     private Circle distanceCircle;
     private SearchStrategy searchStrategy = null;
 
-    public Dialog dialog;
+    private Dialog dialog;
     private Polyline direction;
-
 
     private SearchView search;
     private Spinner sSearchType;
     private FloatingActionButton btnAddNewParking, btnCancelDirections;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -109,7 +107,6 @@ public class HomeFragment extends Fragment
         btnCancelDirections = (FloatingActionButton) view.findViewById(R.id.btn_cancel_direction_mode);
         sSearchType = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
         search = (SearchView) view.findViewById(R.id.searchMap);
-
 
         btnAddNewParking.setOnClickListener(new View.OnClickListener()
         {
@@ -150,7 +147,7 @@ public class HomeFragment extends Fragment
                         }
                         catch (Throwable t)
                         {
-                            Toast.makeText(getActivity(),"Turn on GPS first!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Turn on GPS first and be patient.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -170,8 +167,6 @@ public class HomeFragment extends Fragment
                             return;
                         }
 
-                        //Date date = Calendar.getInstance().getTime();
-
                         String uid = MainActivity.loggedUser.getUid();
                         DatabaseReference parkings = FirebaseDatabase.getInstance().getReference("parkings");
                         DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(uid);
@@ -180,12 +175,6 @@ public class HomeFragment extends Fragment
                         String key = parkings.push().getKey();
                         newParking.setPid(key);
                         parkings.child(key).setValue(newParking);
-
-                        //TODO private
-//                        if(secret)
-//                        {
-//                            database.child("myPrivate").push().setValue(key);
-//                        }
 
                         Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_PARKING + " points!",Toast.LENGTH_SHORT).show();
                         MyLocationService.myPoints += ADD_POINTS_NEW_PARKING;
@@ -213,7 +202,7 @@ public class HomeFragment extends Fragment
                 }
                 else
                 {
-                    Toast.makeText(getActivity(),"Please turn on GPS!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Please turn on GPS and be patient",Toast.LENGTH_SHORT).show();
                     etLatitude.setText("unknown");
                     etLongitude.setText("unknown");
                 }
@@ -276,8 +265,6 @@ public class HomeFragment extends Fragment
                     // to handle the case where the user grants the permission. See the documentation
                     // for ActivityCompat#requestPermissions for more details.
 
-
-                    //checkLocationPermission();
                     return;
                 }
                 googleMap.setMyLocationEnabled(false);
@@ -318,8 +305,6 @@ public class HomeFragment extends Fragment
                                             Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parking.getPid(), now.toString());
                                             String key = statistic.push().getKey();
                                             statistic.child(key).setValue(stat);
-
-//                                            getNavigation(latitude, longitude, parking.getLatitude(),parking.getLongitude());
                                         }
                                     })
                                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
@@ -333,28 +318,12 @@ public class HomeFragment extends Fragment
                         }
                     }
                 });
-
-                //LatLng currentLocation = new LatLng(43.318731, 21.891143);
-
-                // For dropping a marker at a point on the Map
-                //MarkerOptions markerOptions = new MarkerOptions();
-                //markerOptions.position(currentLocation);
-
-                //Bitmap markImage = BitmapFactory.decodeResource(getResources(), R.mipmap.me);
-                //markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScall(markImage,0.1f)));
-                //markerOptions.title("You");
-
-                //googleMap.addMarker(markerOptions);
-
-                // For zooming automatically to the location of the marker
-                //CameraPosition mCameraPosition = new CameraPosition.Builder().target(currentLocation).zoom(15).build();
-                //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             }
         });
 
 
-        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
-
+        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item)
+        {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
@@ -405,8 +374,6 @@ public class HomeFragment extends Fragment
                     case 2:
                         setSearchStrategy(new TypeSearchStrategy());
                         setSearch("Private or Public");
-//                        setSearch("Enter type");
-//                        search.setQuery("Private/Public", false);
                         break;
                 }
 
@@ -467,35 +434,23 @@ public class HomeFragment extends Fragment
             }
         });
 
-
         return view;
     }
 
     private void changeVisibility(boolean b)
     {
-//        ImageView clearButton = (ImageView) search.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
-//        EditText searchEditText = (EditText) search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-
         if(b)
         {
             btnCancelDirections.setVisibility(View.VISIBLE);
-//            searchEditText.setText("Exit direction mode");
-
             search.setVisibility(View.INVISIBLE);
         }
         else
         {
             btnCancelDirections.setVisibility(View.GONE);
             search.setVisibility(View.VISIBLE);
-//            searchEditText.setText("Select type first");
         }
 
-//        clearButton.setEnabled(!b);
-//        searchEditText.setEnabled(!b);
-//        search.setSubmitButtonEnabled(!b);
-
         sSearchType.setEnabled(!b);
-
     }
 
     private void setSearch(String hint)
@@ -513,8 +468,7 @@ public class HomeFragment extends Fragment
         }
         else
         {
-            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -528,18 +482,16 @@ public class HomeFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        /*
-        if (checkLocationPermission()) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission. ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-
-            //Request location updates:
-            //locationManager.requestLocationUpdates(provider, 400, 1, this);
-
-            }
-        }
-        */
+//        if (checkLocationPermission()) {
+//            if (ContextCompat.checkSelfPermission(getActivity(),
+//                Manifest.permission. ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//
+//            //Request location updates:
+//            //locationManager.requestLocationUpdates(provider, 400, 1, this);
+//
+//            }
+//        }
         mMapView.onResume();
     }
 
@@ -570,77 +522,76 @@ public class HomeFragment extends Fragment
         mMapView.onLowMemory();
     }
 
-    public boolean checkLocationPermission()
-    {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION))
-            {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.title_location_permission)
-                        .setMessage(R.string.text_location_permission)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(getActivity(),
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION);
-                            }
-                        }).create().show();
-            }
-            else
-            {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
-    {
-        switch (requestCode)
-        {
-            case MY_PERMISSIONS_REQUEST_LOCATION:
-            {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission. ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED)
-                    {
-                        //Request location updates:
-                        //locationManager.requestLocationUpdates(provider, 400, 1, this);
-                    }
-                }
-                else
-                {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-        }
-    }
-
+//    public boolean checkLocationPermission()
+//    {
+//        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+//        {
+//            // Should we show an explanation?
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission. ACCESS_FINE_LOCATION))
+//            {
+//
+//                // Show an explanation to the user *asynchronously* -- don't block
+//                // this thread waiting for the user's response! After the user
+//                // sees the explanation, try again to request the permission.
+//                new AlertDialog.Builder(getActivity())
+//                        .setTitle(R.string.title_location_permission)
+//                        .setMessage(R.string.text_location_permission)
+//                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i)
+//                            {
+//                                //Prompt the user once explanation has been shown
+//                                ActivityCompat.requestPermissions(getActivity(),
+//                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                                        MY_PERMISSIONS_REQUEST_LOCATION);
+//                            }
+//                        }).create().show();
+//            }
+//            else
+//            {
+//                // No explanation needed, we can request the permission.
+//                ActivityCompat.requestPermissions(getActivity(),
+//                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
+//                        MY_PERMISSIONS_REQUEST_LOCATION);
+//            }
+//            return false;
+//        }
+//        else
+//        {
+//            return true;
+//        }
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+//    {
+//        switch (requestCode)
+//        {
+//            case MY_PERMISSIONS_REQUEST_LOCATION:
+//            {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+//                {
+//                    // permission was granted, yay! Do the
+//                    // location-related task you need to do.
+//                    if (ContextCompat.checkSelfPermission(getActivity(),
+//                            Manifest.permission. ACCESS_FINE_LOCATION)
+//                            == PackageManager.PERMISSION_GRANTED)
+//                    {
+//                        //Request location updates:
+//                        //locationManager.requestLocationUpdates(provider, 400, 1, this);
+//                    }
+//                }
+//                else
+//                {
+//                    // permission denied, boo! Disable the
+//                    // functionality that depends on this permission.
+//                }
+//                return;
+//            }
+//        }
+//    }
 
     private void setSearchStrategy(SearchStrategy newSearchStrategy)
     {
@@ -651,26 +602,13 @@ public class HomeFragment extends Fragment
     {
         if (distanceCircle != null)
             distanceCircle.remove();
-        // Drawing circle
+
         this.distanceCircle = this.googleMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(q_distance)
                 .strokeColor(Color.rgb(0,0,255))
                 .strokeWidth(5)
                 .fillColor(Color.argb(128,255,255,255)));
-    }
-
-    public void getNavigation(double latitudeCurr, double longitudeCurr, double latitudeDest, double longitudeDest)
-    {
-        final Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?" + "saddr="
-                        + latitudeCurr + "," + longitudeCurr + "&daddr="
-                        + latitudeDest + "," + longitudeDest));
-
-        intent.setClassName("com.google.android.apps.maps",
-                "com.google.android.maps.MapsActivity");
-
-        startActivity(intent);
     }
 
     private GeoApiContext getGeoContext()
@@ -686,7 +624,6 @@ public class HomeFragment extends Fragment
     public void getDirection(double latOrig, double lonOrig, double latDest, double lonDest)
     {
         DateTime now = new DateTime();
-
         DirectionsResult result = null;
 
         try
@@ -697,33 +634,20 @@ public class HomeFragment extends Fragment
                     .destination(new com.google.maps.model.LatLng(latDest, lonDest))
                     .departureTime(now).await();
         }
-        catch (ApiException e)
-        {
-            e.printStackTrace();
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
+        catch (ApiException | InterruptedException | IOException e)
         {
             e.printStackTrace();
         }
 
         addPolyline(result, this.googleMap);
-
     }
 
     private void addPolyline(DirectionsResult results, GoogleMap mMap)
     {
-        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Please wait...", "Calculate route...",true);
-
         if(direction!=null)
             direction.remove();
                     
         List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
         direction = mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(10).color(Color.BLUE));
-
-        progressDialog.dismiss();
     }
 }

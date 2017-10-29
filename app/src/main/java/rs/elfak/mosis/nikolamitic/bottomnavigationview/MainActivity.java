@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 
@@ -28,6 +27,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.BitmapManipulation;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.User;
@@ -38,6 +39,7 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment
 
 public class MainActivity extends Activity
 {
+    private BottomNavigationView navigation;
     private int clicked = 1, newClicked =0;
     private HomeFragment homeFragment;
     private FriendsFragment friendsFragment;
@@ -163,11 +165,12 @@ public class MainActivity extends Activity
 
             setContentView(R.layout.activity_main);
 
-            BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-            navigation.setSelectedItemId(R.id.navigation_home);
-
             addFragments();
             changeFragment(1, true);
+
+            navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            navigation.setSelectedItemId(R.id.navigation_home);
+
             backgroundService = new Intent(this,MyLocationService.class);
             navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         }
@@ -283,6 +286,8 @@ public class MainActivity extends Activity
 
     private Marker addMarkers(double lat, double lng, String title, String snippet, String uId, boolean friends_status, boolean player_status, boolean secret, String adderId)
     {
+        ArrayList<String> friendsList = friendsFragment.getFriendsList();
+
         Marker marker = null;
 
         MarkerOptions mo = new MarkerOptions();
@@ -299,7 +304,7 @@ public class MainActivity extends Activity
         {
             if(secret)
             {
-                if(adderId.equals(loggedUser.getUid()) || FriendsFragment.friendsList.contains(adderId))
+                if(adderId.equals(loggedUser.getUid()) || friendsList.contains(adderId))
                 {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.free, MainActivity.this)));
                     marker = homeFragment.googleMap.addMarker(mo);
@@ -320,11 +325,11 @@ public class MainActivity extends Activity
                 homeFragment.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
                 marker = homeFragment.googleMap.addMarker(mo);
-                HomeFragment.mapUserIdMarker.put(uId, marker);
+                HomeFragment.mapFriendIdMarker.put(uId, marker);
             }
             else
             {
-                if(FriendsFragment.friendsList.contains(uId))
+                if(friendsList.contains(uId))
                 {
                     mo.icon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, MainActivity.this)));
                     mo.visible(friends_status);
@@ -435,5 +440,10 @@ public class MainActivity extends Activity
     public SettingsFragment getSettingsFragment()
     {
         return settingsFragment;
+    }
+
+    public void performHomeClick()
+    {
+        navigation.setSelectedItemId(R.id.navigation_home);
     }
 }

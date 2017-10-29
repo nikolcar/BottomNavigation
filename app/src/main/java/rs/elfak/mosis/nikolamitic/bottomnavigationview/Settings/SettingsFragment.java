@@ -70,11 +70,11 @@ public class SettingsFragment extends Fragment
 
     private Spinner gpsSpinner;
 
-    public static Integer gpsRefresh = 10;
-    public Uri savedURI;
+    private Integer gpsRefresh = 10;
+    private Uri savedURI;
 
     private TextView tvName, tvPoints;
-    private static ImageView ivAvatar;
+    private ImageView ivAvatar;
 
     private FirebaseAuth mAuth;
     private FirebaseUser loggedUser;
@@ -337,7 +337,6 @@ public class SettingsFragment extends Fragment
                         try
                         {
                             wait(100);
-                            //Log.d(TAG,"Waiting 100ms");
                         }
                         catch (InterruptedException e)
                         {
@@ -353,7 +352,6 @@ public class SettingsFragment extends Fragment
                         try
                         {
                             wait(100);
-                            //Log.d(TAG,"Waiting 100ms");
                         }
                         catch (InterruptedException e)
                         {
@@ -428,26 +426,6 @@ public class SettingsFragment extends Fragment
         setProfilePhoto();
     }
 
-    private Bitmap getBitmapFromURL(Uri uri)
-    {
-        try
-        {
-            String str = uri.toString();
-            URL src = new URL(str);
-            HttpURLConnection connection = (HttpURLConnection) src.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input=connection.getInputStream();
-            Bitmap mBitmap = BitmapFactory.decodeStream(input);
-            return mBitmap;
-        }
-        catch (IOException e)
-        {
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            return null;
-        }
-    }
-
     public void setProfilePhoto()
     {
         try
@@ -472,10 +450,6 @@ public class SettingsFragment extends Fragment
                     ivAvatar.setImageBitmap(bitmap);
                     bitmap = null;
                 }
-                else
-                {
-                }
-
             }
         })
         .addOnFailureListener(new OnFailureListener()
@@ -484,7 +458,6 @@ public class SettingsFragment extends Fragment
             public void onFailure(@NonNull Exception exception)
             {
                 //Toast.makeText(MainActivity.this, "Error downloading/saving profile image", Toast.LENGTH_SHORT).show();
-                //TODO: Can't display this, maybe user doesn't have a profile photo
             }
         });
     }
@@ -509,15 +482,6 @@ public class SettingsFragment extends Fragment
 
                 if (data != null)
                     savedURI = data.getData();
-
-                //                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(settingsFragment.savedURI).build();
-//                progressDialog.dismiss();
-//                loggedUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Toast.makeText(MainActivity.this, "Profile picture updated!", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
 
                 StorageReference storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + loggedUser.getUid() + ".jpg");
                 storage.putFile(savedURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()

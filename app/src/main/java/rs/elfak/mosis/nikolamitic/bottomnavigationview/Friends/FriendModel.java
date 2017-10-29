@@ -2,14 +2,14 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Friends;
 
 import android.graphics.Bitmap;
 
-public class FriendModel
+class FriendModel
 {
     private String name;
     private int points;
     private Bitmap avatar;
     private String uId;
 
-    public FriendModel(String name, int points, Bitmap avatar, String uId)
+    FriendModel(String name, int points, Bitmap avatar, String uId)
     {
         this.name = name;
         this.points = points;
@@ -17,42 +17,42 @@ public class FriendModel
         this.uId = uId;
     }
 
-    public String getName()
+    String getName()
     {
         return name;
     }
 
-    public void setName(String name)
+    void setName(String name)
     {
         this.name = name;
     }
 
-    public int getPoints()
+    int getPoints()
     {
         return points;
     }
 
-    public void setPoints(int points)
+    void setPoints(int points)
     {
         this.points = points;
     }
 
-    public Bitmap getAvatar()
+    Bitmap getAvatar()
     {
         return avatar;
     }
 
-    public void setAvatar (Bitmap avatar)
+    void setAvatar (Bitmap avatar)
     {
         this.avatar = avatar;
     }
 
-    public String getuId()
+    String getuId()
     {
         return uId;
     }
 
-    public void setuId(String uId)
+    void setuId(String uId)
     {
         this.uId = uId;
     }

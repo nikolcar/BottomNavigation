@@ -1,6 +1,5 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 
-import android.animation.ArgbEvaluator;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,11 +21,8 @@ import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,15 +30,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Settings.SettingsFragment;
-
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingsMarkers;
 
-
 public class MyLocationService extends Service
 {
-    private static final String TAG = "MyLocationService";
     private LocationManager mLocationManager = null;
     public static final int NOTIFY_DISTANCE = 500;
     private static final int LOCATION_INTERVAL = 1000;
@@ -77,14 +69,12 @@ public class MyLocationService extends Service
 
         public LocationListener(String provider)
         {
-            Log.e(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location)
         {
-            Log.e(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
             mLastLocation.set(location);
 
@@ -92,15 +82,9 @@ public class MyLocationService extends Service
             latitude = location.getLatitude();
 
             DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
-            String uid = MainActivity.loggedUser.getUid();
 
-            users.child(uid).child("latitude").setValue(latitude);
-            users.child(uid).child("longitude").setValue(longitude);
-
-            //Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
-            //v.vibrate(1000);
-            //Toast.makeText(MyLocationService.this, "Your location: " + myNewLat + " " + myNewLon + " ", Toast.LENGTH_LONG).show();
+            users.child(loggedUserUid).child("latitude").setValue(latitude);
+            users.child(loggedUserUid).child("longitude").setValue(longitude);
 
             deleteAllNotifications(getApplicationContext());
             showFriendsInRadius();
@@ -111,19 +95,16 @@ public class MyLocationService extends Service
         @Override
         public void onProviderDisabled(String provider)
         {
-            Log.e(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider)
         {
-            Log.e(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
-            Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
 
@@ -158,10 +139,6 @@ public class MyLocationService extends Service
             int type = 2;
             if(minDistanceSecret)
                 type = 3;
-
-            //MainActivity.homeFragment.getNavigation(myNewLat, myNewLon, minDistanceMarker.getPosition().latitude, minDistanceMarker.getPosition().longitude);
-            //MainActivity.homeFragment.getDirection(myNewLat, myNewLon, minDistanceMarker.getPosition().latitude, minDistanceMarker.getPosition().longitude);
-
 
             showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
         }
@@ -225,7 +202,6 @@ public class MyLocationService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
 
         loggedUserUid = MainActivity.loggedUser.getUid();
@@ -250,8 +226,6 @@ public class MyLocationService extends Service
     @Override
     public void onCreate()
     {
-        Log.e(TAG, "onCreate");
-
         initializeLocationManager();
 
         database = FirebaseDatabase.getInstance();
@@ -267,11 +241,11 @@ public class MyLocationService extends Service
         }
         catch (java.lang.SecurityException ex)
         {
-            Log.i(TAG, "fail to request location update, ignore", ex);
+            Log.i("", "fail to request location update, ignore", ex);
         }
         catch (IllegalArgumentException ex)
         {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            Log.d("", "network provider does not exist, " + ex.getMessage());
         }
 
         //        try
@@ -285,18 +259,17 @@ public class MyLocationService extends Service
 //        }
 //        catch (java.lang.SecurityException ex)
 //        {
-//            Log.i(TAG, "fail to request location update, ignore", ex);
+//            Log.i("", "fail to request location update, ignore", ex);
 //        }
 //        catch (IllegalArgumentException ex)
 //        {
-//            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+//            Log.d("", "gps provider does not exist " + ex.getMessage());
 //        }
     }
 
     @Override
     public void onDestroy()
     {
-        Log.e(TAG, "onDestroy");
         super.onDestroy();
         if (mLocationManager != null)
         {
@@ -312,7 +285,7 @@ public class MyLocationService extends Service
                 }
                 catch (Exception ex)
                 {
-                    Log.i(TAG, "fail to remove location listener, ignore", ex);
+                    Log.i("", "fail to remove location listener, ignore", ex);
                 }
             }
         }
@@ -320,7 +293,6 @@ public class MyLocationService extends Service
 
     private void initializeLocationManager()
     {
-        Log.e(TAG, "initializeLocationManager - LOCATION_INTERVAL: "+ LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null)
         {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);

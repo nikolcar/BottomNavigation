@@ -20,8 +20,6 @@ public class User
     private Integer points;
 
     private ArrayList<String> friends;
-    //private ArrayList<String> myPrivate;
-    //private ArrayList<String> myFriendsPrivate;
 
     private Integer gpsrefresh;
     private Boolean showfriends;
