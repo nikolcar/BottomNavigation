@@ -63,3 +63,6 @@ Moqup aplikacije
 <br>
 <a href="https://trello.com/locateparkingmosisapp"> Trello direktorijum </a>
 
+<br>
+<a href="https://www.dropbox.com/s/dwm2co7p2n3o0d4/Locate-Parking.apk?dl=0"> Instalacioni fajl </a>
+
