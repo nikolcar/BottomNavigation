@@ -156,7 +156,7 @@ public class MyLocationService extends Service
             {
                 Marker marker = mapFriendIdMarker.get(key);
                 Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
-                if (distanceFromMarker < NOTIFY_DISTANCE)
+                if (distanceFromMarker < NOTIFY_DISTANCE && !key.equals(MainActivity.loggedUser.getUid()))
                 {
                     showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
                 }
