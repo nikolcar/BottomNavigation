@@ -14,7 +14,7 @@ Aplikacija se sastoji od:
 
 Sa sledećim funkcionalnostima
 
-- Registracija na sistem unosom osnovnih podataka (ime, prezime, nadimak, datum dođenja, email adrese, šifre).
+- Registracija na sistem unosom osnovnih podataka (ime, prezime, nadimak, datum rođenja, email adrese, šifre).
 - Logovanje na sistem email-adresom i šifrom, mogućnost promene šifre preko mail-a.
 
 <p align="center">  
