@@ -414,6 +414,7 @@ public class FriendsFragment extends Fragment
                                                             Marker friendMarker = HomeFragment.mapUserIdMarker.get(friendsUid);
                                                             HomeFragment.mapUserIdMarker.remove(friendsUid);
                                                             friendMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, getActivity())));
+                                                            friendMarker.setVisible(((MainActivity)getActivity()).getSettingsFragment().friends_status);
                                                             HomeFragment.mapFriendIdMarker.put(friendsUid, friendMarker);
                                                         }
                                                     }
