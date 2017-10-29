@@ -368,7 +368,7 @@ public class HomeFragment extends Fragment
                 switch (position)
                 {
                     case 0:
-                        setSearchStrategy(new NameSearchStrategy());
+                        setSearchStrategy(new NameSearchStrategy((MainActivity) getActivity()));
                         setSearch("Enter name");
                         break;
                     case 1:
