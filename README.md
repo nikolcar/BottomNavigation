@@ -23,7 +23,7 @@ Sa sledećim funkcionalnostima
   <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" width="250"/>
 </p>
 
-- Real-time prikaz trenutne lokacije korisnika na mapi, kao i prikaz parkinga.
+- Real-time prikaz trenutne lokacije korisnika na mapi, kao i prikaz javnih parkinga i ličnih privatnih parkinga i ličnih parkinga prijatelja.
 - Dodavanje parkinga, na trenutnoj lokaciji korisnika.
 - Pretraživanje parkinga po imenu, po radijusu u odnosu na korisnika (u metrima) i po tipu (private/public).
 - Klikom na informaciju o parkingu, korisnik može dobiti i direkciju do istog. Tada se u bazi pamti kada je korisnik zatražio direkciju do određenog parkinga.
@@ -36,6 +36,7 @@ Sa sledećim funkcionalnostima
 </p>
 
 - Prikaz rang liste prijatelja.
+- Klikom na prijatelja, ukoliko je u podešavanjima omogućeno da se vide lokacije prijatelja, centrira se na mapi marker odgovarajućeg prijatelja.
 - Dodavanje prijatelja preko bluetooth-a.
 
 <p align="center">  
