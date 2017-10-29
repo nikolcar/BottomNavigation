@@ -361,8 +361,6 @@ public class MainActivity extends Activity
             {
                 mMarker.setVisible(!mMarker.isVisible());
             }
-
-            HomeFragment.mapUserIdMarker.get(loggedUser.getUid()).setVisible(true);
         }
 
         if(friendsOptionChanged)
@@ -371,6 +369,8 @@ public class MainActivity extends Activity
             {
                 mMarker.setVisible(!mMarker.isVisible());
             }
+
+            HomeFragment.mapFriendIdMarker.get(loggedUser.getUid()).setVisible(true);
         }
     }
 

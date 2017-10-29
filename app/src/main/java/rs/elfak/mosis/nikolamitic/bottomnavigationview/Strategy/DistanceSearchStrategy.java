@@ -39,7 +39,7 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         else
         {
-            Toast.makeText(mainActivity,"Please turn on GPS and be patient",Toast.LENGTH_SHORT)
+            Toast.makeText(mainActivity,"Turn on GPS and try again",Toast.LENGTH_SHORT)
                     .show();
             return;
         }

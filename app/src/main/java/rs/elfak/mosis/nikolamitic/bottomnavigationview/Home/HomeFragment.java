@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment
                         }
                         catch (Throwable t)
                         {
-                            Toast.makeText(getActivity(),"Turn on GPS first and be patient.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Turn on GPS and try again", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -202,7 +202,7 @@ public class HomeFragment extends Fragment
                 }
                 else
                 {
-                    Toast.makeText(getActivity(),"Please turn on GPS and be patient",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Turn on GPS and try again",Toast.LENGTH_SHORT).show();
                     etLatitude.setText("unknown");
                     etLongitude.setText("unknown");
                 }
@@ -276,45 +276,49 @@ public class HomeFragment extends Fragment
                         final Parking parking = mapMarkersParkings.get(marker);
                         if(parking!=null)
                         {
-                            dialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle("Get direction to " + parking.getName() + " parking?")
-                                    .setMessage("Are you sure you want to get direction to \n\n" + parking.getName() + "\n" + parking.getDescription())
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                                    {
-                                        public void onClick(DialogInterface dialog, int which)
+                            if(latitude!=null && longitude!=null)
+                            {
+                                dialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle("Get direction to " + parking.getName() + " parking?")
+                                        .setMessage("Are you sure you want to get direction to \n\n" + parking.getName() + "\n" + parking.getDescription())
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                                         {
-                                            dialog.dismiss();
-
-                                            for (Parking parking : mapParkingsMarkers.keySet())
+                                            public void onClick(DialogInterface dialog, int which)
                                             {
-                                                mapParkingsMarkers.get(parking).setVisible(false);
+                                                dialog.dismiss();
+
+                                                for (Parking parking : mapParkingsMarkers.keySet())
+                                                {
+                                                    mapParkingsMarkers.get(parking).setVisible(false);
+                                                }
+
+                                                marker.setVisible(true);
+
+                                                changeVisibility(true);
+
+                                                getDirection(latitude, longitude, parking.getLatitude(), parking.getLongitude());
+
+                                                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
+                                                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+                                                DateTime now = new DateTime();
+                                                DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
+                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parking.getPid(), now.toString());
+                                                String key = statistic.push().getKey();
+                                                statistic.child(key).setValue(stat);
                                             }
-
-                                            marker.setVisible(true);
-
-                                            changeVisibility(true);
-
-                                            getDirection(latitude, longitude, parking.getLatitude(), parking.getLongitude());
-
-                                            CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
-                                            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-
-
-                                            DateTime now = new DateTime();
-                                            DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
-                                            Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parking.getPid(), now.toString());
-                                            String key = statistic.push().getKey();
-                                            statistic.child(key).setValue(stat);
-                                        }
-                                    })
-                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
-                                    {
-                                        public void onClick(DialogInterface dialog, int which)
-                                        {
-                                            Toast.makeText(getActivity(), "You declined parking direction!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .setIcon(R.mipmap.logo).show();
+                                        })
+                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Toast.makeText(getActivity(), "You declined parking direction!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .setIcon(R.mipmap.logo).show();
+                            }
+                            else
+                            {
+                                Toast.makeText(getActivity(),"Turn on GPS and try again",Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
