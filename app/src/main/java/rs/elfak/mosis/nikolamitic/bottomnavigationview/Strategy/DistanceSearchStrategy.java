@@ -15,9 +15,8 @@ public class DistanceSearchStrategy implements SearchStrategy
 {
     MainActivity mainActivity;
     @Override
-    public void search(String query, HashMap<Parking, Marker> mapParkingsMarkers)
+    public void search(String query, HashMap<String, Marker> mapSearchIdMarker)
     {
-        Marker mMarker = null;
         double mLatitude;
         double mLongitude;
         float q_distance;
@@ -46,12 +45,11 @@ public class DistanceSearchStrategy implements SearchStrategy
 
         mainActivity.getHomeFragment().setCircle(new LatLng(mLatitude, mLongitude), q_distance);
 
-        for (Parking parking : mapParkingsMarkers.keySet())
+        for (Marker marker : mapSearchIdMarker.values())
         {
-            mMarker = mapParkingsMarkers.get(parking);
             float distance = distanceBetween((float) mLatitude, (float) mLongitude,
-                    (float) mMarker.getPosition().latitude, (float) mMarker.getPosition().longitude);
-            mMarker.setVisible(distance <= q_distance);
+                    (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+            marker.setVisible(distance <= q_distance);
         }
     }
 

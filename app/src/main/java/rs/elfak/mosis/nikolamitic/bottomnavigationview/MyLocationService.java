@@ -30,8 +30,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
+import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
+
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingsMarkers;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapSecretIdMarker;
 
 public class MyLocationService extends Service
 {
@@ -118,9 +120,9 @@ public class MyLocationService extends Service
         Marker minDistanceMarker = null;
         boolean minDistanceSecret = false;
 
-        for (Parking key : mapParkingsMarkers.keySet())
+        for (Marker marker : mapSecretIdMarker.values())
         {
-            Marker marker = mapParkingsMarkers.get(key);
+            String secret = HomeFragment.getKeyFromValue(mapSecretIdMarker, marker);
             Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
 
             if (distanceFromMarker < NOTIFY_DISTANCE)
@@ -129,7 +131,7 @@ public class MyLocationService extends Service
                 {
                     minDistance = distanceFromMarker;
                     minDistanceMarker = marker;
-                    minDistanceSecret = key.isSecret();
+                    minDistanceSecret = secret.contains("private");
                 }
             }
         }

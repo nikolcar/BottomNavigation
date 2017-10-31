@@ -78,8 +78,7 @@ public class HomeFragment extends Fragment
 
     public GoogleMap googleMap;
     private MapView mMapView;
-    public static HashMap<Parking, Marker> mapParkingsMarkers = new HashMap<Parking, Marker>();
-    public static HashMap<Marker, Parking> mapMarkersParkings = new HashMap<Marker, Parking>();
+    public static HashMap<String, Marker> mapSecretIdMarker = new HashMap<String, Marker>();
     public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
     public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
@@ -91,7 +90,7 @@ public class HomeFragment extends Fragment
 
     private SearchView search;
     private Spinner sSearchType;
-    private FloatingActionButton btnAddNewParking, btnCancelDirections;
+    private FloatingActionButton btnCancelDirections;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -103,7 +102,7 @@ public class HomeFragment extends Fragment
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
         final LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
 
-        btnAddNewParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
+        FloatingActionButton btnAddNewParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
         btnCancelDirections = (FloatingActionButton) view.findViewById(R.id.btn_cancel_direction_mode);
         sSearchType = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
         search = (SearchView) view.findViewById(R.id.searchMap);
@@ -218,9 +217,9 @@ public class HomeFragment extends Fragment
             public void onClick(View v)
             {
                 direction.remove();
-                for (Parking parking: mapParkingsMarkers.keySet())
+                for (Marker marker: mapSecretIdMarker.values())
                 {
-                    mapParkingsMarkers.get(parking).setVisible(true);
+                    marker.setVisible(true);
                 }
 
                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(15).build();
@@ -272,38 +271,38 @@ public class HomeFragment extends Fragment
 
                 googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
-                    public void onInfoWindowClick(final Marker marker) {
-                        final Parking parking = mapMarkersParkings.get(marker);
-                        if(parking!=null)
+                    public void onInfoWindowClick(final Marker mMarker) {
+                        final String secret = getKeyFromValue(mapSecretIdMarker,mMarker);
+                        if(secret != null)
                         {
                             if(latitude!=null && longitude!=null)
                             {
                                 dialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle("Get direction to " + parking.getName() + " parking?")
-                                        .setMessage("Are you sure you want to get direction to \n\n" + parking.getName() + "\n" + parking.getDescription())
+                                        .setTitle("Get direction to " + mMarker.getTitle() + " parking?")
+                                        .setMessage("Are you sure you want to get direction to \n\n" + mMarker.getTitle() + "\n" + mMarker.getSnippet())
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                                         {
                                             public void onClick(DialogInterface dialog, int which)
                                             {
                                                 dialog.dismiss();
 
-                                                for (Parking parking : mapParkingsMarkers.keySet())
+                                                for (Marker marker : mapSecretIdMarker.values())
                                                 {
-                                                    mapParkingsMarkers.get(parking).setVisible(false);
+                                                    marker.setVisible(false);
                                                 }
 
-                                                marker.setVisible(true);
+                                                mMarker.setVisible(true);
 
                                                 changeVisibility(true);
 
-                                                getDirection(latitude, longitude, parking.getLatitude(), parking.getLongitude());
+                                                getDirection(latitude, longitude, mMarker.getPosition().latitude, mMarker.getPosition().longitude);
 
                                                 CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
                                                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
                                                 DateTime now = new DateTime();
                                                 DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
-                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parking.getPid(), now.toString());
+                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), secret.substring(8)/*skip start with 'private+' || 'public +'*/, now.toString());
                                                 String key = statistic.push().getKey();
                                                 statistic.child(key).setValue(stat);
                                             }
@@ -381,9 +380,9 @@ public class HomeFragment extends Fragment
                         break;
                 }
 
-                for (Parking parking: mapParkingsMarkers.keySet())
+                for (Marker marker: mapSecretIdMarker.values())
                 {
-                    mapParkingsMarkers.get(parking).setVisible(true);
+                    marker.setVisible(true);
                 }
             }
 
@@ -426,9 +425,9 @@ public class HomeFragment extends Fragment
             @Override
             public boolean onClose()
             {
-                for (Parking parking: mapParkingsMarkers.keySet())
+                for (Marker marker: mapSecretIdMarker.values())
                 {
-                    mapParkingsMarkers.get(parking).setVisible(true);
+                    marker.setVisible(true);
                 }
 
                 if (distanceCircle != null)
@@ -468,7 +467,7 @@ public class HomeFragment extends Fragment
     {
         if (searchStrategy != null)
         {
-            searchStrategy.search(query, mapParkingsMarkers);
+            searchStrategy.search(query, mapSecretIdMarker);
         }
         else
         {
@@ -653,5 +652,18 @@ public class HomeFragment extends Fragment
                     
         List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
         direction = mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(10).color(Color.BLUE));
+    }
+
+
+    public static String getKeyFromValue(HashMap<String, Marker> hm, Marker value)
+    {
+        for (String o : hm.keySet())
+        {
+            if (hm.get(o).equals(value))
+            {
+                return o;
+            }
+        }
+        return null;
     }
 }

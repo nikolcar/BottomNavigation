@@ -12,20 +12,18 @@ public class NameSearchStrategy implements SearchStrategy
     MainActivity mainActivity;
 
     @Override
-    public void search(String query, HashMap<Parking, Marker> mapParkingsMarkers) {
-        for (Parking parking: mapParkingsMarkers.keySet())
+    public void search(String query, HashMap<String, Marker> mapSearchIdMarker) {
+        for (Marker marker: mapSearchIdMarker.values())
         {
-            Marker mMarker = null;
-            mMarker = mapParkingsMarkers.get(parking);
-            if(parking.getName().toLowerCase().contains(query.toLowerCase()))
+            if(marker.getTitle().toLowerCase().contains(query.toLowerCase()))
             {
-                mMarker.setVisible(true);
-                mMarker.showInfoWindow();
+                marker.setVisible(true);
+                marker.showInfoWindow();
 
-                CameraPosition mCameraPosition = new CameraPosition.Builder().target(mMarker.getPosition()).zoom(16).build();
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(marker.getPosition()).zoom(16).build();
                 mainActivity.getHomeFragment().googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
             }
-            else mMarker.setVisible(false);
+            else marker.setVisible(false);
         }
     }
 
