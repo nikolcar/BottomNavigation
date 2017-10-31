@@ -29,11 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
-import rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment;
-
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
-import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapSecretIdMarker;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingIdMarker;
 
 public class MyLocationService extends Service
 {
@@ -88,7 +85,7 @@ public class MyLocationService extends Service
             users.child(loggedUserUid).child("latitude").setValue(latitude);
             users.child(loggedUserUid).child("longitude").setValue(longitude);
 
-            deleteAllNotifications(getApplicationContext());
+            //deleteAllNotifications(getApplicationContext());
             showFriendsInRadius();
             showParkingInRadius();
         }
@@ -120,9 +117,9 @@ public class MyLocationService extends Service
         Marker minDistanceMarker = null;
         boolean minDistanceSecret = false;
 
-        for (Marker marker : mapSecretIdMarker.values())
+        for (Marker marker : mapParkingIdMarker.values())
         {
-            String secret = HomeFragment.getKeyFromValue(mapSecretIdMarker, marker);
+            String secret = marker.getTag().toString();
             Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
 
             if (distanceFromMarker < NOTIFY_DISTANCE)
@@ -131,7 +128,7 @@ public class MyLocationService extends Service
                 {
                     minDistance = distanceFromMarker;
                     minDistanceMarker = marker;
-                    minDistanceSecret = secret.contains("private");
+                    minDistanceSecret = secret.startsWith("private");
                 }
             }
         }

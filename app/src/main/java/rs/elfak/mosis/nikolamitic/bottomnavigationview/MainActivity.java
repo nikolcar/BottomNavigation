@@ -255,7 +255,8 @@ public class MainActivity extends Activity
 
                 if(marker != null)
                 {
-                    HomeFragment.mapSecretIdMarker.put((parking.isSecret() ? "private" : "public ")+ "+" +parking.pid, marker);
+                    marker.setTag(parking.isSecret()? "private" : "public");
+                    HomeFragment.mapParkingIdMarker.put(parking.getPid(), marker);
                 }
             }
 

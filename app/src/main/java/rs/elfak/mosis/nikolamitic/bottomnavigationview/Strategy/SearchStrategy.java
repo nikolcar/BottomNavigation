@@ -7,5 +7,5 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 
 public interface SearchStrategy
 {
-    public void search(String query, HashMap<String, Marker> mapSearchIdMarker);
+    public void search(String query, HashMap<String, Marker> mapParkingIdMarker);
 }

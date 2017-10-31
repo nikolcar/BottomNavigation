@@ -13,9 +13,9 @@ import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.
 
 public class DistanceSearchStrategy implements SearchStrategy
 {
-    MainActivity mainActivity;
+    private MainActivity mainActivity;
     @Override
-    public void search(String query, HashMap<String, Marker> mapSearchIdMarker)
+    public void search(String query, HashMap<String, Marker> mapParkingIdMarker)
     {
         double mLatitude;
         double mLongitude;
@@ -45,7 +45,7 @@ public class DistanceSearchStrategy implements SearchStrategy
 
         mainActivity.getHomeFragment().setCircle(new LatLng(mLatitude, mLongitude), q_distance);
 
-        for (Marker marker : mapSearchIdMarker.values())
+        for (Marker marker : mapParkingIdMarker.values())
         {
             float distance = distanceBetween((float) mLatitude, (float) mLongitude,
                     (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);

@@ -9,11 +9,11 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 
 public class NameSearchStrategy implements SearchStrategy
 {
-    MainActivity mainActivity;
+    private MainActivity mainActivity;
 
     @Override
-    public void search(String query, HashMap<String, Marker> mapSearchIdMarker) {
-        for (Marker marker: mapSearchIdMarker.values())
+    public void search(String query, HashMap<String, Marker> mapParkingIdMarker) {
+        for (Marker marker: mapParkingIdMarker.values())
         {
             if(marker.getTitle().toLowerCase().contains(query.toLowerCase()))
             {

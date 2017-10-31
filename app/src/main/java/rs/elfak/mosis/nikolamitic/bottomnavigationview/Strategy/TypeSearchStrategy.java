@@ -9,12 +9,11 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.SearchStrategy;
 public class TypeSearchStrategy implements SearchStrategy
 {
     @Override
-    public void search(String query, HashMap<String, Marker> mapSearchIdMarker)
+    public void search(String query, HashMap<String, Marker> mapParkingIdMarker)
     {
-        for (Marker marker: mapSearchIdMarker.values())
+        for (Marker marker: mapParkingIdMarker.values())
         {
-            String secret = HomeFragment.getKeyFromValue(mapSearchIdMarker,marker);
-            marker.setVisible(secret.startsWith(query.toLowerCase()));
+            marker.setVisible(marker.getTag().toString().startsWith(query.toLowerCase()));
         }
     }
 }

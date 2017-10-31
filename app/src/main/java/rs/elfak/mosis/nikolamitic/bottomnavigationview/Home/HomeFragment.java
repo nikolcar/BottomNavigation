@@ -3,18 +3,14 @@ package rs.elfak.mosis.nikolamitic.bottomnavigationview.Home;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
@@ -78,7 +74,7 @@ public class HomeFragment extends Fragment
 
     public GoogleMap googleMap;
     private MapView mMapView;
-    public static HashMap<String, Marker> mapSecretIdMarker = new HashMap<String, Marker>();
+    public static HashMap<String, Marker> mapParkingIdMarker = new HashMap<String, Marker>();
     public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
     public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
 
@@ -217,7 +213,7 @@ public class HomeFragment extends Fragment
             public void onClick(View v)
             {
                 direction.remove();
-                for (Marker marker: mapSecretIdMarker.values())
+                for (Marker marker: mapParkingIdMarker.values())
                 {
                     marker.setVisible(true);
                 }
@@ -269,11 +265,13 @@ public class HomeFragment extends Fragment
                 googleMap.setMyLocationEnabled(false);
                 googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+                {
                     @Override
-                    public void onInfoWindowClick(final Marker mMarker) {
-                        final String secret = getKeyFromValue(mapSecretIdMarker,mMarker);
-                        if(secret != null)
+                    public void onInfoWindowClick(final Marker mMarker)
+                    {
+                        final String parkingId = getKeyFromValue(mapParkingIdMarker, mMarker);
+                        if(parkingId != null)
                         {
                             if(latitude!=null && longitude!=null)
                             {
@@ -286,7 +284,7 @@ public class HomeFragment extends Fragment
                                             {
                                                 dialog.dismiss();
 
-                                                for (Marker marker : mapSecretIdMarker.values())
+                                                for (Marker marker : mapParkingIdMarker.values())
                                                 {
                                                     marker.setVisible(false);
                                                 }
@@ -302,7 +300,7 @@ public class HomeFragment extends Fragment
 
                                                 DateTime now = new DateTime();
                                                 DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
-                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), secret.substring(8)/*skip start with 'private+' || 'public +'*/, now.toString());
+                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parkingId, now.toString());
                                                 String key = statistic.push().getKey();
                                                 statistic.child(key).setValue(stat);
                                             }
@@ -380,7 +378,7 @@ public class HomeFragment extends Fragment
                         break;
                 }
 
-                for (Marker marker: mapSecretIdMarker.values())
+                for (Marker marker: mapParkingIdMarker.values())
                 {
                     marker.setVisible(true);
                 }
@@ -425,7 +423,7 @@ public class HomeFragment extends Fragment
             @Override
             public boolean onClose()
             {
-                for (Marker marker: mapSecretIdMarker.values())
+                for (Marker marker: mapParkingIdMarker.values())
                 {
                     marker.setVisible(true);
                 }
@@ -467,7 +465,7 @@ public class HomeFragment extends Fragment
     {
         if (searchStrategy != null)
         {
-            searchStrategy.search(query, mapSecretIdMarker);
+            searchStrategy.search(query, mapParkingIdMarker);
         }
         else
         {
@@ -612,6 +610,9 @@ public class HomeFragment extends Fragment
                 .strokeColor(Color.rgb(0,0,255))
                 .strokeWidth(5)
                 .fillColor(Color.argb(128,255,255,255)));
+
+        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(15).build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
     }
 
     private GeoApiContext getGeoContext()
