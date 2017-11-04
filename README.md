@@ -23,7 +23,7 @@ Sa sledećim funkcionalnostima
   <img src="https://github.com/nikolcar/BottomNavigation/blob/master/app/src/main/res/screenshots/forgotenPassword.png" width="250"/>
 </p>
 
-- Real-time prikaz trenutne lokacije korisnika na mapi, kao i prikaz javnih parkinga i ličnih privatnih parkinga i ličnih parkinga prijatelja.
+- Real-time prikaz trenutne lokacije korisnika na mapi, kao i prikaz javnih parkinga i ličnih privatnih parkinga i privatnih parkinga prijatelja.
 - Dodavanje parkinga, na trenutnoj lokaciji korisnika.
 - Pretraživanje parkinga po imenu, po radijusu u odnosu na korisnika (u metrima) i po tipu (private/public).
 - Klikom na informaciju o parkingu, korisnik može dobiti i direkciju do istog. Tada se u bazi pamti kada je korisnik zatražio direkciju do određenog parkinga.
@@ -64,5 +64,5 @@ Moqup aplikacije
 <a href="https://trello.com/locateparkingmosisapp"> Trello direktorijum </a>
 
 <br>
-<a href="https://www.dropbox.com/s/evqsic1x26pkmm4/app-release.apk?dl=0"> Instalacioni fajl </a>
+<a href="https://www.dropbox.com/s/notkmzntg96cy1r/Locate-parking.apk?dl=0"> Instalacioni fajl </a>
 
