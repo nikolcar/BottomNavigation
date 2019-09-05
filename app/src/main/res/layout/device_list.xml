@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -8,11 +9,12 @@
         android:id="@+id/tvDeviceListPairedDeviceTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingLeft="5dp"
+        android:background="@android:color/black"
+        android:paddingStart="5dp"
         android:text="@string/title_paired_devices"
-        android:textColor="@color/blue"
-        android:visibility="gone" />
+        android:textColor="@color/white"
+        android:visibility="gone"
+        tools:ignore="RtlSymmetry" />
 
     <ListView
         android:id="@+id/lvDeviceListPairedDevice"
@@ -25,11 +27,12 @@
         android:id="@+id/tvDeviceListNewDeviceTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingLeft="5dp"
+        android:background="@android:color/black"
+        android:paddingStart="5dp"
         android:text="@string/title_other_devices"
-        android:textColor="@color/blue"
-        android:visibility="gone" />
+        android:textColor="@color/white"
+        android:visibility="gone"
+        tools:ignore="RtlSymmetry" />
 
     <ListView
         android:id="@+id/lvDeviceListNewDevice"

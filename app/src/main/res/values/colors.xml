@@ -4,6 +4,12 @@
     <color name="colorPrimaryDark">#0000FF</color>
     <color name="colorAccent">#0000FF</color>
     <color name="white">#FFFFFF</color>
-    <color name="blue">#0000FF</color>
-
+    <color name="blue">#005de9</color>
+    <color name="dark">#212121</color>
+    <color name="transparent">@android:color/transparent</color>
+    <color name="gradient_blue">
+        <item name="android:startColor">#00add4</item>
+        <item name="android:endColor">#1100aa</item>
+        <item name="android:type">linear</item>
+    </color>
 </resources>

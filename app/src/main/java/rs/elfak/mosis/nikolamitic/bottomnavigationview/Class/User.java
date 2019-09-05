@@ -7,8 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class User
-{
+public class User {
     //public String uid;
     private String firstName;
     private String lastName;
@@ -26,12 +25,10 @@ public class User
     private Boolean showplayers;
     private Boolean workback;
 
-    public User()
-    {
+    public User() {
     }
 
-    public User(String firstName, String lastName, String nickname, String dateOfBirth)
-    {
+    public User(String firstName, String lastName, String nickname, String dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -50,123 +47,99 @@ public class User
         this.workback = true;
     }
 
-    public String getFirstName()
-    {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName)
-    {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName()
-    {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName)
-    {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getNickname()
-    {
+    public String getNickname() {
         return nickname;
     }
 
-    public void setNickname(String nickname)
-    {
+    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public String getDateOfBirth()
-    {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth)
-    {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Double getLongitude()
-    {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude)
-    {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
-    public Double getLatitude()
-    {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude)
-    {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getPoints()
-    {
+    public Integer getPoints() {
         return this.points;
     }
 
-    public void setPoints(Integer points)
-    {
+    public void setPoints(Integer points) {
         this.points = points;
     }
 
-    public ArrayList<String> getFriends()
-    {
+    public ArrayList<String> getFriends() {
         return friends;
     }
 
-    public void setFriends(ArrayList<String> friends)
-    {
+    public void setFriends(ArrayList<String> friends) {
         this.friends = friends;
     }
 
-    public Integer getGpsrefresh()
-    {
+    public Integer getGpsrefresh() {
         return gpsrefresh;
     }
 
-    public void setGpsrefresh(Integer gpsrefresh)
-    {
+    public void setGpsrefresh(Integer gpsrefresh) {
         this.gpsrefresh = gpsrefresh;
     }
 
-    public Boolean getShowfriends()
-    {
+    public Boolean getShowfriends() {
         return showfriends;
     }
 
-    public void setShowfriends(Boolean showfriends)
-    {
+    public void setShowfriends(Boolean showfriends) {
         this.showfriends = showfriends;
     }
 
-    public Boolean getShowplayers()
-    {
+    public Boolean getShowplayers() {
         return showplayers;
     }
 
-    public void setShowplayers(Boolean showplayers)
-    {
+    public void setShowplayers(Boolean showplayers) {
         this.showplayers = showplayers;
     }
 
-    public Boolean getWorkback()
-    {
+    public Boolean getWorkback() {
         return workback;
     }
 
-    public void setWorkback(Boolean workback)
-    {
+    public void setWorkback(Boolean workback) {
         this.workback = workback;
     }
 }

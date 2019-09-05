@@ -10,24 +10,37 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <!--    <uses-feature-->
+    <!--        android:glEsVersion="0x00020000"-->
+    <!--        android:required="true" />-->
+
+    <!--    <uses-feature-->
+    <!--        android:name="android.hardware.camera"-->
+    <!--        android:required="true" />-->
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+
+    <supports-screens
+        android:largeScreens="true"
+        android:resizeable="true" />
     <uses-feature
-        android:glEsVersion="0x00020000"
+        android:name="android.hardware.camera.ar"
         android:required="true" />
 
-    <supports-screens android:resizeable="true" android:largeScreens="true"/>
-
     <application
+
         android:allowBackup="true"
-        android:icon="@mipmap/icon_white"
+        android:icon="@mipmap/icon_dark"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/icon_white"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/icon_dark"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".MainActivity"
@@ -36,10 +49,35 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.media.action.IMAGE_CAPTURE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
+        <activity android:name=".Login.LoginActivity" />
+
+        <activity android:name=".Login.SignupActivity" />
+
+        <activity android:name=".Login.ResetPasswordActivity" />
+
+        <activity
+            android:name=".Bluetooth.DeviceListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/ThemeOverlay.Material.Dark.ActionBar" />
+
+        <activity
+            android:name=".LocationActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:label="AR HELP"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -49,21 +87,13 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBGdvZd7cg3aHFI77FT9-Y747f45LF4RME" />
 
-        <activity android:name=".Login.LoginActivity" />
-
-        <activity android:name=".Login.SignupActivity"/>
-
-        <activity android:name=".Login.ResetPasswordActivity" />
-
-        <activity android:name=".Bluetooth.DeviceListActivity"
-            android:label="@string/select_device"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
-
-        <service android:name=".MyLocationService"
+        <service
+            android:name=".MyLocationService"
             android:enabled="true"
             android:exported="true" />
-
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 
 </manifest>

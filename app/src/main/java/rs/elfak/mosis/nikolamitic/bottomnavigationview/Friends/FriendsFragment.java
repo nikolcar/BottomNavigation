@@ -6,40 +6,25 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.view.menu.ActionMenuItemView;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,8 +35,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Bluetooth.ChatService;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Bluetooth.DeviceListActivity;
@@ -78,7 +63,7 @@ public class FriendsFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.friends_fragment, container, false);
 
-        ListView lvHighscore = (ListView) view.findViewById(R.id.highscore_list);
+        ListView lvHighscore = view.findViewById(R.id.highscore_list);
 
         mFriends = new ArrayList<>();
         friendsList = new ArrayList<>();
@@ -86,45 +71,36 @@ public class FriendsFragment extends Fragment
         mAdapter = new FriendListAdapter(getActivity().getApplicationContext(), mFriends);
         lvHighscore.setAdapter(mAdapter);
 
-        lvHighscore.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-           @Override
-           public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-           {
-               MainActivity mainActivity = (MainActivity) getActivity();
-               if(mainActivity.getSettingsFragment().friends_status)
-               {
-                   FriendModel dataModel = mFriends.get(position);
-                   String friendsUid = dataModel.getuId();
+        lvHighscore.setOnItemClickListener((parent, view1, position, id) -> {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if(mainActivity.getSettingsFragment().friends_status)
+            {
+                FriendModel dataModel = mFriends.get(position);
+                String friendsUid = dataModel.getuId();
 
-                   Marker friendMarker = HomeFragment.mapFriendIdMarker.get(friendsUid);
-                   friendMarker.showInfoWindow();
-                   CameraPosition mCameraPosition = new CameraPosition.Builder().target(friendMarker.getPosition()).zoom(16).build();
-                   mainActivity.getHomeFragment().googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+                Marker friendMarker = HomeFragment.mapFriendIdMarker.get(friendsUid);
+                assert friendMarker != null;
+                friendMarker.showInfoWindow();
+                CameraPosition mCameraPosition = new CameraPosition.Builder().target(friendMarker.getPosition()).zoom(16).build();
+                mainActivity.getHomeFragment().googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
 
-                   mainActivity.performHomeClick();
-               }
-               else
-               {
-                   Toast.makeText(mainActivity, "To find friends on map, you first need to make them visible in settings.", Toast.LENGTH_LONG).show();
-               }
-           }
+                mainActivity.performHomeClick();
+            }
+            else
+            {
+                Toast.makeText(mainActivity, "To find friends on map, you first need to make them visible in settings.", Toast.LENGTH_LONG).show();
+            }
         });
 
-        FloatingActionButton btnAddFriend = (FloatingActionButton) view.findViewById(R.id.btn_add_friend);
+        FloatingActionButton btnAddFriend = view.findViewById(R.id.btn_add_friend);
 
-        btnAddFriend.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (bluetoothAdapter == null) {
-                    Toast.makeText(getActivity(),"Bluetooth is not available", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                ensureDiscoverable(bluetoothAdapter);   //onActivityResult checks if discoverability in enabled and then sends friend request
+        btnAddFriend.setOnClickListener(v -> {
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (bluetoothAdapter == null) {
+                Toast.makeText(getActivity(),"Bluetooth is not available", Toast.LENGTH_LONG).show();
+                return;
             }
+            ensureDiscoverable();   //onActivityResult checks if discoverability in enabled and then sends friend request
         });
         getFriendsFromServer();
         pauseWaitingForFriendsList = true;
@@ -189,33 +165,23 @@ public class FriendsFragment extends Fragment
                     StorageReference storage = FirebaseStorage.getInstance().getReference().child("profile_images/" + friendUid + ".jpg");
                     final long MEMORY = 10 * 1024 * 1024;
 
-                    storage.getBytes(MEMORY).addOnSuccessListener(new OnSuccessListener<byte[]>()
-                    {
-                        @Override
-                        public void onSuccess(final byte[] bytes)
-                        {
-                            //TODO: don't deserialize like this
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
+                    storage.getBytes(MEMORY).addOnSuccessListener(bytes -> {
+                        //TODO: don't deserialize like this
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        bitmap = BitmapManipulation.getCroppedBitmap(bitmap);
 
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " +
-                                    friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
-                            bitmap = null;
-                            updatePoints(friendUid);
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    }).addOnFailureListener(new OnFailureListener()
-                    {
-                        @Override
-                        public void onFailure(@NonNull Exception exception)
-                        {
-                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
-                            mFriends.add(new FriendModel(friend.getFirstName() + " " +
-                                    friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
-                            bitmap = null;
-                            updatePoints(friendUid);
-                            mAdapter.notifyDataSetChanged();
-                        }
+                        mFriends.add(new FriendModel(friend.getFirstName() + " " +
+                                friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
+                        bitmap = null;
+                        updatePoints(friendUid);
+                        mAdapter.notifyDataSetChanged();
+                    }).addOnFailureListener(exception -> {
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.avatar);
+                        mFriends.add(new FriendModel(friend.getFirstName() + " " +
+                                friend.getLastName() + "\n" + friend.getNickname(), friend.getPoints(), bitmap, friendUid));
+                        bitmap = null;
+                        updatePoints(friendUid);
+                        mAdapter.notifyDataSetChanged();
                     });
                 }
                 else
@@ -224,14 +190,7 @@ public class FriendsFragment extends Fragment
                     mFriends.add(new FriendModel("fake user\n" + friendUid, 0, bitmap, friendUid));
                     bitmap = null;
 
-                    Collections.sort(mFriends, new Comparator<FriendModel>()
-                    {
-                        @Override
-                        public int compare(FriendModel o1, FriendModel o2)
-                        {
-                            return o2.getPoints()-o1.getPoints();
-                        }
-                    });
+                    Collections.sort(mFriends, (o1, o2) -> o2.getPoints()-o1.getPoints());
 
                     mAdapter.notifyDataSetChanged();
                 }
@@ -259,14 +218,7 @@ public class FriendsFragment extends Fragment
                 int i = findModelById(friendUid);
                 mFriends.get(i).setPoints(points);
 
-                Collections.sort(mFriends, new Comparator<FriendModel>()
-                {
-                    @Override
-                    public int compare(FriendModel o1, FriendModel o2)
-                    {
-                        return o2.getPoints()-o1.getPoints();
-                    }
-                });
+                Collections.sort(mFriends, (o1, o2) -> o2.getPoints()-o1.getPoints());
 
                 mAdapter.notifyDataSetChanged();
             }
@@ -294,14 +246,9 @@ public class FriendsFragment extends Fragment
 
     private void addNewFriend()
     {
-        Runnable r = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-            }
+        Runnable r = () -> {
+            Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
         };
         Thread btThread = new Thread(r);
         btThread.start();
@@ -329,126 +276,103 @@ public class FriendsFragment extends Fragment
     private BluetoothAdapter bluetoothAdapter = null;
     private ChatService chatService = null;
 
-    private Handler handler = new Handler(new Handler.Callback()
-    {
-        @Override
-        public boolean handleMessage(Message msg)
+    private Handler handler = new Handler(msg -> {
+        switch (msg.what)
         {
-            switch (msg.what)
-            {
-                case MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1)
-                    {
-                        case ChatService.STATE_CONNECTED:
-                            sendFriendRequest();
-                            break;
-                        case ChatService.STATE_CONNECTING:
-                            sendFriendRequest();
-                            break;
-                        case ChatService.STATE_LISTEN:
-                        case ChatService.STATE_NONE:
-                            break;
-                    }
-                    break;
-                case MESSAGE_WRITE:
-                    break;
-                case MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    String message = new String(readBuf, 0, msg.arg1);
+            case MESSAGE_STATE_CHANGE:
+                switch (msg.arg1)
+                {
+                    case ChatService.STATE_CONNECTED:
+                        sendFriendRequest();
+                        break;
+                    case ChatService.STATE_CONNECTING:
+                        sendFriendRequest();
+                        break;
+                    case ChatService.STATE_LISTEN:
+                    case ChatService.STATE_NONE:
+                        break;
+                }
+                break;
+            case MESSAGE_WRITE:
+                break;
+            case MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                String message = new String(readBuf, 0, msg.arg1);
 
-                    int _char = message.lastIndexOf("_");
-                    String messageCheck = message.substring(0,_char+1);
-                    final String friendsUid = message.substring(_char+1);
+                int _char = message.lastIndexOf("_");
+                String messageCheck = message.substring(0,_char+1);
+                final String friendsUid = message.substring(_char+1);
 
-                    if(messageCheck.equals(FRIEND_REQUEST_CODE))
-                    {
-                        Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-                        v.vibrate(500);
+                if(messageCheck.equals(FRIEND_REQUEST_CODE))
+                {
+                    Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(500);
 
-                        final String myUid = MainActivity.loggedUser.getUid();
-                        final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(myUid);
-                        final DatabaseReference dbRef = database.child("friends");
+                    final String myUid = MainActivity.loggedUser.getUid();
+                    final DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(myUid);
+                    final DatabaseReference dbRef = database.child("friends");
 
-                        getActivity().runOnUiThread(new Runnable()
-                        {
-                            public void run()
+                    getActivity().runOnUiThread(() -> new AlertDialog.Builder(getActivity())
+                            .setTitle("Confirm friend request")
+                            .setMessage("Are you sure you want to become friends with a device\n\n" + connectedDeviceName)
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> dbRef.addListenerForSingleValueEvent(new ValueEventListener()
                             {
-                                new AlertDialog.Builder(getActivity())
-                                        .setTitle("Confirm friend request")
-                                        .setMessage("Are you sure you want to become friends with a device\n\n" + connectedDeviceName)
-                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                                        {
-                                            public void onClick(DialogInterface dialog, int which)
-                                            {
-                                                dbRef.addListenerForSingleValueEvent(new ValueEventListener()
-                                                {
-                                                    @Override
-                                                    public void onDataChange(DataSnapshot dataSnapshot)
-                                                    {
-                                                        List<String> friendsList = new ArrayList<>();
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot)
+                                {
+                                    List<String> friendsList = new ArrayList<>();
 
-                                                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren())
-                                                        {
-                                                            String json = singleSnapshot.toString();
+                                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren())
+                                    {
+                                        String json = singleSnapshot.toString();
 
-                                                            //TODO: deserialize via class, not like this
-                                                            String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
-                                                            friendsList.add(friendUid);
-                                                        }
+                                        //TODO: deserialize via class, not like this
+                                        String friendUid = json.substring(json.indexOf("value = ") + 8, json.length() - 2);
+                                        friendsList.add(friendUid);
+                                    }
 
-                                                        if (friendsList.contains(friendsUid))
-                                                        {
-                                                            Toast.makeText(getActivity(), "You already have this friend!", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                        else
-                                                        {
-                                                            friendsList.add(friendsUid);
-                                                            dbRef.setValue(friendsList);
+                                    if (friendsList.contains(friendsUid))
+                                    {
+                                        Toast.makeText(getActivity(), "You already have this friend!", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else
+                                    {
+                                        friendsList.add(friendsUid);
+                                        dbRef.setValue(friendsList);
 
-                                                            Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_FRIEND + " points!",Toast.LENGTH_SHORT).show();
-                                                            MyLocationService.myPoints += ADD_POINTS_NEW_FRIEND;
-                                                            database.child("points").setValue(MyLocationService.myPoints);
+                                        Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_FRIEND + " points!",Toast.LENGTH_SHORT).show();
+                                        MyLocationService.myPoints += ADD_POINTS_NEW_FRIEND;
+                                        database.child("points").setValue(MyLocationService.myPoints);
 
-                                                            getFriendData(friendsUid);
+                                        getFriendData(friendsUid);
 
-                                                            Marker friendMarker = HomeFragment.mapUserIdMarker.get(friendsUid);
-                                                            HomeFragment.mapUserIdMarker.remove(friendsUid);
-                                                            friendMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, getActivity())));
-                                                            friendMarker.setVisible(((MainActivity)getActivity()).getSettingsFragment().friends_status);
-                                                            HomeFragment.mapFriendIdMarker.put(friendsUid, friendMarker);
-                                                        }
-                                                    }
+                                        Marker friendMarker = HomeFragment.mapUserIdMarker.get(friendsUid);
+                                        HomeFragment.mapUserIdMarker.remove(friendsUid);
+                                        friendMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapManipulation.getMarkerBitmapFromView(R.mipmap.friend, getActivity())));
+                                        friendMarker.setVisible(((MainActivity)getActivity()).getSettingsFragment().friends_status);
+                                        HomeFragment.mapFriendIdMarker.put(friendsUid, friendMarker);
+                                    }
+                                }
 
-                                                    @Override
-                                                    public void onCancelled(DatabaseError databaseError)
-                                                    {
-                                                    }
-                                                });
-                                            }
-                                        })
-                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
-                                        {
-                                            public void onClick(DialogInterface dialog, int which)
-                                            {
-                                                Toast.makeText(getActivity(), "You declined friend request", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .setIcon(R.mipmap.logo)
-                                        .show();
-                            }
-                        });
-                    }
-                    break;
-                case MESSAGE_DEVICE_NAME:
-                    connectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    Toast.makeText(getActivity(), "Connected to " + connectedDeviceName + "\nClose upper window and confirm friend request.", Toast.LENGTH_LONG).show();
-                    break;
-                case MESSAGE_TOAST:
-                    Toast.makeText(getActivity(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
-                    break;
-            }
-            return false;
+                                @Override
+                                public void onCancelled(DatabaseError databaseError)
+                                {
+                                }
+                            }))
+                            .setNegativeButton(android.R.string.no, (dialog, which) -> Toast.makeText(getActivity(), "You declined friend request", Toast.LENGTH_SHORT).show())
+                            .setIcon(R.mipmap.logo)
+                            .show());
+                }
+                break;
+            case MESSAGE_DEVICE_NAME:
+                connectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                Toast.makeText(getActivity(), "Connected to " + connectedDeviceName + "\nClose upper window and confirm friend request.", Toast.LENGTH_LONG).show();
+                break;
+            case MESSAGE_TOAST:
+                Toast.makeText(getActivity(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
+                break;
         }
+        return false;
     });
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -483,7 +407,7 @@ public class FriendsFragment extends Fragment
 
     private void connectDevice(Intent data, boolean secure)
     {
-        String address = data.getExtras().getString(DeviceListActivity.DEVICE_ADDRESS);
+        String address = Objects.requireNonNull(data.getExtras()).getString(DeviceListActivity.DEVICE_ADDRESS);
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
         try
         {
@@ -497,7 +421,7 @@ public class FriendsFragment extends Fragment
         }
     }
 
-    private void ensureDiscoverable(BluetoothAdapter bluetoothAdapter)
+    private void ensureDiscoverable()
     {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, BT_DISCOVERABLE_TIME);
@@ -519,17 +443,16 @@ public class FriendsFragment extends Fragment
         }
     }
 
-    private boolean setupChat()
+    private void setupChat()
     {
         chatService = new ChatService(getActivity(), handler);
-        outStringBuffer = new StringBuffer("");
+        outStringBuffer = new StringBuffer();
 
         if (chatService.getState() == ChatService.STATE_NONE)
         {
             chatService.start();
         }
 
-        return true;
     }
 
     private void sendFriendRequest()

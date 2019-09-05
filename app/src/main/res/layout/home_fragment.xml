@@ -1,69 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/dark">
 
-        <RelativeLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:id="@+id/search_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:weightSum="1"
-            android:background="@color/white">
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-            <LinearLayout
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchMap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                android:id="@+id/search_layout">
+                android:layout_weight="0.5"
+                android:background="@color/dark"
+                android:theme="@style/AppTheme"
+                app:closeIcon="@drawable/ic_close_blue_24dp"
+                app:searchHintIcon="@null"
+                app:searchIcon="@drawable/ic_search_blue_24dp" />
 
-                <android.support.v7.widget.SearchView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/searchMap"
-                    android:theme="@style/AppTheme"
-                    android:layout_weight="0.5"
-                    app:searchHintIcon="@null"
-                    app:searchIcon="@drawable/ic_search_blue_24dp"
-                    app:closeIcon="@drawable/ic_close_blue_24dp" />
-
-                <Spinner
-                    android:id="@+id/spinnerMapSearchCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:popupBackground="@color/white"
-                    android:layout_weight="0.5" />
-
-            </LinearLayout>
-
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+            <Spinner
+                android:id="@+id/spinnerMapSearchCategory"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/search_layout"/>
+                android:layout_weight="0.5"
+                android:popupBackground="@color/dark" />
+        </LinearLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_cancel_direction_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                app:srcCompat="@drawable/ic_clear_white_24dp"
-                android:layout_below="@id/search_layout"
-                android:layout_alignEnd="@id/search_layout"
-                android:visibility="gone"/>
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/search_layout"
+            android:background="@color/dark" />
 
-        </RelativeLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_cancel_direction_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_layout"
+            android:layout_alignEnd="@id/search_layout"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_clear_white_24dp" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btn_add_new_parking"
+    </RelativeLayout>
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/btn_add_new_parking"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="@dimen/activity_horizontal_margin"-->
+    <!--        app:backgroundTint="@android:color/black"-->
+    <!--        app:srcCompat="@drawable/ic_add_white_24dp"-->
+    <!--        android:layout_gravity="bottom"-->
+    <!--    />-->
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/floating_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        app:srcCompat="@drawable/ic_add_white_24dp"
-        android:layout_gravity="bottom|end"/>
+        android:layout_gravity="bottom|end"
+        android:background="@color/transparent"
+        app:fab_addButtonColorNormal="@android:color/black"
+        app:fab_addButtonColorPressed="@color/white"
+        app:fab_labelsPosition="right">
 
-</android.support.design.widget.CoordinatorLayout>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_add_new_parking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@android:color/black"
+            app:fab_colorPressed="@color/white"
+            app:fab_icon="@drawable/ic_add_white_24dp"
+            app:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_parked_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@android:color/black"
+            app:fab_colorPressed="@color/white"
+            app:fab_icon="@drawable/ic_parking_white_24dp"
+            app:fab_size="mini"
+            app:fab_title="@string/Add_new_parking" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

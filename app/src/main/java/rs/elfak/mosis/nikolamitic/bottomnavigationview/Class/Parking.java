@@ -4,8 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
 
-public class Parking
-{
+public class Parking {
     private String name;
     private Double longitude;
     private Double latitude;
@@ -14,14 +13,12 @@ public class Parking
     private String adderId;
     private boolean secret;
     //private Date date;
-    public String pid;
+    private String pid;
 
-    public Parking()
-    {
+    public Parking() {
     }
 
-    public Parking(String name, String description, Double lon, Double lat, String uid, boolean secret)
-    {
+    public Parking(String name, String description, Double lon, Double lat, String uid, boolean secret) {
         this.name = name;
         this.description = description;
 
@@ -32,73 +29,59 @@ public class Parking
         this.secret = secret;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Double getLongitude()
-    {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude)
-    {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
-    public Double getLatitude()
-    {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude)
-    {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description)
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getAdderId()
-    {
+    public String getAdderId() {
         return adderId;
     }
 
-    public void setAdderId(String adderId)
-    {
+    public void setAdderId(String adderId) {
         this.adderId = adderId;
     }
 
-    public boolean isSecret()
-    {
+    public boolean isSecret() {
         return secret;
     }
 
-    public void setSecret(boolean secret)
-    {
+    public void setSecret(boolean secret) {
         this.secret = secret;
     }
 
-    public String getPid()
-    {
+    public String getPid() {
         return pid;
     }
 
-    public void setPid(String pid)
-    {
+    public void setPid(String pid) {
         this.pid = pid;
     }
 }

@@ -1,5 +1,5 @@
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Locate Parking</string>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Park here</string>
     <string name="title_home">Home</string>
     <string name="title_friends">Friends</string>
     <string name="title_settings">Settings</string>
@@ -27,7 +27,7 @@
     <string name="parking_long">Longitude</string>
     <string name="parking_lati">Latitude</string>
     <string name="add">ADD</string>
-    <string name="cancel">CANCEL</string>
+    <string name="cancel" tools:ignore="ButtonCase">CANCEL</string>
     <string name="Add_new_parking">ADD PARKING</string>
     <string name="change_image">CHANGE IMAGE</string>
 
@@ -35,7 +35,7 @@
     <string name="show_players">Show other users on the map</string>
     <string name="show_friends">Show friends on the map</string>
     <string name="gps_refresh">GPS refresh time</string>
-    <string name="about">by nikolcar</string>
+    <string name="about">by luxtech</string>
     <string name="save">SAVE</string>
     <string name="camera_upload">Camera</string>
     <string name="gallery_upload">Gallery</string>
@@ -43,8 +43,8 @@
     <string name="new_password">New password</string>
     <string name="btn_change">CHANGE</string>
     <string name="title_location_permission">Location permission</string>
-    <string name="text_location_permission">Allow Locate Parking app to access this device\'s location?</string>
-    <string name="ok">Ok</string>
+    <string name="text_location_permission">Allow Park here app to access this device\'s location?</string>
+    <string name="ok">OK</string>
     <string-array name="gps_refresh_array">
         <item>1</item>
         <item>5</item>
@@ -66,11 +66,11 @@
     <string name="send">Send</string>
     <string name="not_connected">You are not connected to a device</string>
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled.</string>
-    <string name="title_connecting">Connecting...</string>
+    <string name="title_connecting">Connecting…</string>
     <string name="title_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="title_not_connected">Not connected</string>
 
-    <string name="scanning">Scanning for devices...</string>
+    <string name="scanning">Scanning for devices…</string>
     <string name="select_device">Select a Device to connect to:</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
@@ -84,5 +84,6 @@
     <string name="title_activity_devicelist">Device List</string>
     <string name="title_player_info">Player info</string>
     <string name="directionsApiKey">AIzaSyAPMXnzeKDxdofUT2VRA_CaraGBodv6RCI</string>
+    <string name="plane_finding">Searching for surfaces&#8230;</string>
 
 </resources>

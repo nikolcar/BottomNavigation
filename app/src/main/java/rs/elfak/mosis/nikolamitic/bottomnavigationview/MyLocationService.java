@@ -1,5 +1,6 @@
 package rs.elfak.mosis.nikolamitic.bottomnavigationview;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -18,9 +19,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DataSnapshot;
@@ -29,11 +31,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapFriendIdMarker;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.Home.HomeFragment.mapParkingIdMarker;
 
-public class MyLocationService extends Service
-{
+public class MyLocationService extends Service {
     private LocationManager mLocationManager = null;
     public static final int NOTIFY_DISTANCE = 500;
     private static final int LOCATION_INTERVAL = 1000;
@@ -48,32 +51,27 @@ public class MyLocationService extends Service
     private Long timeLastNotification = 0L;
 
 
-    public static float distanceBetween(float lat1, float lng1, float lat2, float lng2)
-    {
+    public static float distanceBetween(float lat1, float lng1, float lat2, float lng2) {
         double earthRadius = 6371000; //meters
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        float dist = (float) (earthRadius * c);
+                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return dist;
+        return (float) (earthRadius * c);
     }
 
-    private class LocationListener implements android.location.LocationListener
-    {
+    private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
-        public LocationListener(String provider)
-        {
+        LocationListener(String provider) {
             mLastLocation = new Location(provider);
         }
 
         @Override
-        public void onLocationChanged(Location location)
-        {
+        public void onLocationChanged(Location location) {
             mLastLocation.set(location);
             mLastLocation.set(location);
 
@@ -92,23 +90,19 @@ public class MyLocationService extends Service
 
 
         @Override
-        public void onProviderDisabled(String provider)
-        {
+        public void onProviderDisabled(String provider) {
         }
 
         @Override
-        public void onProviderEnabled(String provider)
-        {
+        public void onProviderEnabled(String provider) {
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
+        public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     }
 
-    private void showParkingInRadius()
-    {
+    private void showParkingInRadius() {
         double myNewLat, myNewLon;
         myNewLat = latitude;
         myNewLon = longitude;
@@ -117,15 +111,12 @@ public class MyLocationService extends Service
         Marker minDistanceMarker = null;
         boolean minDistanceSecret = false;
 
-        for (Marker marker : mapParkingIdMarker.values())
-        {
-            String secret = marker.getTag().toString();
+        for (Marker marker : mapParkingIdMarker.values()) {
+            String secret = Objects.requireNonNull(marker.getTag()).toString();
             Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
 
-            if (distanceFromMarker < NOTIFY_DISTANCE)
-            {
-                if (distanceFromMarker < minDistance)
-                {
+            if (distanceFromMarker < NOTIFY_DISTANCE) {
+                if (distanceFromMarker < minDistance) {
                     minDistance = distanceFromMarker;
                     minDistanceMarker = marker;
                     minDistanceSecret = secret.startsWith("private");
@@ -133,37 +124,32 @@ public class MyLocationService extends Service
             }
         }
 
-        if(minDistanceMarker!=null)
-        {
+        if (minDistanceMarker != null) {
             int type = 2;
-            if(minDistanceSecret)
+            if (minDistanceSecret)
                 type = 3;
 
-            showNotification(type,minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
+            showNotification(type, minDistanceMarker.getTitle() + " is " + Math.round(minDistance) + " meters away from you!");
         }
     }
 
-    public void showFriendsInRadius(/*Marker marker*/)
-    {
+    public void showFriendsInRadius(/*Marker marker*/) {
         double myNewLat, myNewLon;
         myNewLat = latitude;
         myNewLon = longitude;
 
 //        if (marker == null)
 //        {
-            for (String key : mapFriendIdMarker.keySet())
-            {
-                Marker marker = mapFriendIdMarker.get(key);
-                Float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
-                if (distanceFromMarker < NOTIFY_DISTANCE && !key.equals(MainActivity.loggedUser.getUid()))
-                {
-                    showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
-                }
-                else
-                {
-                    //deleteNotification(this,1);
-                }
-            }
+        for (String key : mapFriendIdMarker.keySet()) {
+            Marker marker = mapFriendIdMarker.get(key);
+            assert marker != null;
+            float distanceFromMarker = distanceBetween((float) myNewLat, (float) myNewLon, (float) marker.getPosition().latitude, (float) marker.getPosition().longitude);
+            if (distanceFromMarker < NOTIFY_DISTANCE && !key.equals(MainActivity.loggedUser.getUid())) {
+                showNotification(1, marker.getTitle() + " is " + Math.round(distanceFromMarker) + " meters away from you!");
+            } //else {
+                //deleteNotification(this,1);
+            //}
+        }
 //        }
 //        else
 //        {
@@ -180,7 +166,6 @@ public class MyLocationService extends Service
     }
 
 
-
     //    LocationListener[] mLocationListeners = new LocationListener[]
 //    {
 //        new LocationListener(LocationManager.GPS_PROVIDER),
@@ -188,34 +173,29 @@ public class MyLocationService extends Service
 //    };
 
     LocationListener[] mLocationListeners = new LocationListener[]
-    {
-        new LocationListener(LocationManager.PASSIVE_PROVIDER)
-    };
+            {
+                    new LocationListener(LocationManager.PASSIVE_PROVIDER)
+            };
 
     @Override
-    public IBinder onBind(Intent arg0)
-    {
+    public IBinder onBind(Intent arg0) {
         return null;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
         loggedUserUid = MainActivity.loggedUser.getUid();
 
-        database.getReference("users").child(loggedUserUid).child("points").addListenerForSingleValueEvent(new ValueEventListener()
-        {
+        database.getReference("users").child(loggedUserUid).child("points").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 myPoints = dataSnapshot.getValue(Integer.class);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
 
@@ -223,27 +203,21 @@ public class MyLocationService extends Service
     }
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         initializeLocationManager();
 
         database = FirebaseDatabase.getInstance();
 
-        try
-        {
+        try {
             mLocationManager.requestLocationUpdates(
-                    LocationManager.PASSIVE_PROVIDER,
+                    LocationManager.GPS_PROVIDER,
                     LOCATION_INTERVAL/*SettingsFragment.gpsRefresh*/,
                     LOCATION_DISTANCE,
                     mLocationListeners[0]
             );
-        }
-        catch (java.lang.SecurityException ex)
-        {
+        } catch (java.lang.SecurityException ex) {
             Log.i("", "fail to request location update, ignore", ex);
-        }
-        catch (IllegalArgumentException ex)
-        {
+        } catch (IllegalArgumentException ex) {
             Log.d("", "network provider does not exist, " + ex.getMessage());
         }
 
@@ -267,33 +241,24 @@ public class MyLocationService extends Service
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
-        if (mLocationManager != null)
-        {
-            for (int i = 0; i < mLocationListeners.length; i++)
-            {
-                try
-                {
-                    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                    {
+        if (mLocationManager != null) {
+            for (LocationListener mLocationListener : mLocationListeners) {
+                try {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
-                }
-                catch (Exception ex)
-                {
+                    mLocationManager.removeUpdates(mLocationListener);
+                } catch (Exception ex) {
                     Log.i("", "fail to remove location listener, ignore", ex);
                 }
             }
         }
     }
 
-    private void initializeLocationManager()
-    {
-        if (mLocationManager == null)
-        {
+    private void initializeLocationManager() {
+        if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
@@ -303,14 +268,12 @@ public class MyLocationService extends Service
     private boolean firstNotification = true;
     NotificationCompat.Builder mBuilder = null;
 
-    public void showNotification(int uid, String text)
-    {
+    public void showNotification(int uid, String text) {
         vibrationAndSoundNotification();
 
         mNotificationId = uid;
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if(firstNotification)
-        {
+        if (firstNotification) {
             firstNotification = false;
             mBuilder = new NotificationCompat.Builder(this)
                     .setOnlyAlertOnce(true)
@@ -330,62 +293,49 @@ public class MyLocationService extends Service
             mBuilder.setContentIntent(resultPendingIntent);
         }
 
-        Bitmap icon = null;
-        String what = "";
+        Bitmap icon;
+        String what;
 
-        if(uid==1)
-        {
+        if (uid == 1) {
             icon = BitmapFactory.decodeResource(getResources(), R.mipmap.friend);
             what = "friend";
+        } else if (uid == 2) {
+            icon = BitmapFactory.decodeResource(getResources(), R.mipmap.occupied);
+            what = "public parking";
+        } else {
+            icon = BitmapFactory.decodeResource(getResources(), R.mipmap.free);
+            what = "private parking";
         }
-        else
-            if(uid==2)
-            {
-                icon = BitmapFactory.decodeResource(getResources(), R.mipmap.occupied);
-                what ="public parking";
-            }
-            else
-            {
-                icon = BitmapFactory.decodeResource(getResources(), R.mipmap.free);
-                what ="private parking";
-            }
 
-        mBuilder.setSmallIcon(R.mipmap.privateparking).setLargeIcon(icon).setContentTitle("The "+what+" is near");
+        mBuilder.setSmallIcon(R.mipmap.privateparking).setLargeIcon(icon).setContentTitle("The " + what + " is near");
 
         mBuilder.setContentText(text).setAutoCancel(true);
         mNotificationManager.notify(mNotificationId, mBuilder.build());
         System.gc(); //force garbage collector
     }
 
-    private void vibrationAndSoundNotification()
-    {
-        Long time = System.currentTimeMillis()/1000;
+    private void vibrationAndSoundNotification() {
+        Long time = System.currentTimeMillis() / 1000;
 
-        if(time-timeLastNotification>TIME_BETWEEN_NOTIFICATIONS)
-        {   //notify user only every TIME_BETWEEN_NOTIFICATIONS seconds
+        if (time - timeLastNotification > TIME_BETWEEN_NOTIFICATIONS) {   //notify user only every TIME_BETWEEN_NOTIFICATIONS seconds
             timeLastNotification = time;
 
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(500);
 
-            try
-            {
+            try {
                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 r.play();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static void deleteAllNotifications(Context ctx)
-    {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
-        for(int i =1; i<4; i++)
+    public static void deleteAllNotifications(Context ctx) {
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        for (int i = 1; i < 4; i++)
             nMgr.cancel(i);
     }
 }

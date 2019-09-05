@@ -9,10 +9,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,6 +22,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,6 +53,7 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
@@ -64,19 +66,20 @@ import rs.elfak.mosis.nikolamitic.bottomnavigationview.R;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.SearchStrategy;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Strategy.TypeSearchStrategy;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity.customToast;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
 
-public class HomeFragment extends Fragment
-{
+public class HomeFragment extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private static final int ADD_POINTS_NEW_PARKING = 5;
 
     public GoogleMap googleMap;
     private MapView mMapView;
-    public static HashMap<String, Marker> mapParkingIdMarker = new HashMap<String, Marker>();
-    public static HashMap<String, Marker> mapUserIdMarker = new HashMap<String, Marker>();
-    public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<String, Marker>();
+    public static HashMap<String, Marker> mapParkingIdMarker = new HashMap<>();
+    public static HashMap<String, Marker> mapUserIdMarker = new HashMap<>();
+    public static HashMap<String, Marker> mapFriendIdMarker = new HashMap<>();
 
     private Circle distanceCircle;
     private SearchStrategy searchStrategy = null;
@@ -86,262 +89,202 @@ public class HomeFragment extends Fragment
 
     private SearchView search;
     private Spinner sSearchType;
-    private FloatingActionButton btnCancelDirections;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton btnCancelDirections;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
 
         final Rect displayRectangle = new Rect();
         Window window = getActivity().getWindow();
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-        final LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
 
-        FloatingActionButton btnAddNewParking = (FloatingActionButton) view.findViewById(R.id.btn_add_new_parking);
-        btnCancelDirections = (FloatingActionButton) view.findViewById(R.id.btn_cancel_direction_mode);
-        sSearchType = (Spinner) view.findViewById(R.id.spinnerMapSearchCategory);
-        search = (SearchView) view.findViewById(R.id.searchMap);
+        FloatingActionButton btnAddNewParking = view.findViewById(R.id.btn_add_new_parking);
+        btnCancelDirections = view.findViewById(R.id.btn_cancel_direction_mode);
+        sSearchType = view.findViewById(R.id.spinnerMapSearchCategory);
+        search = view.findViewById(R.id.searchMap);
 
-        btnAddNewParking.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialog = new Dialog(getActivity(),R.style.dialog_no_tytle);
+        btnAddNewParking.setOnClickListener(v -> {
+            dialog = new Dialog(getActivity(), R.style.dialog_no_tytle);
 
-                View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
-                layout.setMinimumWidth((int)(displayRectangle.width() * 0.8f));
+            View layout = layoutInflater.inflate(R.layout.dialog_add_parking, null);
+            layout.setMinimumWidth((int) (displayRectangle.width() * 0.8f));
 
-                dialog.setContentView(layout);
+            dialog.setContentView(layout);
 
-                TextView tvTitle = (TextView) dialog.findViewById(R.id.add_parking_title);
-                tvTitle.setText(R.string.Add_new_parking);
+            TextView tvTitle = dialog.findViewById(R.id.add_parking_title);
+            tvTitle.setText(R.string.Add_new_parking);
 
-                final EditText etName = (EditText) dialog.findViewById(R.id.add_parking_name);
-                final EditText etDescription = (EditText) dialog.findViewById(R.id.add_parking_desc);
-                final EditText etLatitude = (EditText) dialog.findViewById(R.id.add_parking_lati);
-                final EditText etLongitude = (EditText) dialog.findViewById(R.id.add_parking_long);
-                final Spinner sType = (Spinner) dialog.findViewById(R.id.add_parking_type);
+            final EditText etName = dialog.findViewById(R.id.add_parking_name);
+            final EditText etDescription = dialog.findViewById(R.id.add_parking_desc);
+            final EditText etLatitude = dialog.findViewById(R.id.add_parking_lati);
+            final EditText etLongitude = dialog.findViewById(R.id.add_parking_long);
+            final Spinner sType = dialog.findViewById(R.id.add_parking_type);
 
-                Button btnAddParking = (Button) dialog.findViewById(R.id.btn_add_parking);
+            Button btnAddParking = dialog.findViewById(R.id.btn_add_parking);
 
-                btnAddParking.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final String name = etName.getText().toString();
-                        final String description = etDescription.getText().toString();
+            btnAddParking.setOnClickListener(v1 -> {
+                final String name = etName.getText().toString();
+                final String description = etDescription.getText().toString();
 
-                        Double longitude, latitude;
-                        try
-                        {
-                            latitude = Double.parseDouble(etLatitude.getText().toString());
-                            longitude = Double.parseDouble(etLongitude.getText().toString());
-                        }
-                        catch (Throwable t)
-                        {
-                            Toast.makeText(getActivity(),"Turn on GPS and try again", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        String text = sType.getSelectedItem().toString();
-
-                        final boolean secret = (text.equals("Private"));
-
-                        if (TextUtils.isEmpty(name))
-                        {
-                            Toast.makeText(getActivity(), "Enter parking name!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (TextUtils.isEmpty(description))
-                        {
-                            Toast.makeText(getActivity(), "Enter parking description!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        String uid = MainActivity.loggedUser.getUid();
-                        DatabaseReference parkings = FirebaseDatabase.getInstance().getReference("parkings");
-                        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(uid);
-
-                        Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
-                        String key = parkings.push().getKey();
-                        newParking.setPid(key);
-                        parkings.child(key).setValue(newParking);
-
-                        Toast.makeText(getActivity(),"Adding " + ADD_POINTS_NEW_PARKING + " points!",Toast.LENGTH_SHORT).show();
-                        MyLocationService.myPoints += ADD_POINTS_NEW_PARKING;
-                        database.child("points").setValue(MyLocationService.myPoints);
-
-                        Toast.makeText(getActivity(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                });
-
-                Button btnCancelParking = (Button) dialog.findViewById(R.id.btn_cancel_parking);
-                btnCancelParking.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialog.dismiss();
-                    }
-                });
-
-                if(latitude!=null && longitude!=null)
-                {
-                    etLatitude.setText(String.valueOf(latitude));
-                    etLongitude.setText(String.valueOf(longitude));
-                }
-                else
-                {
-                    Toast.makeText(getActivity(),"Turn on GPS and try again",Toast.LENGTH_SHORT).show();
-                    etLatitude.setText("unknown");
-                    etLongitude.setText("unknown");
+                Double longitude, latitude;
+                try {
+                    latitude = Double.parseDouble(etLatitude.getText().toString());
+                    longitude = Double.parseDouble(etLongitude.getText().toString());
+                } catch (Throwable t) {
+                    customToast(getActivity(), "Turn on GPS and try again", Toast.LENGTH_SHORT);
+                    return;
                 }
 
-                dialog.show();
+                String text = sType.getSelectedItem().toString();
+
+                final boolean secret = (text.equals("Private"));
+
+                if (TextUtils.isEmpty(name)) {
+                    customToast(getActivity(), "Enter parking name!", Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                if (TextUtils.isEmpty(description)) {
+                    customToast(getActivity(), "Enter parking description!", Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                String uid = MainActivity.loggedUser.getUid();
+                DatabaseReference parkings = FirebaseDatabase.getInstance().getReference("parkings");
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(uid);
+
+                Parking newParking = new Parking(name, description, longitude, latitude, uid, secret);
+                String key = parkings.push().getKey();
+                newParking.setPid(key);
+                assert key != null;
+                parkings.child(key).setValue(newParking);
+
+                customToast(getActivity(), "Adding " + ADD_POINTS_NEW_PARKING + " points!", Toast.LENGTH_SHORT);
+                MyLocationService.myPoints += ADD_POINTS_NEW_PARKING;
+                database.child("points").setValue(MyLocationService.myPoints);
+
+                customToast(getActivity(), "Parking " + name + " has been added!", Toast.LENGTH_SHORT);
+                dialog.dismiss();
+            });
+
+            Button btnCancelParking = dialog.findViewById(R.id.btn_cancel_parking);
+            btnCancelParking.setOnClickListener(v12 -> dialog.dismiss());
+
+            if (latitude != null && longitude != null) {
+                etLatitude.setText(String.valueOf(latitude));
+                etLongitude.setText(String.valueOf(longitude));
+            } else {
+                customToast(getActivity(), "Turn on GPS and try again", Toast.LENGTH_SHORT);
+                etLatitude.setText("unknown");
+                etLongitude.setText("unknown");
             }
+
+            dialog.show();
         });
 
 
-        btnCancelDirections.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                direction.remove();
-                for (Marker marker: mapParkingIdMarker.values())
-                {
-                    marker.setVisible(true);
-                }
-
-                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(15).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-
-                changeVisibility(false);
+        btnCancelDirections.setOnClickListener(v -> {
+            direction.remove();
+            for (Marker marker : mapParkingIdMarker.values()) {
+                marker.setVisible(true);
             }
+
+            CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(15).build();
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+            changeVisibility(false);
         });
 
-        mMapView = (MapView) view.findViewById(R.id.mapView);
+        mMapView = view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
         mMapView.onResume(); // needed to get the map to display immediately
 
-        try
-        {
+        try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        mMapView.getMapAsync(new OnMapReadyCallback()
-        {
-            @Override
-            public void onMapReady(GoogleMap mMap)
-            {
-                googleMap = mMap;
+        mMapView.getMapAsync(mMap -> {
+            googleMap = mMap;
 
-                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-                // For showing a move to my location button
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+            // For showing a move to my location button
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
 
-                    return;
-                }
-                googleMap.setMyLocationEnabled(false);
-                googleMap.getUiSettings().setMapToolbarEnabled(false);
-
-                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
-                {
-                    @Override
-                    public void onInfoWindowClick(final Marker mMarker)
-                    {
-                        final String parkingId = getKeyFromValue(mapParkingIdMarker, mMarker);
-                        if(parkingId != null)
-                        {
-                            if(latitude!=null && longitude!=null)
-                            {
-                                dialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle("Get direction to " + mMarker.getTitle() + " parking?")
-                                        .setMessage("Are you sure you want to get direction to \n\n" + mMarker.getTitle() + "\n" + mMarker.getSnippet())
-                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                                        {
-                                            public void onClick(DialogInterface dialog, int which)
-                                            {
-                                                dialog.dismiss();
-
-                                                for (Marker marker : mapParkingIdMarker.values())
-                                                {
-                                                    marker.setVisible(false);
-                                                }
-
-                                                mMarker.setVisible(true);
-
-                                                changeVisibility(true);
-
-                                                getDirection(latitude, longitude, mMarker.getPosition().latitude, mMarker.getPosition().longitude);
-
-                                                CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
-                                                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-
-                                                DateTime now = new DateTime();
-                                                DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
-                                                Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parkingId, now.toString());
-                                                String key = statistic.push().getKey();
-                                                statistic.child(key).setValue(stat);
-                                            }
-                                        })
-                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Toast.makeText(getActivity(), "You declined parking direction!", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .setIcon(R.mipmap.logo).show();
-                            }
-                            else
-                            {
-                                Toast.makeText(getActivity(),"Turn on GPS and try again",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
+                return;
             }
+            googleMap.setMyLocationEnabled(false);
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+            googleMap.setOnInfoWindowClickListener(mMarker -> {
+                final String parkingId = getKeyFromValue(mapParkingIdMarker, mMarker);
+                if (parkingId != null) {
+                    if (latitude != null && longitude != null) {
+                        dialog = new AlertDialog.Builder(getActivity())
+                                .setTitle("Get direction to " + mMarker.getTitle() + " parking?")
+                                .setMessage("Are you sure you want to get direction to \n\n" + mMarker.getTitle() + "\n" + mMarker.getSnippet())
+                                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                                    dialog.dismiss();
+
+                                    for (Marker marker : mapParkingIdMarker.values()) {
+                                        marker.setVisible(false);
+                                    }
+
+                                    mMarker.setVisible(true);
+
+                                    changeVisibility(true);
+
+                                    getDirection(latitude, longitude, mMarker.getPosition().latitude, mMarker.getPosition().longitude);
+
+                                    CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(20).tilt(90).build();
+                                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+
+                                    DateTime now = new DateTime();
+                                    DatabaseReference statistic = FirebaseDatabase.getInstance().getReference("statistic");
+                                    Statistic stat = new Statistic(MainActivity.loggedUser.getUid(), parkingId, now.toString());
+                                    String key = statistic.push().getKey();
+                                    assert key != null;
+                                    statistic.child(key).setValue(stat);
+                                })
+                                .setNegativeButton(android.R.string.no, (dialog, which) -> customToast(getActivity(), "You declined parking direction!", Toast.LENGTH_SHORT))
+                                .setIcon(R.mipmap.logo)
+                                .show();
+                    } else {
+                        customToast(getActivity(), "Turn on GPS and try again", Toast.LENGTH_SHORT);
+                    }
+                }
+            });
         });
 
 
-        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item)
-        {
+        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent)
-            {
+            public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                if (position == getCount())
-                {
-                    ((TextView)v.findViewById(android.R.id.text1)).setText("");
-                    ((TextView)v.findViewById(android.R.id.text1)).setHint(getItem(getCount())); //"Hint to be displayed"
+                if (position == getCount()) {
+                    ((TextView) v.findViewById(android.R.id.text1)).setText("");
+                    ((TextView) v.findViewById(android.R.id.text1)).setHint(getItem(getCount())); //"Hint to be displayed"
                 }
 
                 return v;
             }
 
             @Override
-            public int getCount()
-            {
-                return super.getCount()-1; // you dont display last item. It is used as hint.
+            public int getCount() {
+                return super.getCount() - 1; // you dont display last item. It is used as hint.
             }
 
         };
@@ -351,19 +294,16 @@ public class HomeFragment extends Fragment
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sSearchType.setAdapter(spinnerAdapter);
         sSearchType.setSelection(spinnerAdapter.getCount());
-        sSearchType.getBackground().setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+        sSearchType.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-        sSearchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
+        sSearchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                if (distanceCircle != null & position!=1)
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (distanceCircle != null & position != 1)
                     distanceCircle.remove();
 
-                search.setQuery("",false);
-                switch (position)
-                {
+                search.setQuery("", false);
+                switch (position) {
                     case 0:
                         setSearchStrategy(new NameSearchStrategy((MainActivity) getActivity()));
                         setSearch("Enter name");
@@ -378,75 +318,59 @@ public class HomeFragment extends Fragment
                         break;
                 }
 
-                for (Marker marker: mapParkingIdMarker.values())
-                {
+                for (Marker marker : mapParkingIdMarker.values()) {
                     marker.setVisible(true);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent)
-            {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
         search.setQueryHint("Select type first");
-        EditText searchEditText = (EditText)search.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-        searchEditText.setTextColor(getResources().getColor(R.color.blue));
+        EditText searchEditText = search.findViewById(R.id.search_src_text);
+        searchEditText.setTextColor(getResources().getColor(R.color.white));
         searchEditText.setTextSize(15);
 
-        if(!search.isFocused())
-        {
+        if (!search.isFocused()) {
             search.clearFocus();
         }
 
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-        {
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query)
-            {
+            public boolean onQueryTextSubmit(String query) {
                 searchMarker(query);
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText)
-            {
+            public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 1)
                     searchMarker(newText);
                 return false;
             }
         });
 
-        search.setOnCloseListener(new SearchView.OnCloseListener()
-        {
-            @Override
-            public boolean onClose()
-            {
-                for (Marker marker: mapParkingIdMarker.values())
-                {
-                    marker.setVisible(true);
-                }
-
-                if (distanceCircle != null)
-                    distanceCircle.remove();
-
-                return false;
+        search.setOnCloseListener(() -> {
+            for (Marker marker : mapParkingIdMarker.values()) {
+                marker.setVisible(true);
             }
+
+            if (distanceCircle != null)
+                distanceCircle.remove();
+
+            return false;
         });
 
         return view;
     }
 
-    private void changeVisibility(boolean b)
-    {
-        if(b)
-        {
+    private void changeVisibility(boolean b) {
+        if (b) {
             btnCancelDirections.setVisibility(View.VISIBLE);
             search.setVisibility(View.INVISIBLE);
-        }
-        else
-        {
+        } else {
             btnCancelDirections.setVisibility(View.GONE);
             search.setVisibility(View.VISIBLE);
         }
@@ -454,34 +378,27 @@ public class HomeFragment extends Fragment
         sSearchType.setEnabled(!b);
     }
 
-    private void setSearch(String hint)
-    {
+    private void setSearch(String hint) {
         search.setQueryHint(hint);
         search.setIconified(false);
         search.requestFocusFromTouch();
     }
 
-    private void searchMarker(String query)
-    {
-        if (searchStrategy != null)
-        {
+    private void searchMarker(String query) {
+        if (searchStrategy != null) {
             searchStrategy.search(query, mapParkingIdMarker);
-        }
-        else
-        {
-            Toast.makeText(getActivity(),"Please first select type of search!",Toast.LENGTH_SHORT).show();
+        } else {
+            customToast(getActivity(), "Please first select type of search!", Toast.LENGTH_SHORT);
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 //        if (checkLocationPermission()) {
 //            if (ContextCompat.checkSelfPermission(getActivity(),
@@ -497,28 +414,24 @@ public class HomeFragment extends Fragment
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         mMapView.onPause();
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
     }
 
     @Override
-    public void onLowMemory()
-    {
+    public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
@@ -547,7 +460,7 @@ public class HomeFragment extends Fragment
 //                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
 //                                        MY_PERMISSIONS_REQUEST_LOCATION);
 //                            }
-//                        }).create().show();
+//                        }).create();
 //            }
 //            else
 //            {
@@ -594,29 +507,26 @@ public class HomeFragment extends Fragment
 //        }
 //    }
 
-    private void setSearchStrategy(SearchStrategy newSearchStrategy)
-    {
+    private void setSearchStrategy(SearchStrategy newSearchStrategy) {
         this.searchStrategy = newSearchStrategy;
     }
 
-    public void setCircle(LatLng latLng, float q_distance)
-    {
+    public void setCircle(LatLng latLng, float q_distance) {
         if (distanceCircle != null)
             distanceCircle.remove();
 
         this.distanceCircle = this.googleMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(q_distance)
-                .strokeColor(Color.rgb(0,0,255))
+                .strokeColor(Color.rgb(0, 0, 255))
                 .strokeWidth(5)
-                .fillColor(Color.argb(128,255,255,255)));
+                .fillColor(Color.argb(128, 255, 255, 255)));
 
-        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude,longitude)).zoom(15).build();
+        CameraPosition mCameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(15).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
     }
 
-    private GeoApiContext getGeoContext()
-    {
+    private GeoApiContext getGeoContext() {
         GeoApiContext geoApiContext = new GeoApiContext();
         return geoApiContext.setQueryRateLimit(3)
                 .setApiKey(getString(R.string.directionsApiKey))
@@ -625,43 +535,35 @@ public class HomeFragment extends Fragment
                 .setWriteTimeout(1, TimeUnit.SECONDS);
     }
 
-    public void getDirection(double latOrig, double lonOrig, double latDest, double lonDest)
-    {
+    public void getDirection(double latOrig, double lonOrig, double latDest, double lonDest) {
         DateTime now = new DateTime();
         DirectionsResult result = null;
 
-        try
-        {
+        try {
             result = DirectionsApi.newRequest(getGeoContext())
                     .mode(TravelMode.DRIVING)
                     .origin(new com.google.maps.model.LatLng(latOrig, lonOrig))
                     .destination(new com.google.maps.model.LatLng(latDest, lonDest))
                     .departureTime(now).await();
-        }
-        catch (ApiException | InterruptedException | IOException e)
-        {
+        } catch (ApiException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
 
         addPolyline(result, this.googleMap);
     }
 
-    private void addPolyline(DirectionsResult results, GoogleMap mMap)
-    {
-        if(direction!=null)
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+        if (direction != null)
             direction.remove();
-                    
+
         List<LatLng> decodedPath = PolyUtil.decode(results.routes[0].overviewPolyline.getEncodedPath());
         direction = mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(10).color(Color.BLUE));
     }
 
 
-    public static String getKeyFromValue(HashMap<String, Marker> hm, Marker value)
-    {
-        for (String o : hm.keySet())
-        {
-            if (hm.get(o).equals(value))
-            {
+    public static String getKeyFromValue(HashMap<String, Marker> hm, Marker value) {
+        for (String o : hm.keySet()) {
+            if (Objects.requireNonNull(hm.get(o)).equals(value)) {
                 return o;
             }
         }

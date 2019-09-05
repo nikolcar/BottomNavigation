@@ -7,6 +7,7 @@ import java.util.HashMap;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.Class.Parking;
 import rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity;
 
+import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity.customToast;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.distanceBetween;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.latitude;
 import static rs.elfak.mosis.nikolamitic.bottomnavigationview.MyLocationService.longitude;
@@ -26,8 +27,8 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         catch (Exception e)
         {
-            Toast.makeText(mainActivity,"Please enter the float number!",
-                    Toast.LENGTH_SHORT).show();
+            customToast(mainActivity,"Please enter the float number!",
+                    Toast.LENGTH_SHORT);
             return;
         }
 
@@ -38,8 +39,7 @@ public class DistanceSearchStrategy implements SearchStrategy
         }
         else
         {
-            Toast.makeText(mainActivity,"Turn on GPS and try again",Toast.LENGTH_SHORT)
-                    .show();
+            customToast(mainActivity,"Turn on GPS and try again",Toast.LENGTH_SHORT);
             return;
         }
 

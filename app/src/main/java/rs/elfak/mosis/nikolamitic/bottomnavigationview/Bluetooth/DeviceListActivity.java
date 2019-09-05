@@ -59,13 +59,13 @@ public class DeviceListActivity extends Activity {
 
     private void getWidgetReferences() {
 		Log.d(TAG, "DeviceListActivity: getWidgetReferences started");
-		tvDeviceListPairedDeviceTitle = (TextView) findViewById(R.id.tvDeviceListPairedDeviceTitle);
-		tvDeviceListNewDeviceTitle = (TextView) findViewById(R.id.tvDeviceListNewDeviceTitle);
+		tvDeviceListPairedDeviceTitle = findViewById(R.id.tvDeviceListPairedDeviceTitle);
+		tvDeviceListNewDeviceTitle = findViewById(R.id.tvDeviceListNewDeviceTitle);
 
-		lvDeviceListPairedDevice = (ListView) findViewById(R.id.lvDeviceListPairedDevice);
-		lvDeviceListNewDevice = (ListView) findViewById(R.id.lvDeviceListNewDevice);
+		lvDeviceListPairedDevice = findViewById(R.id.lvDeviceListPairedDevice);
+		lvDeviceListNewDevice = findViewById(R.id.lvDeviceListNewDevice);
 
-		btnDeviceListScan = (Button) findViewById(R.id.btnDeviceListScan);
+		btnDeviceListScan = findViewById(R.id.btnDeviceListScan);
 
 	}
 
@@ -86,8 +86,8 @@ public class DeviceListActivity extends Activity {
 
 	private void initializeValues() {
 		Log.d(TAG, "DeviceListActivity: initializeValues started");
-		pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-		newDevicesArrayAdapter = new ArrayAdapter<String>(this,	R.layout.device_name);
+		pairedDevicesArrayAdapter = new ArrayAdapter<>(this, R.layout.device_name);
+		newDevicesArrayAdapter = new ArrayAdapter<>(this, R.layout.device_name);
 
 		lvDeviceListPairedDevice.setAdapter(pairedDevicesArrayAdapter);
 		lvDeviceListNewDevice.setAdapter(newDevicesArrayAdapter);

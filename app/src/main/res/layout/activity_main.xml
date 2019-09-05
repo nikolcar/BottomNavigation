@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/dark"
     tools:context="rs.elfak.mosis.nikolamitic.bottomnavigationview.MainActivity">
 
     <FrameLayout
@@ -16,13 +16,15 @@
         android:layout_weight="1">
     </FrameLayout>
 
-    <android.support.design.widget.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
-        android:background="@color/white"
-        app:itemIconTint="@color/colorPrimary"
+        android:background="@color/dark"
+        android:theme="@style/navigation"
+        app:itemRippleColor="@android:color/black"
+        app:itemTextColor="@color/gradient_text"
         app:menu="@menu/navigation" />
 
 </LinearLayout>
